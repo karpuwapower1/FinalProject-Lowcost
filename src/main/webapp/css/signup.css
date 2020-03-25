@@ -1,0 +1,61 @@
+body {
+	min-width: 320px;
+	width: 100%;
+	font-size: 18px;
+	font-family: 'Sen', sans-serif;
+	color: #0A0A0A;
+	background-image: url('../img/mainview.jpg');
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-size: cover;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+body .login-header {
+	margin-top: 20px;
+	font-family: 'Sen', sans-serif;
+	font-size: 30px;
+	color: #000;
+}
+
+body .form-control {
+	margin-bottom: 15px;
+	font-family: 'Sen', sans-serif;
+	font-size: 20px;
+}
+
+body .form-control:valid  {
+	color: #000;
+}
+
+body .form-control:invalid {
+	 box-shadow: 0 0 1px 1px #ff0000;
+}
+
+.error-name {
+	margin-top: 10px;
+	font-family: 'Sen', sans-serif;
+	color: #696969;
+	font-size: 100px;
+	text-transform: uppercase;
+	text-align: center;
+}
+
+.error-code {
+	font-family: 'Sen', sans-serif;
+	color: #696969;
+	font-size: 20px;
+	text-align: center;
+}
+
+body .illegal-file-message {
+	font-family: 'Sen', sans-serif;
+	color: #FF0000;
+	font-size: 15px;
+	margin-top: 10px
+}
