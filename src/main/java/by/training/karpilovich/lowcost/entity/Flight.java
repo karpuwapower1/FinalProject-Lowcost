@@ -5,30 +5,29 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 
 public class Flight implements Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private String number;
 	private PlaneModel planeModel;
-	private String from;
-	private String to;
+	private City from;
+	private City to;
 	private Calendar date;
-	private BigDecimal defaultPrice;
+	private BigDecimal price;
 	private int permittedLuggageWeigth;
 	private int availablePlaceQuantity;
-	
-	
+
 	public Flight() {
 	}
 
-	public Flight(String number, PlaneModel planeModel, String from, String to, Calendar date, BigDecimal defaultPrice,
+	public Flight(String number, PlaneModel planeModel, City from, City to, Calendar date, BigDecimal price,
 			int permittedLuggageWeigth, int availablePlaceQuantity) {
 		this.number = number;
 		this.planeModel = planeModel;
 		this.from = from;
 		this.to = to;
 		this.date = date;
-		this.defaultPrice = defaultPrice;
+		this.price = price;
 		this.permittedLuggageWeigth = permittedLuggageWeigth;
 		this.availablePlaceQuantity = availablePlaceQuantity;
 	}
@@ -49,19 +48,19 @@ public class Flight implements Serializable {
 		this.planeModel = planeModel;
 	}
 
-	public String getFrom() {
+	public City getFrom() {
 		return from;
 	}
 
-	public void setFrom(String from) {
+	public void setFrom(City from) {
 		this.from = from;
 	}
 
-	public String getTo() {
+	public City getTo() {
 		return to;
 	}
 
-	public void setTo(String to) {
+	public void setTo(City to) {
 		this.to = to;
 	}
 
@@ -73,12 +72,12 @@ public class Flight implements Serializable {
 		this.date = date;
 	}
 
-	public BigDecimal getDefaultPrice() {
-		return defaultPrice;
+	public BigDecimal getPrice() {
+		return price;
 	}
 
-	public void setDefaultPrice(BigDecimal defaultPrice) {
-		this.defaultPrice = defaultPrice;
+	public void setPrice(BigDecimal price) {
+		this.price = price;
 	}
 
 	public int getPermittedLuggageWeigth() {
@@ -103,7 +102,7 @@ public class Flight implements Serializable {
 		int result = 1;
 		result = prime * result + availablePlaceQuantity;
 		result = prime * result + ((date == null) ? 0 : date.hashCode());
-		result = prime * result + ((defaultPrice == null) ? 0 : defaultPrice.hashCode());
+		result = prime * result + ((price == null) ? 0 : price.hashCode());
 		result = prime * result + ((from == null) ? 0 : from.hashCode());
 		result = prime * result + ((number == null) ? 0 : number.hashCode());
 		result = prime * result + permittedLuggageWeigth;
@@ -126,10 +125,10 @@ public class Flight implements Serializable {
 				return false;
 		} else if (!date.equals(other.date))
 			return false;
-		if (defaultPrice == null) {
-			if (other.defaultPrice != null)
+		if (price == null) {
+			if (other.price != null)
 				return false;
-		} else if (!defaultPrice.equals(other.defaultPrice))
+		} else if (!price.equals(other.price))
 			return false;
 		if (from == null) {
 			if (other.from != null)
@@ -158,11 +157,10 @@ public class Flight implements Serializable {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " [number=" + number + ", planeModel=" + planeModel + ", from=" + from + ", to=" + to + ", date="
-				+ date + ", defaultPrice=" + defaultPrice + ", permittedLuggageWeigth=" + permittedLuggageWeigth
-				+ ", availablePlaceQuantity=" + availablePlaceQuantity + "]";
+		return getClass().getSimpleName() + " [number=" + number + ", planeModel=" + planeModel + ", from="
+				+ from.toString() + ", to=" + to.toString() + ", date=" + date + ", price=" + price
+				+ ", permittedLuggageWeigth=" + permittedLuggageWeigth + ", availablePlaceQuantity="
+				+ availablePlaceQuantity + "]";
 	}
-	
-	
 
 }
