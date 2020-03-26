@@ -9,7 +9,7 @@ import by.training.karpilovich.lowcost.command.impl.DefaultCommand;
 import by.training.karpilovich.lowcost.command.impl.RedirectCommand;
 import by.training.karpilovich.lowcost.command.impl.SigninCommand;
 import by.training.karpilovich.lowcost.command.impl.SignoutCommand;
-import by.training.karpilovich.lowcost.command.impl.SignupCommand;
+import by.training.karpilovich.lowcost.command.impl.SignUpCommand;
 
 public class CommandFactory {
 
@@ -35,13 +35,13 @@ public class CommandFactory {
 		try {
 			CommandType commandType = CommandType.valueOf(commandName.toUpperCase());
 			switch (commandType) {
-			case SIGNIN:
+			case SIGN_IN:
 				command = new SigninCommand();
 				break;
-			case SIGNUP:
-				command = new SignupCommand();
+			case SIGN_UP:
+				command = new SignUpCommand();
 				break;
-			case SIGNOUT:
+			case SIGN_OUT:
 				command = new SignoutCommand();
 				break;
 			case REDIRECT:

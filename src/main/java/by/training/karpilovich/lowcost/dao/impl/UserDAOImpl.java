@@ -11,14 +11,14 @@ import org.apache.logging.log4j.Logger;
 
 import by.training.karpilovich.lowcost.builder.UserBuilder;
 import by.training.karpilovich.lowcost.connection.ConnectionPool;
-import by.training.karpilovich.lowcost.dao.UserDao;
+import by.training.karpilovich.lowcost.dao.UserDAO;
 import by.training.karpilovich.lowcost.entity.Role;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ConnectionPoolException;
-import by.training.karpilovich.lowcost.exception.DaoException;
+import by.training.karpilovich.lowcost.exception.DAOException;
 import by.training.karpilovich.lowcost.util.MessageType;
 
-public class MySqlUserDao implements UserDao {
+public class UserDAOImpl implements UserDAO {
 
 	private static final String ADD_QUERY = "INSERT INTO airport_user(email, user_password, first_name, last_name) "
 			+ " VALUES (?,?,?,?)";
@@ -59,57 +59,57 @@ public class MySqlUserDao implements UserDao {
 
 	private static final int COUNT_EMAIL_QUERY_RESULT_INDEX = 1;
 
-	private static final Logger LOGGER = LogManager.getLogger(MySqlUserDao.class);
+	private static final Logger LOGGER = LogManager.getLogger(UserDAOImpl.class);
 
-	private MySqlUserDao() {
+	private UserDAOImpl() {
 	}
 
 	private static final class MySqlUserDaoInstanceHolder {
-		private static final MySqlUserDao INSTANCE = new MySqlUserDao();
+		private static final UserDAOImpl INSTANCE = new UserDAOImpl();
 	}
 
-	public static UserDao getInstance() {
+	public static UserDAO getInstance() {
 		return MySqlUserDaoInstanceHolder.INSTANCE;
 	}
 
 	@Override
-	public int add(User user) throws DaoException {
+	public int add(User user) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = prepareAddStatement(connection, user);) {
 			return statement.executeUpdate();
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while adding a user" + user.toString(), e);
-			throw new DaoException(MessageType.INTERNAL_ERROR.getType());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getType());
 		}
 	}
 
 	@Override
-	public int update(User user) throws DaoException {
+	public int update(User user) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = prepareUpdateStatement(connection, user);) {
 			return statement.executeUpdate();
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while updateng a user" + user.toString(), e);
-			throw new DaoException(MessageType.INTERNAL_ERROR.getType());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getType());
 		}
 	}
 
 	@Override
-	public int delete(User user) throws DaoException {
+	public int delete(User user) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = prepareDeleteStatement(connection, user);) {
 			return statement.executeUpdate();
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while deleting a user" + user.toString(), e);
-			throw new DaoException(MessageType.INTERNAL_ERROR.getType());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getType());
 		}
 	}
 
 	@Override
-	public Optional<User> selectUserByEmaiAndPassword(String email, String password) throws DaoException {
+	public Optional<User> selectUserByEmaiAndPassword(String email, String password) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = prepageSelectByEmailAndPasswordStatement(connection, email, password);
@@ -121,12 +121,12 @@ public class MySqlUserDao implements UserDao {
 			return optional;
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while select user by email and password email=" + email + " password=" + password, e);
-			throw new DaoException(MessageType.INTERNAL_ERROR.getType());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getType());
 		}
 	}
 
 	@Override
-	public int countUserWithEmail(String email) throws DaoException {
+	public int countUserWithEmail(String email) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = prepareCountEmailStatementStatement(connection, email);
@@ -138,7 +138,7 @@ public class MySqlUserDao implements UserDao {
 			return result;
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while counting email=" + email, e);
-			throw new DaoException(MessageType.INTERNAL_ERROR.getType());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getType());
 		}
 	}
 

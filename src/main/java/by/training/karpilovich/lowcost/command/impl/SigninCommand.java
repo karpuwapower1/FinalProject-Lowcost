@@ -17,8 +17,7 @@ import by.training.karpilovich.lowcost.command.CookieName;
 import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ServiceException;
-import by.training.karpilovich.lowcost.factory.ServiceFactory;
-import by.training.karpilovich.lowcost.service.InitializatorService;
+import by.training.karpilovich.lowcost.service.UserService;
 
 public class SigninCommand implements Command {
 
@@ -30,24 +29,22 @@ public class SigninCommand implements Command {
 	private static final Logger LOGGER = LogManager.getLogger(SigninCommand.class);
 
 	@Override
-	public String exequte(HttpServletRequest request, HttpServletResponse response)
+	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Page page = null;
 		HttpSession session = request.getSession();
 		String email = request.getParameter(EMAIL_PARAMETER).trim();
 		String password = request.getParameter(PASSWORD_PARAMETER).trim();
-
 		try {
 			User user = initializeUser(email, password);
 			setAttribute(request, user);
 			keepInMind(request, response, email, password);
 			page = (Page) session.getAttribute(AttributeName.PAGE_FROM.getName());
-			LOGGER.debug("Page = " + page.getAddress());
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
 			LOGGER.warn(e);
 		}
-		return page != null ? page.getAddress() : Page.SIGNIN.getAddress();
+		return page != null ? page.getAddress() : Page.SIGN_IN.getAddress();
 	}
 
 	private void keepInMind(HttpServletRequest request, HttpServletResponse response, String email, String password) {
@@ -72,9 +69,8 @@ public class SigninCommand implements Command {
 	}
 
 	private User initializeUser(String email, String password) throws ServiceException {
-		ServiceFactory factory = ServiceFactory.getInstance();
-		InitializatorService initializationService = factory.getInitializatorService();
-		return initializationService.signin(email, password);
+		UserService userService = getUserService();
+		return userService.signIn(email, password);
 	}
 
 }

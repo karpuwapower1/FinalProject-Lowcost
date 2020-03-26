@@ -14,7 +14,7 @@
 </head>
 
 <header>
-	<c:set var="page_from" value="<%=by.training.karpilovich.lowcost.command.Page.SIGNIN%>" scope="request"/>
+	<c:set var="page_from" value="<%=by.training.karpilovich.lowcost.command.Page.SIGN_IN%>" scope="request"/>
 	<c:import url="/general/header.jsp" />
 </header>
 
@@ -32,7 +32,7 @@
 					placeholder="<fmt:message key="password"/>" value="" required
 					pattern="(\w{5,})" />
 				<button class="btn btn-primary btn-block " type="submit"
-					name="command" value="signin">
+					name="command" value="sign_in">
 					<fmt:message key="command" />
 				</button>
 

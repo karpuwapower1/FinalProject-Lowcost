@@ -8,12 +8,12 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class MessageManager {
+public class MessageLocaleManager {
 
 	private static final String BASE_NAME = "pagecontent";
-	private static final Logger LOGGER = LogManager.getLogger(MessageManager.class);
+	private static final Logger LOGGER = LogManager.getLogger(MessageLocaleManager.class);
 
-	private MessageManager() {
+	private MessageLocaleManager() {
 	}
 
 	public static Optional<String> getMessage(String key, Locale locale) {

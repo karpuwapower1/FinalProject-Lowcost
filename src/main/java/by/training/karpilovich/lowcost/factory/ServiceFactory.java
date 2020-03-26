@@ -1,7 +1,7 @@
 package by.training.karpilovich.lowcost.factory;
 
-import by.training.karpilovich.lowcost.service.InitializatorService;
-import by.training.karpilovich.lowcost.service.impl.InitializatorServiceImpl;
+import by.training.karpilovich.lowcost.service.UserService;
+import by.training.karpilovich.lowcost.service.impl.UserServiceImpl;
 
 public class ServiceFactory {
 	
@@ -15,8 +15,8 @@ public class ServiceFactory {
 		return ServiceFactoryInstanceHolder.INSTANCE;
 	}
 	
-	public InitializatorService getInitializatorService() {
-		return InitializatorServiceImpl.getInstance();
+	public UserService getUserService() {
+		return UserServiceImpl.getInstance();
 	}
 
 }

@@ -17,7 +17,7 @@ import by.training.karpilovich.lowcost.entity.Role;
 public class SignoutCommand implements Command {
 
 	@Override
-	public String exequte(HttpServletRequest request, HttpServletResponse response)
+	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		session.invalidate();
