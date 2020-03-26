@@ -1,7 +1,14 @@
 package by.training.karpilovich.lowcost.factory;
 
+
 import by.training.karpilovich.lowcost.service.UserService;
 import by.training.karpilovich.lowcost.service.impl.UserServiceImpl;
+
+import by.training.karpilovich.lowcost.service.FlightService;
+
+
+
+
 
 public class ServiceFactory {
 	
@@ -18,5 +25,7 @@ public class ServiceFactory {
 	public UserService getUserService() {
 		return UserServiceImpl.getInstance();
 	}
+	
+
 
 }
