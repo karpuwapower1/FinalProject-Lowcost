@@ -5,10 +5,12 @@ import by.training.karpilovich.lowcost.exception.ServiceException;
 
 public interface InitializatorService {
 
-	public User signin(String email, String password) throws ServiceException;
+	User signin(String email, String password) throws ServiceException;
 
-	public User signup(String email, String password, String repeatedPassword, String firstName, String lastName) throws ServiceException;
+	User signup(String email, String password, String repeatedPassword, String firstName, String lastName) throws ServiceException;
 
-	public void delete(User user, String repeatedPassword) throws ServiceException;
+	void delete(User user, String repeatedPassword) throws ServiceException;
+	
+	int countUserWithEmail(String email) throws ServiceException;
 
 }

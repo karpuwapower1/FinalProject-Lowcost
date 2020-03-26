@@ -16,6 +16,7 @@ import by.training.karpilovich.lowcost.factory.DaoFactory;
 import by.training.karpilovich.lowcost.service.InitializatorService;
 import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
+import by.training.karpilovich.lowcost.validator.user.EmailPresenceValidator;
 import by.training.karpilovich.lowcost.validator.user.EmailValidator;
 import by.training.karpilovich.lowcost.validator.user.NameValidator;
 import by.training.karpilovich.lowcost.validator.user.PasswordMatchValidator;
@@ -63,9 +64,6 @@ public class InitializatorServiceImpl implements InitializatorService {
 		Validator validator = getUserValidator(email, password, repeatPassword, firstName);
 		try {
 			validator.validate();
-			if (userDao.countUserWithEmail(email) != 0) {
-				throw new ServiceException(MessageType.EMAIL_ALREADY_PRESENT.getType());
-			}
 			User user = buildUser(email, password, firstName, lastName);
 			userDao.add(user);
 			return user;
@@ -86,13 +84,28 @@ public class InitializatorServiceImpl implements InitializatorService {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
+	
+	@Override
+	public int countUserWithEmail(String email) throws ServiceException {
+		Validator validator = new EmailValidator(email);
+		DaoFactory factory = DaoFactory.getInstance();
+		UserDao userDao = factory.getUserDao();
+		try {
+			validator.validate();
+			return userDao.countUserWithEmail(email);
+		} catch (ValidatorException | DaoException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
 
 	private Validator getUserValidator(String email, String password, String repeatPassword, String firstName) {
 		Validator validator = new EmailValidator(email);
+		Validator emailPresenceValidator = new EmailPresenceValidator(email);
 		Validator passwordValidator = new PasswordValidator(password);
 		Validator passwordMatchValidator = new PasswordMatchValidator(password, repeatPassword);
 		Validator nameValidator = new NameValidator(firstName);
-		validator.setNext(passwordValidator);
+		validator.setNext(emailPresenceValidator);
+		emailPresenceValidator.setNext(passwordValidator);
 		passwordValidator.setNext(passwordMatchValidator);
 		passwordMatchValidator.setNext(nameValidator);
 		return validator;
