@@ -17,11 +17,11 @@ import by.training.karpilovich.lowcost.exception.ConnectionPoolException;
 import by.training.karpilovich.lowcost.factory.CommandFactory;
 
 @WebServlet(urlPatterns = { "" })
-public class Controller extends HttpServlet {
+public class ServletController extends HttpServlet {
 
 	private static final String COMMAND_PARAMETER_NAME = "command";
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = LogManager.getLogger(Controller.class);
+	private static final Logger LOGGER = LogManager.getLogger(ServletController.class);
 
 	@Override
 	public void init() throws ServletException {
@@ -64,7 +64,7 @@ public class Controller extends HttpServlet {
 		String commandParameterValue = request.getParameter(COMMAND_PARAMETER_NAME);
 		CommandFactory factory = CommandFactory.getInstance();
 		Command command = factory.getCommad(commandParameterValue);
-		String page = command.exequte(request, response);
+		String page = command.execute(request, response);
 		request.getRequestDispatcher(page).forward(request, response);
 	}
 

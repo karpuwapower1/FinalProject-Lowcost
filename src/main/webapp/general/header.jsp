@@ -54,10 +54,10 @@
 			</div>
 			<div class="navbar-nav ml-auto">
 				<c:if
-					test="${!page.equals('signin') && !page.equals('signup') && role == 'GUEST'}">
+					test="${!page.equals('sign_in') && !page.equals('sign_up') && role == 'GUEST'}">
 					<div class="nav-item">
-						<form method="post" name="signup">
-							<input type="hidden" name="to_page" value="signup" /> <input
+						<form method="post" name="sign_up">
+							<input type="hidden" name="to_page" value="sign_up" /> <input
 								type="hidden" name="page_from" value="${page}" /> 
 							<button type="submit" class="btn btn-link" name="command"
 								value="redirect">Signup</button>
@@ -65,8 +65,8 @@
 					</div>
 
 					<div class="nav-item">
-						<form method="post" name="signin">
-							<input type="hidden" name="to_page" value="signin" /> <input
+						<form method="post" name="sign_in">
+							<input type="hidden" name="to_page" value="sign_in" /> <input
 								type="hidden" name="page_from" value="${page}" /> 
 							<button type="submit" class="btn btn-link" name="command"
 								value="redirect">Signin</button>
@@ -74,13 +74,13 @@
 					</div>
 				</c:if>
 				<c:if
-					test="${!page.equals('signin') && !page.equals('signup') && role!= 'GUEST'}">
+					test="${!page.equals('sign_in') && !page.equals('sign_up') && role!= 'GUEST'}">
 					<div class="nav-item col-4">
-						<form name="signout" method="post">
+						<form name="sign_out" method="post">
 						<%-- <input
 								type="hidden" name="page_from" value="${page_from}" /> --%>
 							<button type="submit" class="btn btn-link" name="command"
-								value="signout">Signout</button>
+								value="sign_out">Signout</button>
 						</form>
 					</div>
 				</c:if>

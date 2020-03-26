@@ -1,6 +1,7 @@
 package by.training.karpilovich.lowcost.filter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -22,7 +23,7 @@ import by.training.karpilovich.lowcost.entity.Role;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.factory.ServiceFactory;
-import by.training.karpilovich.lowcost.service.InitializatorService;
+import by.training.karpilovich.lowcost.service.UserService;
 
 @WebFilter(urlPatterns = { "/*" })
 public class SigninFilter implements Filter {
@@ -51,14 +52,14 @@ public class SigninFilter implements Filter {
 
 	private User initializeUser(Cookie[] cookies, HttpSession session) {
 		User user = null;
-		String email;
-		String password;
-		if (cookies != null && !(email = getCookieValue(cookies, CookieName.EMAIL.getName())).isEmpty()
-				&& !(password = getCookieValue(cookies, CookieName.PASSWORD.getName())).isEmpty()) {
+		Optional<String> email;
+		Optional<String> password;
+		if (cookies != null && (email = getCookieValue(cookies, CookieName.EMAIL.getName())).isPresent()
+				&& (password = getCookieValue(cookies, CookieName.PASSWORD.getName())).isPresent()) {
 			ServiceFactory factory = ServiceFactory.getInstance();
-			InitializatorService initializationService = factory.getInitializatorService();
+			UserService userService = factory.getUserService();
 			try {
-				user = initializationService.signin(email, password);
+				user = userService.signIn(email.get(), password.get());
 			} catch (ServiceException e) {
 				LOGGER.warn(e);
 			}
@@ -66,13 +67,13 @@ public class SigninFilter implements Filter {
 		return user;
 	}
 
-	private String getCookieValue(Cookie[] cookies, String name) {
+	private Optional<String> getCookieValue(Cookie[] cookies, String name) {
 		for (Cookie cookie : cookies) {
 			if (cookie.getName().equals(name)) {
-				return cookie.getValue();
+				return Optional.of(cookie.getValue());
 			}
 		}
-		return new String();
+		return Optional.empty();
 	}
 
 	private void setSessionAttribute(HttpSession session, User user) {

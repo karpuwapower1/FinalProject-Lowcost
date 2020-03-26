@@ -16,8 +16,7 @@ import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.entity.Role;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ServiceException;
-import by.training.karpilovich.lowcost.factory.ServiceFactory;
-import by.training.karpilovich.lowcost.service.InitializatorService;
+import by.training.karpilovich.lowcost.service.UserService;
 
 public class DeleteUserCommand implements Command {
 	
@@ -26,7 +25,7 @@ public class DeleteUserCommand implements Command {
 	private static final Logger LOGGER = LogManager.getLogger(DeleteUserCommand.class);
 
 	@Override
-	public String exequte(HttpServletRequest request, HttpServletResponse response)
+	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		String repeatPassword = request.getParameter(REPEAT_PASSWORD_PARAMETER_NAME);
@@ -47,8 +46,7 @@ public class DeleteUserCommand implements Command {
 	}
 
 	private void deleteUser(User user, String repeatPassword) throws ServiceException {
-		ServiceFactory factory = ServiceFactory.getInstance();
-		InitializatorService service = factory.getInitializatorService();
-		service.delete(user, repeatPassword);
+		UserService userService = getUserService();
+		userService.delete(user, repeatPassword);
 	}
 }

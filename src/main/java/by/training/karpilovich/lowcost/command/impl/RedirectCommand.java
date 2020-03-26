@@ -22,7 +22,7 @@ public class RedirectCommand implements Command {
 	private static final Logger LOGGER = LogManager.getLogger(DeleteUserCommand.class);
 
 	@Override
-	public String exequte(HttpServletRequest request, HttpServletResponse response)
+	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String pageTo = request.getParameter(TO_PAGE_REQUEST_PARAMETER);
 		String pageFrom = request.getParameter(FROM_PAGE_REQUEST_PARAMETER);
