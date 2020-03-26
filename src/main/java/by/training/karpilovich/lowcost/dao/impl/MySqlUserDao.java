@@ -41,8 +41,8 @@ public class MySqlUserDao implements UserDao {
 	private static final int UPDATE_QUERY_ROLE_INDEX = 4;
 	private static final int UPDATE_QUERY_CONDITION_EMAIL_INDEX = 5;
 
-	private static final String SELECT_BY_EMAIL_AND_PASSWORD_QUERY = "SELECT email, password, first_name, last_name, role "
-			+ " FROM airport_user JOIN role on airport_user.role_id=role.id WHERE email=? AND user_password=?";
+	private static final String SELECT_BY_EMAIL_AND_PASSWORD_QUERY = "SELECT email, user_password, first_name, last_name, user_role.name "
+			+ " FROM airport_user JOIN user_role on airport_user.user_role_id=user_role.id WHERE email=? AND user_password=?";
 
 	private static final int EMAIL_SELECT_BY_EMAIL_AND_PASSWORD_QUERY_INDEX = 1;
 	private static final int PASSWORD_SELECT_BY_EMAIL_AND_PASSWORD_QUERY_INDEX = 2;
