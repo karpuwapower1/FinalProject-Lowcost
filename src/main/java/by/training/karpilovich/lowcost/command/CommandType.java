@@ -2,6 +2,6 @@ package by.training.karpilovich.lowcost.command;
 
 public enum CommandType {
 	
-	SIGNIN, SIGNOUT, SIGNUP, REMOVE, REDIRECT;
+	SIGN_IN, SIGN_OUT, SIGN_UP, REMOVE, REDIRECT;
 
 }

@@ -6,14 +6,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.karpilovich.lowcost.builder.UserBuilder;
-import by.training.karpilovich.lowcost.dao.UserDao;
+import by.training.karpilovich.lowcost.dao.UserDAO;
 import by.training.karpilovich.lowcost.entity.Role;
 import by.training.karpilovich.lowcost.entity.User;
-import by.training.karpilovich.lowcost.exception.DaoException;
+import by.training.karpilovich.lowcost.exception.DAOException;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.exception.ValidatorException;
-import by.training.karpilovich.lowcost.factory.DaoFactory;
-import by.training.karpilovich.lowcost.service.InitializatorService;
+import by.training.karpilovich.lowcost.factory.DAOFactory;
+import by.training.karpilovich.lowcost.service.UserService;
 import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 import by.training.karpilovich.lowcost.validator.user.EmailPresenceValidator;
@@ -22,52 +22,49 @@ import by.training.karpilovich.lowcost.validator.user.NameValidator;
 import by.training.karpilovich.lowcost.validator.user.PasswordMatchValidator;
 import by.training.karpilovich.lowcost.validator.user.PasswordValidator;
 
-public class InitializatorServiceImpl implements InitializatorService {
+public class UserServiceImpl implements UserService {
 
-	private static final Logger LOGGER = LogManager.getLogger(InitializatorServiceImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
 
-	private InitializatorServiceImpl() {
+	private UserDAO userDAO = DAOFactory.getInstance().getUserDAO();
+
+	private UserServiceImpl() {
 	}
 
 	private static final class InitializatorServiceInstanceHolder {
-		private static final InitializatorServiceImpl INSTANCE = new InitializatorServiceImpl();
+		private static final UserServiceImpl INSTANCE = new UserServiceImpl();
 	}
 
-	public static InitializatorService getInstance() {
+	public static UserService getInstance() {
 		return InitializatorServiceInstanceHolder.INSTANCE;
 	}
 
 	@Override
-	public User signin(String email, String password) throws ServiceException {
-		Validator validator = new EmailValidator(email);
-		Validator passwordValidator = new PasswordValidator(password);
-		validator.setNext(passwordValidator);
-		DaoFactory factory = DaoFactory.getInstance();
-		UserDao userDao = factory.getUserDao();
+	public User signIn(String email, String password) throws ServiceException {
+		Validator validator = getEmailAndPasswordValidator(email, password);
 		try {
 			validator.validate();
-			Optional<User> optional = userDao.selectUserByEmaiAndPassword(email, password);
+			Optional<User> optional = userDAO.selectUserByEmaiAndPassword(email, password);
 			if (optional.isPresent()) {
 				return optional.get();
 			}
 			throw new ServiceException(MessageType.ILLEGAL_EMAIL_OR_PASSWORD_MESSAGE.getType());
-		} catch (ValidatorException | DaoException e) {
+		} catch (ValidatorException | DAOException e) {
 			LOGGER.warn(e);
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public User signup(String email, String password, String repeatPassword, String firstName, String lastName) throws ServiceException {
-		DaoFactory factory = DaoFactory.getInstance();
-		UserDao userDao = factory.getUserDao();
+	public User signUp(String email, String password, String repeatPassword, String firstName, String lastName)
+			throws ServiceException {
 		Validator validator = getUserValidator(email, password, repeatPassword, firstName);
 		try {
 			validator.validate();
 			User user = buildUser(email, password, firstName, lastName);
-			userDao.add(user);
+			userDAO.add(user);
 			return user;
-		} catch (ValidatorException | DaoException e) {
+		} catch (ValidatorException | DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
@@ -75,25 +72,21 @@ public class InitializatorServiceImpl implements InitializatorService {
 	@Override
 	public void delete(User user, String repeatedPassword) throws ServiceException {
 		Validator passwordValidator = new PasswordMatchValidator(user.getPassword(), repeatedPassword);
-		DaoFactory factory = DaoFactory.getInstance();
-		UserDao userDao = factory.getUserDao();
 		try {
 			passwordValidator.validate();
-			userDao.delete(user);
-		} catch (ValidatorException | DaoException e) {
+			userDAO.delete(user);
+		} catch (ValidatorException | DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
-	
+
 	@Override
 	public int countUserWithEmail(String email) throws ServiceException {
 		Validator validator = new EmailValidator(email);
-		DaoFactory factory = DaoFactory.getInstance();
-		UserDao userDao = factory.getUserDao();
 		try {
 			validator.validate();
-			return userDao.countUserWithEmail(email);
-		} catch (ValidatorException | DaoException e) {
+			return userDAO.countUserWithEmail(email);
+		} catch (ValidatorException | DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
@@ -110,7 +103,14 @@ public class InitializatorServiceImpl implements InitializatorService {
 		passwordMatchValidator.setNext(nameValidator);
 		return validator;
 	}
-	
+
+	private Validator getEmailAndPasswordValidator(String email, String password) {
+		Validator validator = new EmailValidator(email);
+		Validator passwordValidator = new PasswordValidator(password);
+		validator.setNext(passwordValidator);
+		return validator;
+	}
+
 	private User buildUser(String email, String password, String firstName, String lastName) {
 		UserBuilder builder = new UserBuilder();
 		builder.setUserEmail(email);

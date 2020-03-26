@@ -3,7 +3,7 @@ package by.training.karpilovich.lowcost.validator.user;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.factory.ServiceFactory;
-import by.training.karpilovich.lowcost.service.InitializatorService;
+import by.training.karpilovich.lowcost.service.UserService;
 import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 
@@ -18,7 +18,7 @@ public class EmailPresenceValidator extends Validator {
 	@Override
 	public void validate() throws ValidatorException {
 		ServiceFactory serviceFactory = ServiceFactory.getInstance();
-		InitializatorService initService = serviceFactory.getInitializatorService();
+		UserService initService = serviceFactory.getUserService();
 		try {
 			if (initService.countUserWithEmail(email) != 0) {
 				throw new ValidatorException(MessageType.EMAIL_ALREADY_PRESENT.getType());

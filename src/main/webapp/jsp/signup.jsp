@@ -13,7 +13,7 @@
 </head>
 
 <header>
-	<c:set var="page_from" value="<%=by.training.karpilovich.lowcost.command.Page.SIGNUP%>" scope="request"/>
+	<c:set var="page_from" value="<%=by.training.karpilovich.lowcost.command.Page.SIGN_UP%>" scope="request"/>
 	<c:import url="/general/header.jsp" />
 </header>
 
@@ -46,7 +46,7 @@
 
 
 				<button class="btn btn-primary btn-block " type="submit"
-					name="command" value="signup"></button>
+					name="command" value="sign_up"></button>
 				<fmt:message key="command" />
 
 

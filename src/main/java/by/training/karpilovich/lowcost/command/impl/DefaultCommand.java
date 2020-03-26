@@ -12,7 +12,7 @@ import by.training.karpilovich.lowcost.command.Page;
 public class DefaultCommand implements Command {
 
 	@Override
-	public String exequte(HttpServletRequest request, HttpServletResponse response)
+	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		return Page.DEFAULT.getAddress();
 	}
