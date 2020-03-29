@@ -19,7 +19,7 @@ public class RedirectCommand implements Command {
 	private static final String TO_PAGE_REQUEST_PARAMETER = "to_page";
 	private static final String FROM_PAGE_REQUEST_PARAMETER = "page_from";
 
-	private static final Logger LOGGER = LogManager.getLogger(DeleteUserCommand.class);
+	private static final Logger LOGGER = LogManager.getLogger(RedirectCommand.class);
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)

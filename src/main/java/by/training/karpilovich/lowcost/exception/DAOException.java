@@ -2,6 +2,8 @@ package by.training.karpilovich.lowcost.exception;
 
 public class DAOException extends Exception {
 
+	private static final long serialVersionUID = 1L;
+
 	public DAOException() {
 	}
 
@@ -16,7 +18,5 @@ public class DAOException extends Exception {
 	public DAOException(Throwable cause) {
 		super(cause);
 	}
-	
-	
 
 }

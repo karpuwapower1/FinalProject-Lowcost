@@ -14,7 +14,7 @@ import by.training.karpilovich.lowcost.command.CookieName;
 import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.entity.Role;
 
-public class SignoutCommand implements Command {
+public class SignOutCommand implements Command {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
