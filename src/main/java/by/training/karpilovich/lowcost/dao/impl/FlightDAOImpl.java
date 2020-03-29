@@ -1,172 +1,308 @@
 package by.training.karpilovich.lowcost.dao.impl;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.karpilovich.lowcost.builder.FlightBuilder;
+import by.training.karpilovich.lowcost.builder.coefficient.LuggageCoefficientBuilder;
 import by.training.karpilovich.lowcost.connection.ConnectionPool;
 import by.training.karpilovich.lowcost.dao.FlightDAO;
+import by.training.karpilovich.lowcost.entity.AbstractCoefficient;
+import by.training.karpilovich.lowcost.entity.City;
+import by.training.karpilovich.lowcost.entity.DateCoefficient;
 import by.training.karpilovich.lowcost.entity.Flight;
+import by.training.karpilovich.lowcost.entity.LuggageCoefficient;
+import by.training.karpilovich.lowcost.entity.PlaceCoefficient;
 import by.training.karpilovich.lowcost.entity.PlaneModel;
 import by.training.karpilovich.lowcost.exception.ConnectionPoolException;
-import by.training.karpilovich.lowcost.exception.DaoException;
+import by.training.karpilovich.lowcost.exception.DAOException;
 import by.training.karpilovich.lowcost.util.MessageType;
 
 public class FlightDAOImpl implements FlightDAO {
 
-	private static final String ADD_QUERY = "INSERT INTO flight "
+	private static final String ADD_FLIGHT_QUERY = "INSERT INTO flight "
 			+ " VALUES(number, date, plane_model, from, to, default_price, default_luggage_kg, available_places) "
-			+ " ?, ?, "
-			+ " (SELECT id FROM city WHERE ?=city.name),"
-			+ " (SELECT id FROM city WHERE ?=city.name), ?, ?, ?, ?";
+			+ " ?, ?, ?, ?, ?, ?, ?, ?";
 
-	private static final int ADD_QUERY_NUMBER_INDEX = 1;
-	private static final int ADD_QUERY_DATE_INDEX = 2;
-	private static final int ADD_QUERY_PLANE_MODEL_INDEX = 3;
-	private static final int ADD_QUERY_COUNTRY_FROM_INDEX = 4;
-	private static final int ADD_QUERY_COUNTRY_TO_INDEX = 5;
-	private static final int ADD_QUERY_DEFAULT_PRICE_INDEX = 6;
-	private static final int ADD_QUERY_DEFAULT_LUGGAGE_INDEX = 7;
-	private static final int ADD_QUERY_PLACE_QUANTITY_INDEX = 8;
+	private static final int ADD_FLIGHT_QUERY_NUMBER_INDEX = 1;
+	private static final int ADD_FLIGHT_QUERY_DATE_INDEX = 2;
+	private static final int ADD_FLIGHT_QUERY_PLANE_MODEL_INDEX = 3;
+	private static final int ADD_FLIGHT_QUERY_CITY_FROM_ID_INDEX = 4;
+	private static final int ADD_FLIGHT_QUERY_CITY_TO_ID_INDEX = 5;
+	private static final int ADD_FLIGHT_QUERY_DEFAULT_PRICE_INDEX = 6;
+	private static final int ADD_FLIGHT_QUERY_DEFAULT_LUGGAGE_INDEX = 7;
+	private static final int ADD_FLIGHT_QUERY_PLACE_QUANTITY_INDEX = 8;
 
-	private static final String SELECT_FLIGHT_BY_DATE_AND_PASSENGER_QUANTITY = "SELECT "
-			+ " flight.number, flight.date, city_from.name, city_to.name, "
+	private static final String ADD_PLACES_COEFFICIENT_QUERY = "INSERT INTO free_places_coeff "
+			+ " VALUES(flight_id, free_places_from, free_paces_to, coeff) " + " LAST_INSERT_ID(), ?, ?, ?";
+
+	private static final String ADD_DATE_COEFFICIENT_QUERY = "INSERT INTO date_coeff "
+			+ " VALUES(flight_id, days_from, days_to, coeff) " + " LAST_INSERT_ID(), ?, ?, ?";
+
+	private static final String ADD_LUGGAGE_COEFFICIENT_QUERY = "INSERT INTO overweight_luggage_price "
+			+ " VALUES(flight_id, weight_from, weight_to, coeff) " + " LAST_INSERT_ID(), ?, ?, ?";
+
+//	private static final int ADD_COEFFICIENT_QUERY_ID_INDEX = 1;
+	private static final int ADD_COEFFICIENT_QUERY_BOUND_FROM_INDEX = 2;
+	private static final int ADD_COEFFICIENT_QUERY_BOUND_TO_INDEX = 3;
+	private static final int ADD_COEFFICIENT_QUERY_VALUE_INDEX = 4;
+
+	private static final String SELECT_FLIGHT_BY_DATE_AND_PASSENGER_QUANTITY = "SELECT " + " id, flight.number,  "
 			+ " default_price * date_coeff.coeff * places_coeff.coeff AS price, "
-			+ " default_luggage_kg, available_places, model, available_places, "
-			+ " lug_price.weight_from, lug_price.weight_to, lug_price.price_for_every_kg_overweight "
-			+ " FROM flight "
-			+ " JOIN plane ON flight.plane_model = plane.model "
-			+ " JOIN city AS city_from ON flight.from_id = city_from.id "
-			+ " JOIN city AS city_to ON flight.to_id = city_to.id "
+			+ " default_luggage_kg, available_places, model, places_quantity, "
+			+ " lug_price.weight_from, lug_price.weight_to, lug_price.price_for_every_kg_overweight " + " FROM flight "
+			+ " JOIN plane ON flight.plane_model = plane.model " 
 			+ " JOIN free_places_coeff AS places_coeff "
-				+ " ON flight.number = places_coeff.flight_number "
-				+ " AND flight.date = places_coeff.flight_date"
-				+ " AND available_places <= places_coeff.free_places_from "
-				+ " AND available_places > places_coeff.free_places_to "
-			+ "JOIN date_coeff AS date_coeff "
-				+ " ON flight.number = date_coeff.flight_number "
-				+ " AND flight.date = date_coeff.flight_date"
-				+ " AND TIMESTAMPDIFF(DAY, CURRENT_TIMESTAMP(), date) <= date_coeff.days_from "
-				+ " AND TIMESTAMPDIFF(DAY, CURRENT_TIMESTAMP(), date) > date_coeff.days_to  "
-			+ " RIGHT JOIN overweight_luggage_price AS lug_price ON flight.number = lug_price.flight_number "
-			+ "	WHERE city_from.name=? AND  city_to.name=? AND date>=? AND available_places >= ?";
-
+			+ " ON flight.id = places_coeff.flight_id "
+			+ " AND available_places BETWEEN places_coeff.free_places_from AND places_coeff.free_places_to "
+			+ " JOIN date_coeff AS date_coeff " 
+			+ " ON flight.id = date_coeff.flight_id "
+			+ " AND TIMESTAMPDIFF(DAY, CURRENT_TIMESTAMP(), date) BETWEEN date_coeff.days_from AND date_coeff.days_to  "
+			+ " RIGHT JOIN overweight_luggage_price AS lug_price ON flight.id = lug_price.flight_id "
+			+ "	WHERE city_from.id=? AND  city_to.id=? AND date>=? AND available_places >= ?"
+			+ " ORDER BY flight.number, flight.date";
 
 	private static final int SELECT_FLIGHT_BY_DATE_AND_PASSENGER_FROM_INDEX = 1;
 	private static final int SELECT_FLIGHT_BY_DATE_AND_PASSENGER_TO_INDEX = 2;
 	private static final int SELECT_FLIGHT_BY_DATE_AND_PASSENGER_DATE_INDEX = 3;
 	private static final int SELECT_FLIGHT_BY_DATE_AND_PASSENGER_QUANTITY_INDEX = 4;
-	
 
-	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_NUMBER_INDEX = 1;
-	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_DATE_INDEX = 2;
-	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_COUNTRY_FROM_INDEX = 3;
-	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_COUNTRY_TO_INDEX = 4;
-	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_PRICE_INDEX = 5;
-	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_LUGGAGE_INDEX = 6;
-	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_PLACES_INDEX = 7;
-	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_MODEL_INDEX = 8;
-	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_PLACE_QUANTITY_INDEX = 9;
+	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_ID_INDEX = 1;
+	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_NUMBER_INDEX = 2;
+	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_PRICE_INDEX = 3;
+	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_LUGGAGE_INDEX = 4;
+	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_PLACES_INDEX = 5;
+	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_MODEL_INDEX = 6;
+	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_PLACE_QUANTITY_INDEX = 7;
+	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_LUGG_WEIGHT_FROM_INDEX = 8;
+	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_LUGG_WEIGHT_TO_INDEX = 9;
+	private static final int RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_LUGG_WEIGHT_PRICE_INDEX = 10;
+
+//	private static final String SELECT_FLIGHT_ID_BY_NUMBER_AND_DATE = "SELECT id " + " FROM flight "
+//			+ " WHERE number=? AND date=?";
+//
+//	private static final int SELECT_FLIGHT_ID_BY_NUMBER_AND_DATE_NUMBER_INDEX = 1;
+//	private static final int SELECT_FLIGHT_ID_BY_NUMBER_AND_DATE_DATE_INDEX = 2;
+//
+//	private static final int RESULT_SELECT_FLIGHT_ID_BY_NUMBER_AND_DATE_ID_INDEX = 1;
 
 	private static final Logger LOGGER = LogManager.getLogger(FlightDAOImpl.class);
+	
+	private FlightDAOImpl() {
+		
+	}
+	
+	private static final class FlightDAOImplInstanceHolder {
+		private static final FlightDAOImpl INSTANCE = new FlightDAOImpl();
+	}
+	
+	public static FlightDAO getInstance() {
+		return FlightDAOImplInstanceHolder.INSTANCE;
+	}
 
 	@Override
-	public boolean add(Flight flight) throws DaoException {
+	public boolean add(Flight flight, Set<PlaceCoefficient> placeCoefficient, Set<DateCoefficient> dateCoefficient,
+			Set<LuggageCoefficient> luggageCoefficient) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
-		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = prepareAddStatement(connection, flight);) {
-			int result = statement.executeUpdate();
-			return result == 1;
+		Connection connection = null;
+		PreparedStatement flightStatement = null;
+		try {
+			connection = pool.getConnection();
+			connection.setAutoCommit(false);
+			flightStatement = prepareAddFlightStatement(connection, flight);
+			flightStatement.executeUpdate();
+//			int flightId = getFlightId(connection, flight);
+			insertCoefficietns(connection, placeCoefficient, ADD_PLACES_COEFFICIENT_QUERY);
+			insertCoefficietns(connection, dateCoefficient, ADD_DATE_COEFFICIENT_QUERY);
+			insertCoefficietns(connection, luggageCoefficient, ADD_LUGGAGE_COEFFICIENT_QUERY);
+			connection.commit();
+			return true;
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("Error while adding a flight " + flight.toString(), e);
-			throw new DaoException(MessageType.INTERNAL_ERROR.getType());
+			rollback(connection);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getType());
+		} finally {
+			closePreparedStatement(flightStatement);
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				LOGGER.error("Error while adding flight and setting setAutoCommit=true " + flight.toString(), e);
+			}
+			closeConnection(connection);
 		}
 	}
 
 	@Override
-	public boolean update(Flight flight) throws DaoException {
+	public boolean update(Flight flight) throws DAOException {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean remove(Flight flight) throws DaoException {
+	public boolean remove(Flight flight) throws DAOException {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public List<Flight> getFlightsByDateAndPassengerQuantity(String countryFrom, String countryTo, Calendar date,
-			int quantity) throws DaoException {
+	public Set<Flight> getFlightsByDateAndPassengerQuantityWithoutPlaceAndDateCoefficient(City from, City to, Calendar date, int quantity)
+			throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = prepareSelectByDateAndPassengerQuantityStatement(connection, countryFrom,
-						countryTo, date, quantity);
+				PreparedStatement statement = prepareSelectByDateAndPassengerQuantityStatement(connection, from, to,
+						date, quantity);
 				ResultSet resultSet = statement.executeQuery();) {
-			List<Flight> flights = new ArrayList<>();
+			Set<Flight> flights = new HashSet<>();
+			Flight flight;
 			while (resultSet.next()) {
-				flights.add(buildFlight(resultSet));
+				flight = buildFlight(resultSet, from, to, date);
+				addLuggageCoefficientsToFlight(resultSet, flight);
+				flights.add(flight);
 			}
 			return flights;
 		} catch (ConnectionPoolException | SQLException e) {
-			LOGGER.error("Error while getting a flight by date and passenger quantity: countryFrom=" + countryFrom
-					+ " countryTo=" + countryTo + " date=" + date + "quantity=" + quantity);
-			throw new DaoException(MessageType.INTERNAL_ERROR.getType(), e);
+			LOGGER.error("Error while getting a flight by date and passenger quantity: from=" + from + " to=" + to
+					+ " date=" + date + "quantity=" + quantity);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getType(), e);
 		}
 	}
 
-	private PreparedStatement prepareAddStatement(Connection connection, Flight flight) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(ADD_QUERY);
-		statement.setString(ADD_QUERY_NUMBER_INDEX, flight.getNumber());
-		statement.setDate(ADD_QUERY_DATE_INDEX, (Date) flight.getDate().getTime());
-		statement.setString(ADD_QUERY_PLANE_MODEL_INDEX, flight.getPlaneModel().getName());
-		statement.setString(ADD_QUERY_COUNTRY_FROM_INDEX, flight.getFrom());
-		statement.setString(ADD_QUERY_COUNTRY_TO_INDEX, flight.getTo());
-		statement.setBigDecimal(ADD_QUERY_DEFAULT_PRICE_INDEX, flight.getPrice());
-		statement.setInt(ADD_QUERY_DEFAULT_LUGGAGE_INDEX, flight.getPermittedLuggageWeigth());
-		statement.setInt(ADD_QUERY_PLACE_QUANTITY_INDEX, flight.getPlaneModel().getPlaceQuantity());
+	private void insertCoefficietns(Connection connection, Set<? extends AbstractCoefficient> coefficients,
+			String query) throws SQLException {
+		PreparedStatement statement = prepareAddCoefficientStatement(connection, coefficients, query);
+		statement.executeUpdate();
+	}
+
+//	private int getFlightId(Connection connection, Flight flight) throws SQLException {
+//		try (PreparedStatement statement = prepareGetFlightIdStatement(connection, flight);
+//				ResultSet resultSet = statement.executeQuery()) {
+//			return resultSet.getInt(RESULT_SELECT_FLIGHT_ID_BY_NUMBER_AND_DATE_ID_INDEX);
+//		}
+//	}
+
+//	private PreparedStatement prepareGetFlightIdStatement(Connection connection, Flight flight) throws SQLException {
+//		PreparedStatement statement = connection.prepareStatement(SELECT_FLIGHT_ID_BY_NUMBER_AND_DATE);
+//		statement.setString(SELECT_FLIGHT_ID_BY_NUMBER_AND_DATE_NUMBER_INDEX, flight.getNumber());
+//		statement.setTimestamp(SELECT_FLIGHT_ID_BY_NUMBER_AND_DATE_DATE_INDEX,
+//				new Timestamp(flight.getDate().getTimeInMillis()));
+//		return statement;
+//	}
+
+	private PreparedStatement prepareAddFlightStatement(Connection connection, Flight flight) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(ADD_FLIGHT_QUERY);
+		statement.setString(ADD_FLIGHT_QUERY_NUMBER_INDEX, flight.getNumber());
+		statement.setTimestamp(ADD_FLIGHT_QUERY_DATE_INDEX, new Timestamp(flight.getDate().getTimeInMillis()));
+		statement.setString(ADD_FLIGHT_QUERY_PLANE_MODEL_INDEX, flight.getPlaneModel().getName());
+		statement.setInt(ADD_FLIGHT_QUERY_CITY_FROM_ID_INDEX, flight.getFrom().getId());
+		statement.setInt(ADD_FLIGHT_QUERY_CITY_TO_ID_INDEX, flight.getTo().getId());
+		statement.setBigDecimal(ADD_FLIGHT_QUERY_DEFAULT_PRICE_INDEX, flight.getPrice());
+		statement.setInt(ADD_FLIGHT_QUERY_DEFAULT_LUGGAGE_INDEX, flight.getPermittedLuggageWeigth());
+		statement.setInt(ADD_FLIGHT_QUERY_PLACE_QUANTITY_INDEX, flight.getPlaneModel().getPlaceQuantity());
 		return statement;
 	}
 
-	private PreparedStatement prepareSelectByDateAndPassengerQuantityStatement(Connection connection, String from,
-			String to, Calendar date, int quantity) throws SQLException {
+	private PreparedStatement prepareAddCoefficientStatement(Connection connection,
+			Set<? extends AbstractCoefficient> coefficients, String query) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(query);
+		for (AbstractCoefficient coefficient : coefficients) {
+//			statement.setInt(ADD_COEFFICIENT_QUERY_ID_INDEX, flightId);
+			statement.setInt(ADD_COEFFICIENT_QUERY_BOUND_FROM_INDEX, coefficient.getBoundFrom());
+			statement.setInt(ADD_COEFFICIENT_QUERY_BOUND_TO_INDEX, coefficient.getBoundTo());
+			statement.setBigDecimal(ADD_COEFFICIENT_QUERY_VALUE_INDEX, coefficient.getValue());
+			statement.addBatch();
+		}
+		return statement;
+	}
+
+	private PreparedStatement prepareSelectByDateAndPassengerQuantityStatement(Connection connection, City from,
+			City to, Calendar date, int quantity) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SELECT_FLIGHT_BY_DATE_AND_PASSENGER_QUANTITY);
-		statement.setString(SELECT_FLIGHT_BY_DATE_AND_PASSENGER_FROM_INDEX, from);
-		statement.setString(SELECT_FLIGHT_BY_DATE_AND_PASSENGER_TO_INDEX, to);
-		statement.setDate(SELECT_FLIGHT_BY_DATE_AND_PASSENGER_DATE_INDEX, (Date) date.getTime());
+		statement.setInt(SELECT_FLIGHT_BY_DATE_AND_PASSENGER_FROM_INDEX, from.getId());
+		statement.setInt(SELECT_FLIGHT_BY_DATE_AND_PASSENGER_TO_INDEX, to.getId());
+		statement.setTimestamp(SELECT_FLIGHT_BY_DATE_AND_PASSENGER_DATE_INDEX, new Timestamp(date.getTimeInMillis()));
 		statement.setInt(SELECT_FLIGHT_BY_DATE_AND_PASSENGER_QUANTITY_INDEX, quantity);
 		return statement;
 	}
 
-	private Flight buildFlight(ResultSet resultSet) throws SQLException {
+	private Flight buildFlight(ResultSet resultSet, City from, City to, Calendar date) throws SQLException {
 		FlightBuilder builder = new FlightBuilder();
+		builder.setId(resultSet.getInt(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_ID_INDEX));
 		builder.setAvailablePlaceQuantity(
 				resultSet.getInt(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_PLACE_QUANTITY_INDEX));
-		builder.setFrom(resultSet.getString(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_COUNTRY_FROM_INDEX));
-		builder.setTo(resultSet.getString(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_COUNTRY_TO_INDEX));
+		builder.setFrom(from);
+		builder.setTo(to);
 		builder.setFlightNumber(resultSet.getString(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_NUMBER_INDEX));
-		GregorianCalendar date = new GregorianCalendar();
-		date.setTime(resultSet.getDate(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_DATE_INDEX));
 		builder.setDate(date);
 		builder.setPrice(resultSet.getBigDecimal(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_PRICE_INDEX));
 		builder.setPermittedLuggageWeight(resultSet.getInt(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_LUGGAGE_INDEX));
-
 		builder.setAvailablePlaceQuantity(resultSet.getInt(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_PLACES_INDEX));
-		PlaneModel model = new PlaneModel();
-		model.setName(resultSet.getString(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_MODEL_INDEX));
-		model.setPlaceQuantity(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_PLACE_QUANTITY_INDEX);
-		builder.setPlaneModel(model);
+		builder.setPlaneModel(
+				new PlaneModel(resultSet.getString(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_MODEL_INDEX),
+						resultSet.getInt(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_PLACE_QUANTITY_INDEX)));
 		return builder.getFlight();
+	}
+
+	private void addLuggageCoefficientsToFlight(ResultSet resultSet, Flight flight) throws SQLException {
+		LuggageCoefficientBuilder builder;
+		int id = flight.getId();
+		while (resultSet.next()
+				&& (id = resultSet.getInt(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_ID_INDEX)) == flight.getId()) {
+			builder = new LuggageCoefficientBuilder();
+			builder.setFlightId(id);
+			builder.setBoundFrom(resultSet.getInt(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_LUGG_WEIGHT_FROM_INDEX));
+			builder.setBoundTo(resultSet.getInt(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_LUGG_WEIGHT_TO_INDEX));
+			builder.setValue(
+					resultSet.getBigDecimal(RESULT_SELECT_FLIGHT_BY_DATE_AND_PASSENGER_LUGG_WEIGHT_PRICE_INDEX));
+			flight.addLuggageCoefficient(builder.getCoefficient());
+		}
+		if (id != flight.getId()) {
+			resultSet.previous();
+		}
+	}
+
+//	private GregorianCalendar getDateFromTimestamp(Timestamp timestamp) {
+//		GregorianCalendar date = new GregorianCalendar();
+//		date.setTime(new Date(timestamp.getTime()));
+//		return date;
+//	}
+
+	private void rollback(Connection connection) {
+		if (connection != null) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				LOGGER.error("Error while adding a flight and rolling back " + e1);
+			}
+		}
+	}
+
+	private void closePreparedStatement(PreparedStatement statement) {
+		if (statement != null) {
+			try {
+				statement.close();
+			} catch (SQLException e) {
+				LOGGER.error("Error while adding a flight and closing prepared statrement" + e);
+			}
+		}
+	}
+
+	private void closeConnection(Connection connection) {
+		if (connection != null) {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				LOGGER.error("Error while adding a flight and closing " + e);
+			}
+		}
 	}
 
 }

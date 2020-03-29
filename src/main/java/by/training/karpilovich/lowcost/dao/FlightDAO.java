@@ -1,20 +1,25 @@
 package by.training.karpilovich.lowcost.dao;
 
 import java.util.Calendar;
-import java.util.List;
+import java.util.Set;
 
+import by.training.karpilovich.lowcost.entity.City;
+import by.training.karpilovich.lowcost.entity.DateCoefficient;
 import by.training.karpilovich.lowcost.entity.Flight;
-import by.training.karpilovich.lowcost.exception.DaoException;
+import by.training.karpilovich.lowcost.entity.LuggageCoefficient;
+import by.training.karpilovich.lowcost.entity.PlaceCoefficient;
+import by.training.karpilovich.lowcost.exception.DAOException;
 
 public interface FlightDAO {
 
-	boolean add(Flight flight) throws DaoException;
+	boolean add(Flight flight, Set<PlaceCoefficient> placeCoefficient, Set<DateCoefficient> dateCoefficient,
+			Set<LuggageCoefficient> luggageCoefficient) throws DAOException;
 
-	boolean update(Flight flight) throws DaoException;
+	boolean update(Flight flight) throws DAOException;
 
-	boolean remove(Flight flight) throws DaoException;
+	boolean remove(Flight flight) throws DAOException;
 
-	List<Flight> getFlightsByDateAndPassengerQuantity(String countryFrom, String contryTo, Calendar date, int quantity)
-			throws DaoException;
+	Set<Flight> getFlightsByDateAndPassengerQuantityWithoutPlaceAndDateCoefficient(City from, City to, Calendar date,
+			int quantity) throws DAOException;
 
 }
