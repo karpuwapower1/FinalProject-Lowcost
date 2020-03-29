@@ -3,11 +3,16 @@ package by.training.karpilovich.lowcost.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Set;
+import java.util.TreeSet;
+
+import by.training.karpilovich.lowcost.util.CoefficientByBoundComparator;
 
 public class Flight implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private int id;
 	private String number;
 	private PlaneModel planeModel;
 	private City from;
@@ -16,6 +21,9 @@ public class Flight implements Serializable {
 	private BigDecimal price;
 	private int permittedLuggageWeigth;
 	private int availablePlaceQuantity;
+	private Set<LuggageCoefficient> luggageCoefficients = new TreeSet<>(new CoefficientByBoundComparator());
+	private Set<PlaceCoefficient> placeCoefficients = new TreeSet<>(new CoefficientByBoundComparator());
+	private Set<DateCoefficient> dateCoefficients = new TreeSet<>(new CoefficientByBoundComparator());
 
 	public Flight() {
 	}
@@ -30,6 +38,14 @@ public class Flight implements Serializable {
 		this.price = price;
 		this.permittedLuggageWeigth = permittedLuggageWeigth;
 		this.availablePlaceQuantity = availablePlaceQuantity;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getNumber() {
@@ -96,10 +112,46 @@ public class Flight implements Serializable {
 		this.availablePlaceQuantity = availablePlaceQuantity;
 	}
 
+	public Set<LuggageCoefficient> getLuggageCoefficient() {
+		return luggageCoefficients;
+	}
+
+	public void setLuggageCoefficient(Set<LuggageCoefficient> luggageCoefficient) {
+		this.luggageCoefficients = luggageCoefficient;
+	}
+
+	public Set<PlaceCoefficient> getPlaceCoefficient() {
+		return placeCoefficients;
+	}
+
+	public void setPlaceCoefficient(Set<PlaceCoefficient> placeCoefficient) {
+		this.placeCoefficients = placeCoefficient;
+	}
+
+	public Set<DateCoefficient> getDateCoefficient() {
+		return dateCoefficients;
+	}
+
+	public void setDateCoefficient(Set<DateCoefficient> dateCoefficient) {
+		this.dateCoefficients = dateCoefficient;
+	}
+	
+	public void addLuggageCoefficient(LuggageCoefficient luggageCoefficient) {
+		luggageCoefficients.add(luggageCoefficient);
+	}
+	
+	public void addPlaceCoefficient(PlaceCoefficient placeCoefficient) {
+		placeCoefficients.add(placeCoefficient);
+	}
+	
+	public void addDateCoefficient(DateCoefficient dateCoefficient) {
+		dateCoefficients.add(dateCoefficient);
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = id;
 		result = prime * result + availablePlaceQuantity;
 		result = prime * result + ((date == null) ? 0 : date.hashCode());
 		result = prime * result + ((price == null) ? 0 : price.hashCode());
@@ -118,6 +170,9 @@ public class Flight implements Serializable {
 		if (obj == null || getClass() != obj.getClass())
 			return false;
 		Flight other = (Flight) obj;
+		if (id != other.id) {
+			return false;
+		}
 		if (availablePlaceQuantity != other.availablePlaceQuantity)
 			return false;
 		if (date == null) {
@@ -157,7 +212,7 @@ public class Flight implements Serializable {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " [number=" + number + ", planeModel=" + planeModel + ", from="
+		return getClass().getSimpleName() + " [id=" + id + " number=" + number + ", planeModel=" + planeModel + ", from="
 				+ from.toString() + ", to=" + to.toString() + ", date=" + date + ", price=" + price
 				+ ", permittedLuggageWeigth=" + permittedLuggageWeigth + ", availablePlaceQuantity="
 				+ availablePlaceQuantity + "]";

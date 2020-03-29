@@ -3,6 +3,7 @@ package by.training.karpilovich.lowcost.builder;
 import java.math.BigDecimal;
 import java.util.Calendar;
 
+import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.entity.Flight;
 import by.training.karpilovich.lowcost.entity.PlaneModel;
 
@@ -16,6 +17,10 @@ public class FlightBuilder {
 	
 	public Flight getFlight() {
 		return flight;
+	}
+	
+	public void setId(int id) {
+		flight.setId(id);
 	}
 	
 	public void setAvailablePlaceQuantity(int places) {
@@ -42,10 +47,10 @@ public class FlightBuilder {
 		flight.setPlaneModel(model);
 	}
 	
-	public void setFrom(String from) {
+	public void setFrom(City from) {
 		flight.setFrom(from);
 	}
-	public void setTo(String to) {
+	public void setTo(City to) {
 		flight.setTo(to);
 	}
 
