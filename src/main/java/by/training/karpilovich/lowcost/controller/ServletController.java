@@ -14,7 +14,10 @@ import org.apache.logging.log4j.Logger;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.connection.ConnectionPool;
 import by.training.karpilovich.lowcost.exception.ConnectionPoolException;
+import by.training.karpilovich.lowcost.exception.RepositoryException;
 import by.training.karpilovich.lowcost.factory.CommandFactory;
+import by.training.karpilovich.lowcost.repository.CityRepository;
+import by.training.karpilovich.lowcost.repository.impl.CityRepositoryImpl;
 
 @WebServlet(urlPatterns = { "" })
 public class ServletController extends HttpServlet {
@@ -29,6 +32,12 @@ public class ServletController extends HttpServlet {
 		try {
 			pool.init();
 		} catch (ConnectionPoolException e) {
+			throw new ServletException(e);
+		}
+		try {
+		CityRepository repository = CityRepositoryImpl.getInstance();
+		repository.init();
+		} catch (RepositoryException e) {
 			throw new ServletException(e);
 		}
 		super.init();
