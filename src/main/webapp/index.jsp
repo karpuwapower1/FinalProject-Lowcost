@@ -22,16 +22,16 @@
 	<fmt:bundle basename="pagecontent" prefix="index.select.">
 		<div class="container">
 			<div class="grid">
-				<form name="select" method="post" enctype="multipart/form-data">
+				<form name="select" method="post">
 					<div class="row">
 						<select class="custom-select  custom-select-lg col-md-2"
-							name="departureCountry">
+							name="departure">
 							<option selected><fmt:message key="departureCounty" /></option>
 							<option value=""></option>
 							<option value=""></option>
 							<option value=""></option>
 						</select> <select class="custom-select  custom-select-lg col-md-2"
-							name="destinationCountry">
+							name="destination">
 							<option selected><fmt:message key="destinationCountry" /></option>
 							<option value=""></option>
 							<option value=""></option>
@@ -48,7 +48,7 @@
 							name="quantity" id="quantity"
 							placeholder="<fmt:message key="quantity"/>" value="" />
 						<button type="submit" class="btn btn-light col-md-2"
-							name="command" value="search">
+							name="command" value="search_flight">
 							<fmt:message key="command" />
 						</button>
 					</div>
