@@ -1,6 +1,6 @@
 package by.training.karpilovich.lowcost.service;
 
-import java.util.List;
+import java.util.Set;
 
 import by.training.karpilovich.lowcost.entity.Flight;
 import by.training.karpilovich.lowcost.exception.ServiceException;
@@ -17,7 +17,7 @@ public interface FlightService {
 
 	void removeFlight(String number, String date) throws ServiceException;
 
-	List<Flight> getFlight(String countryFrom, String countryTo, String date, String passengerQuantity)
+	Set<Flight> getFlight(String cityFrom, String cityTo, String date, String passengerQuantity)
 			throws ServiceException;
 
 }
