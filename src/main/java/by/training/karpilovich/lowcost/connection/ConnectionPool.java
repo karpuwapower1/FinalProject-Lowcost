@@ -64,10 +64,11 @@ public class ConnectionPool {
 				unavailable = new ArrayList<>(poolSize);
 				fillPool();
 				isPoolInitialized.set(true);
-				lock.unlock();
 			} catch (ClassNotFoundException e) {
 				LOGGER.fatal(e);
 				throw new ConnectionPoolException(e);
+			} finally {
+				lock.unlock();
 			}
 		}
 	}
@@ -140,13 +141,13 @@ public class ConnectionPool {
 			throw new ConnectionPoolException(e);
 		}
 	}
-	
+
 	private void deregisterDriver() throws ConnectionPoolException {
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
 		try {
-		while (drivers.hasMoreElements()) {
-			DriverManager.deregisterDriver(drivers.nextElement());
-		}
+			while (drivers.hasMoreElements()) {
+				DriverManager.deregisterDriver(drivers.nextElement());
+			}
 		} catch (SQLException e) {
 			throw new ConnectionPoolException(e);
 		}
