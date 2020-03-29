@@ -10,7 +10,11 @@ public enum MessageType {
 	INTERNAL_ERROR("message.error.internal"),
 	ADMIN_DELETING("message.error.admin_deleting"),
 	ILLEGAL_EMAIL_OR_PASSWORD_MESSAGE("message.error.initialization.invalid_email_password"),
-	EMAIL_ALREADY_PRESENT("message.error.email_already_present");
+	EMAIL_ALREADY_PRESENT("message.error.email_already_present"),
+	
+	INVALID_CITY("message.error.invalid_city"),
+	INVALID_DATE("message.error.invalid_date"),
+	INVALID_PASSEGER_QUNTITY("message.error.invalid_passenger_quantity");
 	
 	private String type;
 	
