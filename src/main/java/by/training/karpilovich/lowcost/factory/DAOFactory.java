@@ -2,9 +2,11 @@ package by.training.karpilovich.lowcost.factory;
 
 import by.training.karpilovich.lowcost.dao.CityDAO;
 import by.training.karpilovich.lowcost.dao.FlightDAO;
+import by.training.karpilovich.lowcost.dao.PlaneDAO;
 import by.training.karpilovich.lowcost.dao.UserDAO;
 import by.training.karpilovich.lowcost.dao.impl.CityDAOImpl;
 import by.training.karpilovich.lowcost.dao.impl.FlightDAOImpl;
+import by.training.karpilovich.lowcost.dao.impl.PlaneDAOImpl;
 import by.training.karpilovich.lowcost.dao.impl.UserDAOImpl;
 
 public class DAOFactory {
@@ -29,6 +31,10 @@ public class DAOFactory {
 
 	public FlightDAO getFlightDAO() {
 		return FlightDAOImpl.getInstance();
+	}
+	
+	public PlaneDAO getPlaneDAO() {
+		return PlaneDAOImpl.getInstance();
 	}
 
 }
