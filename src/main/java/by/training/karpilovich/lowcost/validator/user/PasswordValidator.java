@@ -21,11 +21,9 @@ public class PasswordValidator extends Validator {
 	@Override
 	public void validate() throws ValidatorException {
 		if (password == null || password.isEmpty() || !matcher.find()) {
-			throw new ValidatorException(MessageType.ILLEGAL_PASSWORD.getType());
+			throw new ValidatorException(MessageType.ILLEGAL_PASSWORD.getMessage());
 		}
-		if (hasNext()) {
-			next.validate();
-		}
+		continueValidate();
 	}
 
 }

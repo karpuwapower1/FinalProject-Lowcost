@@ -21,15 +21,12 @@ public class EmailPresenceValidator extends Validator {
 		UserService initService = serviceFactory.getUserService();
 		try {
 			if (initService.countUserWithEmail(email) != 0) {
-				throw new ValidatorException(MessageType.EMAIL_ALREADY_PRESENT.getType());
+				throw new ValidatorException(MessageType.EMAIL_ALREADY_PRESENT.getMessage());
 			}
 		} catch (ServiceException e) {
 			throw new ValidatorException(e.getMessage(), e);
 		}
-
-		if (hasNext()) {
-			next.validate();
-		}
+		continueValidate();
 	}
 
 }

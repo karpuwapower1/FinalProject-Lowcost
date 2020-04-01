@@ -20,10 +20,8 @@ public class EmailValidator extends Validator {
 	@Override
 	public void validate() throws ValidatorException {
 		if (email == null || email.isEmpty() || !matcher.find()) {
-			throw new ValidatorException(MessageType.ILLEGAL_EMAIL.getType());
+			throw new ValidatorException(MessageType.ILLEGAL_EMAIL.getMessage());
 		}
-		if (hasNext()) {
-			next.validate();
-		}
+		continueValidate();
 	}
 }

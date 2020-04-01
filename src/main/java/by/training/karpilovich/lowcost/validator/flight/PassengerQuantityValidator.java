@@ -15,11 +15,9 @@ public class PassengerQuantityValidator extends Validator {
 	@Override
 	public void validate() throws ValidatorException {
 		if (quantity <= 0) {
-			throw new ValidatorException(MessageType.INVALID_PASSEGER_QUNTITY.getType());
+			throw new ValidatorException(MessageType.INVALID_PASSEGER_QUANTITY.getMessage());
 		}
-		if (hasNext()) {
-			next.validate();
-		}
+		continueValidate();
 	}
 
 }
