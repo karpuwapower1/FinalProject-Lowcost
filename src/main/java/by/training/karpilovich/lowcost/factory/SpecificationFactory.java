@@ -2,6 +2,7 @@ package by.training.karpilovich.lowcost.factory;
 
 import by.training.karpilovich.lowcost.specification.Specification;
 import by.training.karpilovich.lowcost.specification.impl.QuerySpecificationAllCities;
+import by.training.karpilovich.lowcost.specification.impl.QuerySpecificationById;
 import by.training.karpilovich.lowcost.specification.impl.QuerySpecificationByNameAndCountryName;
 
 public class SpecificationFactory {
@@ -24,6 +25,10 @@ public class SpecificationFactory {
 	
 	public Specification getQuerySpecificationByNameAndCountryName(String name, String countryName) {
 		return QuerySpecificationByNameAndCountryName.getInstance(name, countryName);
+	}
+	
+	public Specification getQuerySpecificationById(int id) {
+		return  QuerySpecificationById.getInstance(id);
 	}
 
 }

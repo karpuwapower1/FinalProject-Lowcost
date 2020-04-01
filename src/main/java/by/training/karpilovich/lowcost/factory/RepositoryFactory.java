@@ -1,6 +1,5 @@
 package by.training.karpilovich.lowcost.factory;
 
-import by.training.karpilovich.lowcost.exception.RepositoryException;
 import by.training.karpilovich.lowcost.repository.CityRepository;
 import by.training.karpilovich.lowcost.repository.impl.CityRepositoryImpl;
 
@@ -17,7 +16,7 @@ public class RepositoryFactory {
 		return RepositoryFactoryInstanceHolder.INSTANCE;
 	}
 	
-	public CityRepository getCityRepository() throws RepositoryException {
+	public CityRepository getCityRepository() {
 		return CityRepositoryImpl.getInstance();
 	}
 

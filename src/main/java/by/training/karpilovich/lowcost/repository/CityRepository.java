@@ -10,13 +10,13 @@ public interface CityRepository {
 	
 	void init() throws RepositoryException;
 	
-	void add(City city);
+	void add(City city) throws RepositoryException;
 	
-	void delete(City city);
+	void delete(City city) throws RepositoryException;
 	
-	void update(City city);
+	void update(City city) throws RepositoryException;
 	
-	List<City> getCities(Specification specification);
+	List<City> getCities(Specification specification) throws RepositoryException;
 	
 	
 
