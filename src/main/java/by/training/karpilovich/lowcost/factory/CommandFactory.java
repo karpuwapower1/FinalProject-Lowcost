@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.CommandType;
-import by.training.karpilovich.lowcost.command.impl.DefaultCommand;
+import by.training.karpilovich.lowcost.command.impl.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.command.impl.RedirectCommand;
 import by.training.karpilovich.lowcost.command.impl.SearchFlightCommand;
 import by.training.karpilovich.lowcost.command.impl.SignInCommand;
@@ -29,7 +29,7 @@ public class CommandFactory {
 
 	public Command getCommad(String commandName) {
 		LOGGER.debug(commandName);
-		Command command = new DefaultCommand();
+		Command command = new RedirectToDefaultPageCommand();
 		if (commandName == null || commandName.isEmpty()) {
 			LOGGER.debug("illegal command ");
 			return command;

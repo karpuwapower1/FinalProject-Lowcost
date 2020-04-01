@@ -30,14 +30,11 @@ public class SearchFlightCommand implements Command {
 		try {
 			Set<Flight> flights = findFlights(request);
 			session.setAttribute(AttributeName.FLIGHTS.getName(), flights);
-			page = Page.DEFAULT;
+			page = Page.RESULT;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			page = Page.DEFAULT;
 		}
-		return page.getAddress();
-
-
+		return page == null ? new RedirectToDefaultPageCommand().execute(request, response) : page.getAddress();
 	}
 
 	private Set<Flight> findFlights(HttpServletRequest request) throws ServiceException {

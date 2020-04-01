@@ -27,8 +27,10 @@ public class RedirectCommand implements Command {
 		String pageTo = request.getParameter(TO_PAGE_REQUEST_PARAMETER);
 		String pageFrom = request.getParameter(FROM_PAGE_REQUEST_PARAMETER);
 		setAttribute(request, pageTo, pageFrom);
-		Page page = takePage(pageTo);
-		return page.getAddress();
+		if (pageTo == null || pageTo.isEmpty() || Page.valueOf(pageTo.toUpperCase()) == Page.DEFAULT) {
+			return new RedirectToDefaultPageCommand().execute(request, response);
+		}
+		return Page.valueOf(pageTo.toUpperCase()).getAddress();
 	}
 	
 	private void setAttribute(HttpServletRequest request, String pageTo, String pageFrom) {
@@ -38,10 +40,6 @@ public class RedirectCommand implements Command {
 			session.setAttribute(AttributeName.PAGE_FROM.getName(), Page.valueOf(pageFrom));
 			LOGGER.debug(Page.valueOf(pageFrom));
 		}
-	}
-
-	private Page takePage(String pageTo) {
-		return (pageTo == null || pageTo.isEmpty()) ? Page.DEFAULT : Page.valueOf(pageTo.toUpperCase());
 	}
 
 }

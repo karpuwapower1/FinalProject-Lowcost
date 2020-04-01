@@ -11,7 +11,6 @@ import javax.servlet.http.HttpSession;
 import by.training.karpilovich.lowcost.command.AttributeName;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.CookieName;
-import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.entity.Role;
 
 public class SignOutCommand implements Command {
@@ -28,7 +27,7 @@ public class SignOutCommand implements Command {
 			removeCookie(cookies, CookieName.EMAIL.getName(), response);
 			removeCookie(cookies, CookieName.PASSWORD.getName(), response);
 		}
-		return Page.DEFAULT.getAddress();
+		return new RedirectToDefaultPageCommand().execute(request, response);
 	}
 
 	private void removeCookie(Cookie[] cookies, String name, HttpServletResponse response) {

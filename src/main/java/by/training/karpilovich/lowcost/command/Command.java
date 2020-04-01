@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import by.training.karpilovich.lowcost.factory.ServiceFactory;
+import by.training.karpilovich.lowcost.service.CityService;
 import by.training.karpilovich.lowcost.service.FlightService;
 import by.training.karpilovich.lowcost.service.UserService;
 import by.training.karpilovich.lowcost.util.LocaleMessageManager;
@@ -23,13 +24,15 @@ public interface Command {
 	}
 	
 	default UserService getUserService() {
-		ServiceFactory factory = ServiceFactory.getInstance();
-		return factory.getUserService();
+		return ServiceFactory.getInstance().getUserService();
 	}
 	
 	default FlightService getFlightService() {
-		ServiceFactory factory = ServiceFactory.getInstance();
-		return factory.getFlightService();
+		return  ServiceFactory.getInstance().getFlightService();
+	}
+	
+	default CityService getCityService() {
+		return ServiceFactory.getInstance().getCityService();
 	}
 	
 	String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
