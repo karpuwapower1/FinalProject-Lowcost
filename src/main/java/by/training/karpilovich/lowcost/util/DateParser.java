@@ -7,7 +7,7 @@ import java.util.GregorianCalendar;
 
 public class DateParser {
 
-	private static final SimpleDateFormat FORMAT = new SimpleDateFormat("YYYY-MM-DD");
+	private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
 	public Calendar getDateFromString(String date) throws ParseException {
 		Calendar calendar = new GregorianCalendar();
