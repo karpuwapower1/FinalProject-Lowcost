@@ -26,4 +26,8 @@ public class CityBuilder {
 		city.setCountry(country);
 	}
 	
+	public void setCityIdFromCount() {
+		city.setIdFromCoutn();
+	}
+	
 }
