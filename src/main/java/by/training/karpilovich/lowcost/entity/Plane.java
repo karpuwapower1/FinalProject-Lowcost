@@ -2,28 +2,27 @@ package by.training.karpilovich.lowcost.entity;
 
 import java.io.Serializable;
 
-public class PlaneModel implements Serializable {
+public class Plane implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private String name;
+	private String model;
 	private int placeQuantity;
 
-	public PlaneModel() {
+	public Plane() {
 	}
 
-	public PlaneModel(String name, int placeQuantity) {
-		super();
-		this.name = name;
+	public Plane(String model, int placeQuantity) {
+		this.model = model;
 		this.placeQuantity = placeQuantity;
 	}
 
-	public String getName() {
-		return name;
+	public String getModel() {
+		return model;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setModel(String model) {
+		this.model = model;
 	}
 
 	public int getPlaceQuantity() {
@@ -38,7 +37,7 @@ public class PlaneModel implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((model == null) ? 0 : model.hashCode());
 		result = prime * result + placeQuantity;
 		return result;
 	}
@@ -49,11 +48,11 @@ public class PlaneModel implements Serializable {
 			return true;
 		if (obj == null || getClass() != obj.getClass())
 			return false;
-		PlaneModel other = (PlaneModel) obj;
-		if (name == null) {
-			if (other.name != null)
+		Plane other = (Plane) obj;
+		if (model == null) {
+			if (other.model != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!model.equals(other.model))
 			return false;
 		if (placeQuantity != other.placeQuantity)
 			return false;
@@ -62,7 +61,7 @@ public class PlaneModel implements Serializable {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " [name=" + name + ", placeQuantity=" + placeQuantity + "]";
+		return getClass().getSimpleName() + " [model=" + model + ", placeQuantity=" + placeQuantity + "]";
 	}
 
 }
