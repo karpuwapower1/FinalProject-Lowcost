@@ -14,7 +14,7 @@ public class Flight implements Serializable {
 
 	private int id;
 	private String number;
-	private PlaneModel planeModel;
+	private Plane planeModel;
 	private City from;
 	private City to;
 	private Calendar date;
@@ -28,7 +28,7 @@ public class Flight implements Serializable {
 	public Flight() {
 	}
 
-	public Flight(String number, PlaneModel planeModel, City from, City to, Calendar date, BigDecimal price,
+	public Flight(String number, Plane planeModel, City from, City to, Calendar date, BigDecimal price,
 			int permittedLuggageWeigth, int availablePlaceQuantity) {
 		this.number = number;
 		this.planeModel = planeModel;
@@ -56,11 +56,11 @@ public class Flight implements Serializable {
 		this.number = number;
 	}
 
-	public PlaneModel getPlaneModel() {
+	public Plane getPlaneModel() {
 		return planeModel;
 	}
 
-	public void setPlaneModel(PlaneModel planeModel) {
+	public void setPlaneModel(Plane planeModel) {
 		this.planeModel = planeModel;
 	}
 

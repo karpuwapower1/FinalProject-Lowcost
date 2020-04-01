@@ -5,7 +5,7 @@ import java.util.Calendar;
 
 import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.entity.Flight;
-import by.training.karpilovich.lowcost.entity.PlaneModel;
+import by.training.karpilovich.lowcost.entity.Plane;
 
 public class FlightBuilder {
 	
@@ -43,7 +43,7 @@ public class FlightBuilder {
 		flight.setNumber(number);
 	}
 	
-	public void setPlaneModel(PlaneModel model) {
+	public void setPlaneModel(Plane model) {
 		flight.setPlaneModel(model);
 	}
 	
