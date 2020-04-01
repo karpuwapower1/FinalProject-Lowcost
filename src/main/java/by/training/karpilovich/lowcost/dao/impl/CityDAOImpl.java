@@ -20,11 +20,27 @@ import by.training.karpilovich.lowcost.util.MessageType;
 
 public class CityDAOImpl implements CityDAO {
 
+	private static final String ADD_QUERY = "INSERT INTO city (id, name, country_name) VALUES ?,?,?";
+
+	private static final int ADD_QUERY_ID_INDEX = 1;
+	private static final int ADD_QUERY_NAME_INDEX = 2;
+	private static final int ADD_QUERY_COUNTRY_NAME_INDEX = 3;
+	
+	private static final String UPDATE_QUERY = "UPDATE city name=?, country_name=?";
+
+	private static final int UPDATE_QUERY_NAME_INDEX = 1;
+	private static final int UPDATE_QUERY_COUNTRY_NAME_INDEX = 2;
+	
+	private static final String DELETE_QUERY = "DELETE FROM city WHERE id=?";
+
+	private static final int DELETE_QUERY_ID_INDEX = 1;
+	
 	private static final String SELECT_ALL_CITIES_QUERY = "SELECT id, name, country_name FROM city";
 
 	private static final int RESULT_SELECT_ALL_CITIES_QUERY_ID_INDEX = 1;
 	private static final int RESULT_SELECT_ALL_CITIES_QUERY_NAME_INDEX = 2;
 	private static final int RESULT_SELECT_ALL_CITIES_QUERY_COUNTRY_NAME_INDEX = 3;
+
 
 	private static final Logger LOGGER = LogManager.getLogger(CityDAOImpl.class);
 
@@ -41,21 +57,39 @@ public class CityDAOImpl implements CityDAO {
 	}
 
 	@Override
-	public boolean addCity(City city) throws DAOException {
-		// TODO Auto-generated method stub
-		return false;
+	public void addCity(City city) throws DAOException {
+		ConnectionPool pool = ConnectionPool.getInstance();
+		try (Connection connection = pool.getConnection();
+		PreparedStatement statement = prepareAddStatement(connection, city);) {
+			statement.executeUpdate();
+		} catch (SQLException | ConnectionPoolException e) {
+			LOGGER.error("Error while adding a city " + city, e);
+			throw new DAOException(e);
+		}
 	}
 
 	@Override
-	public boolean updateCity(City city) throws DAOException {
-		// TODO Auto-generated method stub
-		return false;
+	public void updateCity(City city) throws DAOException {
+		ConnectionPool pool = ConnectionPool.getInstance();
+		try (Connection connection = pool.getConnection();
+		PreparedStatement statement = prepareUpdateStatement(connection, city);) {
+			statement.executeUpdate();
+		} catch (SQLException | ConnectionPoolException e) {
+			LOGGER.error("Error while updating a city " + city, e);
+			throw new DAOException(e);
+		}
 	}
 
 	@Override
-	public boolean deleteCity(City city) throws DAOException {
-		// TODO Auto-generated method stub
-		return false;
+	public void deleteCity(City city) throws DAOException {
+		ConnectionPool pool = ConnectionPool.getInstance();
+		try (Connection connection = pool.getConnection();
+		PreparedStatement statement = prepareDeleteStatement(connection, city);) {
+			statement.executeUpdate();
+		} catch (SQLException | ConnectionPoolException e) {
+			LOGGER.error("Error while updating a city " + city, e);
+			throw new DAOException(e);
+		}
 	}
 
 	@Override
@@ -71,9 +105,30 @@ public class CityDAOImpl implements CityDAO {
 			return cities;
 		} catch (ConnectionPoolException | SQLException e) {
 			LOGGER.error("Error while getting all cities");
-			throw new DAOException(MessageType.INTERNAL_ERROR.getType());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
 		}
 
+	}
+
+	private PreparedStatement prepareAddStatement(Connection connection, City city) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(ADD_QUERY);
+		statement.setInt(ADD_QUERY_ID_INDEX, city.getId());
+		statement.setString(ADD_QUERY_NAME_INDEX, city.getName());
+		statement.setString(ADD_QUERY_COUNTRY_NAME_INDEX, city.getName());
+		return statement;
+	}
+	
+	private PreparedStatement prepareUpdateStatement(Connection connection, City city) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);
+		statement.setString(UPDATE_QUERY_NAME_INDEX, city.getName());
+		statement.setString(UPDATE_QUERY_COUNTRY_NAME_INDEX, city.getCountry());
+		return statement;
+	}
+	
+	private PreparedStatement prepareDeleteStatement(Connection connection, City city) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);
+		statement.setInt(DELETE_QUERY_ID_INDEX, city.getId());
+		return statement;
 	}
 
 	private City buildCity(ResultSet resultSet) throws SQLException {

@@ -7,11 +7,11 @@ import by.training.karpilovich.lowcost.exception.DAOException;
 
 public interface CityDAO {
 	
-	boolean addCity(City city) throws DAOException;
+	void addCity(City city) throws DAOException;
 	
-	boolean updateCity(City city) throws DAOException;
+	void updateCity(City city) throws DAOException;
 	
-	boolean deleteCity(City city) throws DAOException;
+	void deleteCity(City city) throws DAOException;
 	
 	List<City> getAllCities() throws DAOException;
 
