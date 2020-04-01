@@ -1,5 +1,6 @@
 package by.training.karpilovich.lowcost.service.impl;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Set;
@@ -7,9 +8,11 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import by.training.karpilovich.lowcost.builder.FlightBuilder;
 import by.training.karpilovich.lowcost.dao.FlightDAO;
 import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.entity.Flight;
+import by.training.karpilovich.lowcost.entity.Plane;
 import by.training.karpilovich.lowcost.exception.DAOException;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.exception.ValidatorException;
@@ -17,6 +20,7 @@ import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.factory.ServiceFactory;
 import by.training.karpilovich.lowcost.service.CityService;
 import by.training.karpilovich.lowcost.service.FlightService;
+import by.training.karpilovich.lowcost.service.PlaneService;
 import by.training.karpilovich.lowcost.util.DateParser;
 import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
@@ -26,9 +30,6 @@ import by.training.karpilovich.lowcost.validator.flight.PassengerQuantityValidat
 public class FlightServiceImpl implements FlightService {
 
 	private static final Logger LOGGER = LogManager.getLogger(FlightServiceImpl.class);
-	
-	private FlightDAO flightDAO = DAOFactory.getInstance().getFlightDAO();
-
 
 	private FlightServiceImpl() {
 	}
@@ -42,10 +43,27 @@ public class FlightServiceImpl implements FlightService {
 	}
 
 	@Override
-	public void addFlight(String number, String countryFrom, String countryTo, String date, String defaultPrice,
-			String model) throws ServiceException {
+	public void addFlight(String number, String fromId, String toId, String date, String defaultPrice, String model,
+			String permittedLuggage) throws ServiceException {
+		City from = takeCityFromString(fromId);
+		City to = takeCityFromString(toId);
+		BigDecimal price = new BigDecimal(defaultPrice);
+		int luggage = takeIntFromString(permittedLuggage);
+		Plane planeModel = getPlaneModel(model);
+		Calendar departureDate = takeDateFromString(date);
+		Flight flight = buildFlight(number, from, to, departureDate, price, planeModel, planeModel.getPlaceQuantity(),
+				luggage);
+		try {
+			getFlightDAO().add(flight);
+		} catch (DAOException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
+	@Override
+	public void addCoefficient(Flight flight, String from, String to, String value) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -55,49 +73,70 @@ public class FlightServiceImpl implements FlightService {
 	}
 
 	@Override
-	public Set<Flight> getFlight(String from, String to, String date, String passengerQuantity)
+	public Set<Flight> getFlight(String fromId, String toId, String date, String passengerQuantity)
 			throws ServiceException {
-		City cityFrom = getCityFromString(from);
-		City cityTo = getCityFromString(to);
-		Calendar departureDate = getDateFromString(date); 
-		int quantity = getPassengerQuantityFromString(passengerQuantity);
+		City cityFrom = takeCityFromString(fromId);
+		City cityTo = takeCityFromString(toId);
+		Calendar departureDate = takeDateFromString(date);
+		int quantity = takeIntFromString(passengerQuantity);
 		Validator dateValidator = new DateValidator(departureDate);
 		Validator passengerQuantityValidator = new PassengerQuantityValidator(quantity);
 		dateValidator.setNext(passengerQuantityValidator);
 		try {
 			dateValidator.validate();
-			Set<Flight> flights = flightDAO.getFlightsByDateAndPassengerQuantityWithoutPlaceAndDateCoefficient(cityFrom, cityTo, departureDate, quantity);
-			for (Flight flight : flights) {
-				LOGGER.debug(flight.toString());
-			}
-			return flightDAO.getFlightsByDateAndPassengerQuantityWithoutPlaceAndDateCoefficient(cityFrom, cityTo, departureDate, quantity);
+			return getFlightDAO().getFlightsByDateAndPassengerQuantityWithoutPlaceAndDateCoefficient(cityFrom, cityTo,
+					departureDate, quantity);
 		} catch (ValidatorException | DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
-		
 	}
 
-	private Calendar getDateFromString(String date) throws ServiceException {
+	private FlightDAO getFlightDAO() {
+		return DAOFactory.getInstance().getFlightDAO();
+	}
+
+	private Calendar takeDateFromString(String date) throws ServiceException {
 		DateParser dateParser = new DateParser();
 		try {
 			return dateParser.getDateFromString(date);
 		} catch (ParseException e) {
-			throw new ServiceException(MessageType.INVALID_DATE.getType(), e);
+			LOGGER.error("Exception while parcing a date " + date, e);
+			throw new ServiceException(MessageType.INVALID_DATE.getMessage(), e);
 		}
 	}
 
-	private int getPassengerQuantityFromString(String quantity) throws ServiceException {
-		try {
-			return Integer.parseInt(quantity);
-		} catch (NumberFormatException e) {
-			throw new ServiceException(MessageType.INVALID_PASSEGER_QUNTITY.getType());
-		}
-	}
-
-	private City getCityFromString(String city) throws ServiceException {
+	private City takeCityFromString(String id) throws ServiceException {
 		ServiceFactory factory = ServiceFactory.getInstance();
 		CityService cityService = factory.getCityService();
-		return cityService.getCity(city);
+		return cityService.getCityById(takeIntFromString(id));
+	}
+
+	private int takeIntFromString(String value) throws ServiceException {
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			LOGGER.error("Error while formatting id to int " + value);
+			throw new ServiceException(MessageType.INTERNAL_ERROR.getMessage());
+		}
+	}
+
+	private Plane getPlaneModel(String model) throws ServiceException {
+		PlaneService planeService = ServiceFactory.getInstance().getPlaneService();
+		return planeService.getPlaneByModel(model);
+	}
+
+	private Flight buildFlight(String number, City from, City to, Calendar date, BigDecimal price, Plane model,
+			int availablePlace, int permittedLuggage) {
+		FlightBuilder builder = new FlightBuilder();
+		builder.setFrom(from);
+		builder.setTo(to);
+		builder.setFlightNumber(number);
+		builder.setPrice(price);
+		builder.setPermittedLuggageWeight(permittedLuggage);
+		builder.setAvailablePlaceQuantity(availablePlace);
+		builder.setPlaneModel(model);
+		builder.setDate(date);
+		return builder.getFlight();
 	}
 
 }

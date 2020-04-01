@@ -12,8 +12,10 @@ public interface FlightService {
 	 * model, place_quantity
 	 */
 
-	void addFlight(String number, String countryFrom, String countryTo, String date, String defaultPrice, String model)
+	void addFlight(String number, String fromId, String toId, String date, String defaultPrice, String model, String permittedLuggage)
 			throws ServiceException;
+	
+	void addCoefficient(Flight flight, String from, String to, String value);
 
 	void removeFlight(String number, String date) throws ServiceException;
 
