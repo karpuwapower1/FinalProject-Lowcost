@@ -2,7 +2,7 @@ package by.training.karpilovich.lowcost.util;
 
 import java.util.Comparator;
 
-import by.training.karpilovich.lowcost.entity.AbstractCoefficient;
+import by.training.karpilovich.lowcost.entity.coefficient.AbstractCoefficient;
 
 public class CoefficientByBoundComparator implements Comparator<AbstractCoefficient> {
 

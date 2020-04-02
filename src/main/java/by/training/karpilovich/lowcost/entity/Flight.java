@@ -6,6 +6,9 @@ import java.util.Calendar;
 import java.util.Set;
 import java.util.TreeSet;
 
+import by.training.karpilovich.lowcost.entity.coefficient.DateCoefficient;
+import by.training.karpilovich.lowcost.entity.coefficient.LuggageCoefficient;
+import by.training.karpilovich.lowcost.entity.coefficient.PlaceCoefficient;
 import by.training.karpilovich.lowcost.util.CoefficientByBoundComparator;
 
 public class Flight implements Serializable {

@@ -1,4 +1,4 @@
-package by.training.karpilovich.lowcost.entity;
+package by.training.karpilovich.lowcost.entity.coefficient;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

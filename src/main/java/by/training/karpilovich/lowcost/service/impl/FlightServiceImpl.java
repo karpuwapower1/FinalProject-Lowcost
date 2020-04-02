@@ -25,7 +25,9 @@ import by.training.karpilovich.lowcost.util.DateParser;
 import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 import by.training.karpilovich.lowcost.validator.flight.DateValidator;
+import by.training.karpilovich.lowcost.validator.flight.LuggageValidator;
 import by.training.karpilovich.lowcost.validator.flight.PassengerQuantityValidator;
+import by.training.karpilovich.lowcost.validator.flight.PriceValidator;
 
 public class FlightServiceImpl implements FlightService {
 
@@ -47,7 +49,7 @@ public class FlightServiceImpl implements FlightService {
 			String permittedLuggage) throws ServiceException {
 		City from = takeCityFromString(fromId);
 		City to = takeCityFromString(toId);
-		BigDecimal price = new BigDecimal(defaultPrice);
+		BigDecimal price = takeBigDecimalFromString(defaultPrice);
 		int luggage = takeIntFromString(permittedLuggage);
 		Plane planeModel = getPlaneModel(model);
 		Calendar departureDate = takeDateFromString(date);
@@ -59,17 +61,38 @@ public class FlightServiceImpl implements FlightService {
 			throw new ServiceException(e);
 		}
 	}
-	
+
 	@Override
 	public void addCoefficient(Flight flight, String from, String to, String value) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removeFlight(String number, String date) throws ServiceException {
 		// TODO Auto-generated method stub
 
+	}
+
+	public Flight makeFlightFromParamenters(String number, String fromId, String toId, String date, String defaultPrice,
+			String model, String permittedLuggage) throws ServiceException {
+		City from = takeCityFromString(fromId);
+		City to = takeCityFromString(toId);
+		BigDecimal price = takeBigDecimalFromString(defaultPrice);
+		int luggage = takeIntFromString(permittedLuggage);
+		Plane planeModel = getPlaneModel(model);
+		Calendar departureDate = takeDateFromString(date);
+		Validator validator = new PriceValidator(price);
+		Validator luggageValidator = new LuggageValidator(luggage);
+		Validator dateValidator = new DateValidator(departureDate);
+		validator.setNext(luggageValidator);
+		luggageValidator.setNext(dateValidator);
+		try {
+			validator.validate();
+			return buildFlight(number, from, to, departureDate, price, planeModel, planeModel.getPlaceQuantity(), luggage);
+		} catch (ValidatorException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}	
 	}
 
 	@Override
@@ -115,7 +138,7 @@ public class FlightServiceImpl implements FlightService {
 		try {
 			return Integer.parseInt(value);
 		} catch (NumberFormatException e) {
-			LOGGER.error("Error while formatting id to int " + value);
+			LOGGER.error("Error while formatting string to int " + value);
 			throw new ServiceException(MessageType.INTERNAL_ERROR.getMessage());
 		}
 	}
@@ -123,6 +146,15 @@ public class FlightServiceImpl implements FlightService {
 	private Plane getPlaneModel(String model) throws ServiceException {
 		PlaneService planeService = ServiceFactory.getInstance().getPlaneService();
 		return planeService.getPlaneByModel(model);
+	}
+
+	private BigDecimal takeBigDecimalFromString(String value) throws ServiceException {
+		try {
+			return new BigDecimal(value);
+		} catch (NumberFormatException e) {
+			LOGGER.error("Error while formatting string to BigDecimal " + value);
+			throw new ServiceException(MessageType.INTERNAL_ERROR.getMessage());
+		}
 	}
 
 	private Flight buildFlight(String number, City from, City to, Calendar date, BigDecimal price, Plane model,

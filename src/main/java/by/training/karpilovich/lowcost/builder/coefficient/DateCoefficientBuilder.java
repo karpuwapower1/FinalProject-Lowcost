@@ -1,6 +1,6 @@
 package by.training.karpilovich.lowcost.builder.coefficient;
 
-import by.training.karpilovich.lowcost.entity.DateCoefficient;
+import by.training.karpilovich.lowcost.entity.coefficient.DateCoefficient;
 
 public class DateCoefficientBuilder extends AbstractCoefficientBuilder {
 

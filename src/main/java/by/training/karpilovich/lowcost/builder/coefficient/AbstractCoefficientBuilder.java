@@ -2,7 +2,7 @@ package by.training.karpilovich.lowcost.builder.coefficient;
 
 import java.math.BigDecimal;
 
-import by.training.karpilovich.lowcost.entity.AbstractCoefficient;
+import by.training.karpilovich.lowcost.entity.coefficient.AbstractCoefficient;
 
 public abstract class AbstractCoefficientBuilder {
 	

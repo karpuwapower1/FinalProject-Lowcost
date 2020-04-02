@@ -2,9 +2,9 @@ package by.training.karpilovich.lowcost.builder.coefficient;
 
 import java.math.BigDecimal;
 
-import by.training.karpilovich.lowcost.entity.DateCoefficient;
-import by.training.karpilovich.lowcost.entity.LuggageCoefficient;
-import by.training.karpilovich.lowcost.entity.PlaceCoefficient;
+import by.training.karpilovich.lowcost.entity.coefficient.DateCoefficient;
+import by.training.karpilovich.lowcost.entity.coefficient.LuggageCoefficient;
+import by.training.karpilovich.lowcost.entity.coefficient.PlaceCoefficient;
 
 public class Director {
 

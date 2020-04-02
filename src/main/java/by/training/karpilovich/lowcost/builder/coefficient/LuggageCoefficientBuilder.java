@@ -1,6 +1,6 @@
 package by.training.karpilovich.lowcost.builder.coefficient;
 
-import by.training.karpilovich.lowcost.entity.LuggageCoefficient;
+import by.training.karpilovich.lowcost.entity.coefficient.LuggageCoefficient;
 
 public class LuggageCoefficientBuilder extends AbstractCoefficientBuilder {
 

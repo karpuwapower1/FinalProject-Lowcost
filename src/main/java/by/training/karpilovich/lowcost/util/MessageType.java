@@ -14,7 +14,9 @@ public enum MessageType {
 	
 	INVALID_CITY("message.error.invalid_city"),
 	INVALID_DATE("message.error.invalid_date"),
+	INVALID_PRICE("message.error.invalid_price"),
 	INVALID_PASSEGER_QUANTITY("message.error.invalid_passenger_quantity"),
+	INVALID_DEFAULT_LUGGAGE("message.error.invalid_default_luggage"),
 	
 	INVALID_PLANE_MODEL("message.error.invalid_plane_model"),
 	INVALID_PLANE_PASSENGER_QUANTITY("message.error.invalid_plane_passenger_quntity"),
