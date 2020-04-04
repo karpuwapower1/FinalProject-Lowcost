@@ -19,14 +19,14 @@ import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.service.UserService;
 
-public class SigninCommand implements Command {
+public class SignInCommand implements Command {
 
 	private static final String EMAIL_PARAMETER = "email";
 	private static final String PASSWORD_PARAMETER = "password";
 	private static final String IS_REMEMBER = "memory";
 	private static final int INACTIVE_TIMEOUT = 300;
 
-	private static final Logger LOGGER = LogManager.getLogger(SigninCommand.class);
+	private static final Logger LOGGER = LogManager.getLogger(SignInCommand.class);
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)

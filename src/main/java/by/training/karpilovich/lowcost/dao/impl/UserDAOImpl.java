@@ -80,7 +80,7 @@ public class UserDAOImpl implements UserDAO {
 			return statement.executeUpdate();
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while adding a user" + user.toString(), e);
-			throw new DAOException(MessageType.INTERNAL_ERROR.getType());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
 		}
 	}
 
@@ -92,7 +92,7 @@ public class UserDAOImpl implements UserDAO {
 			return statement.executeUpdate();
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while updateng a user" + user.toString(), e);
-			throw new DAOException(MessageType.INTERNAL_ERROR.getType());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
 		}
 	}
 
@@ -104,7 +104,7 @@ public class UserDAOImpl implements UserDAO {
 			return statement.executeUpdate();
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while deleting a user" + user.toString(), e);
-			throw new DAOException(MessageType.INTERNAL_ERROR.getType());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
 		}
 	}
 
@@ -121,7 +121,7 @@ public class UserDAOImpl implements UserDAO {
 			return optional;
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while select user by email and password email=" + email + " password=" + password, e);
-			throw new DAOException(MessageType.INTERNAL_ERROR.getType());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
 		}
 	}
 
@@ -138,7 +138,7 @@ public class UserDAOImpl implements UserDAO {
 			return result;
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while counting email=" + email, e);
-			throw new DAOException(MessageType.INTERNAL_ERROR.getType());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
 		}
 	}
 

@@ -1,8 +1,6 @@
 package by.training.karpilovich.lowcost.entity;
 
-import java.io.Serializable;
-
-public enum Role implements Serializable {
+public enum Role {
 
 	ADMIN(0), USER(1), GUEST(2);
 	

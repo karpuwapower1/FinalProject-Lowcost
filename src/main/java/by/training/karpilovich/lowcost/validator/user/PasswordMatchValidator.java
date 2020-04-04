@@ -17,11 +17,9 @@ public class PasswordMatchValidator extends Validator {
 	@Override
 	public void validate() throws ValidatorException {
 		if (password == null || !password.equals(repeatPassword)) {
-			throw new ValidatorException(MessageType.PASSWORDS_NOT_MATCH.getType());
+			throw new ValidatorException(MessageType.PASSWORDS_NOT_MATCH.getMessage());
 		}
-		if (hasNext()) {
-			next.validate();
-		}
+		continueValidate();
 	}
 	
 	

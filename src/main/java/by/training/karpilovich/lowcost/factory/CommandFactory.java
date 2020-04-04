@@ -5,10 +5,13 @@ import org.apache.logging.log4j.Logger;
 
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.CommandType;
-import by.training.karpilovich.lowcost.command.impl.DefaultCommand;
+import by.training.karpilovich.lowcost.command.impl.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.command.impl.RedirectCommand;
-import by.training.karpilovich.lowcost.command.impl.SigninCommand;
-import by.training.karpilovich.lowcost.command.impl.SignoutCommand;
+
+import by.training.karpilovich.lowcost.command.impl.SearchFlightCommand;
+import by.training.karpilovich.lowcost.command.impl.SignInCommand;
+import by.training.karpilovich.lowcost.command.impl.SignOutCommand;
+
 import by.training.karpilovich.lowcost.command.impl.SignUpCommand;
 
 public class CommandFactory {
@@ -27,7 +30,8 @@ public class CommandFactory {
 	}
 
 	public Command getCommad(String commandName) {
-		Command command = new DefaultCommand();
+		LOGGER.debug(commandName);
+		Command command = new RedirectToDefaultPageCommand();
 		if (commandName == null || commandName.isEmpty()) {
 			LOGGER.debug("illegal command ");
 			return command;
@@ -36,13 +40,16 @@ public class CommandFactory {
 			CommandType commandType = CommandType.valueOf(commandName.toUpperCase());
 			switch (commandType) {
 			case SIGN_IN:
-				command = new SigninCommand();
+				command = new SignInCommand();
 				break;
 			case SIGN_UP:
 				command = new SignUpCommand();
 				break;
 			case SIGN_OUT:
-				command = new SignoutCommand();
+				command = new SignOutCommand();
+				break;
+			case SEARCH_FLIGHT:
+				command = new SearchFlightCommand();
 				break;
 			case REDIRECT:
 				command = new RedirectCommand();

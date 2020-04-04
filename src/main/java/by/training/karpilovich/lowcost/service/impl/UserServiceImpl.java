@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
 			if (optional.isPresent()) {
 				return optional.get();
 			}
-			throw new ServiceException(MessageType.ILLEGAL_EMAIL_OR_PASSWORD_MESSAGE.getType());
+			throw new ServiceException(MessageType.ILLEGAL_EMAIL_OR_PASSWORD_MESSAGE.getMessage());
 		} catch (ValidatorException | DAOException e) {
 			LOGGER.warn(e);
 			throw new ServiceException(e.getMessage(), e);

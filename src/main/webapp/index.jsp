@@ -13,8 +13,10 @@
 </head>
 
 <header>
-<c:set var="page" value="<%=by.training.karpilovich.lowcost.command.Page.DEFAULT%>" scope="request"/> 
-<c:import url="/general/header.jsp" />
+	<c:set var="page"
+		value="<%=by.training.karpilovich.lowcost.command.Page.DEFAULT%>"
+		scope="request" />
+	<c:import url="/general/header.jsp" />
 </header>
 
 <body>
@@ -22,33 +24,33 @@
 	<fmt:bundle basename="pagecontent" prefix="index.select.">
 		<div class="container">
 			<div class="grid">
-				<form name="select" method="post" enctype="multipart/form-data">
+				<form name="select" method="post">
 					<div class="row">
 						<select class="custom-select  custom-select-lg col-md-2"
-							name="departureCountry">
+							name="departure" required>
 							<option selected><fmt:message key="departureCounty" /></option>
-							<option value=""></option>
-							<option value=""></option>
-							<option value=""></option>
+							<c:forEach var="city" items="${cities }">
+								<option value="${city.id }">${city.country},${ city.name}</option>
+							</c:forEach>
 						</select> <select class="custom-select  custom-select-lg col-md-2"
-							name="destinationCountry">
+							name="destination" required>
 							<option selected><fmt:message key="destinationCountry" /></option>
-							<option value=""></option>
-							<option value=""></option>
-							<option value=""></option>
+							<c:forEach var="city" items="${cities }">
+								<option value="${city.id }">${city.country},${ city.name}</option>
+							</c:forEach>
 						</select> <input class="form-control form-control-lg col-md-2"
-							placeholder="<fmt:message key="departureDate"/>"
+							placeholder="<fmt:message key="departureDate"/>" required
 							class="textbox-n" type="text" onfocus="(this.type='date')"
 							onblur="(this.type='text')" name="departureDate" value="" /> <input
 							class="form-control form-control-lg col-md-2"
 							placeholder="<fmt:message key="returnDate"/>" class="textbox-n"
 							type="text" onfocus="(this.type='date')"
-							onblur="(this.type='text')" name="returnDate" value="" /> <input
+							onblur="(this.type='text')" name="returnDate" value="" required /> <input
 							type="text" class="form-control form-control-lg col-md-2"
 							name="quantity" id="quantity"
-							placeholder="<fmt:message key="quantity"/>" value="" />
+							placeholder="<fmt:message key="quantity"/>" value="" required pattern="[0-9]" />
 						<button type="submit" class="btn btn-light col-md-2"
-							name="command" value="search">
+							name="command" value="search_flight">
 							<fmt:message key="command" />
 						</button>
 					</div>

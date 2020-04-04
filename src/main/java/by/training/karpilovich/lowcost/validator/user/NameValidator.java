@@ -15,11 +15,9 @@ public class NameValidator extends Validator {
 	@Override
 	public void validate() throws ValidatorException {
 		if (name == null || name.isEmpty()) {
-			throw new ValidatorException(MessageType.ILLEGAL_NAME.getType());
+			throw new ValidatorException(MessageType.ILLEGAL_NAME.getMessage());
 		}
-		if (hasNext()) {
-			next.validate();
-		}
+		continueValidate();
 	}
 
 }

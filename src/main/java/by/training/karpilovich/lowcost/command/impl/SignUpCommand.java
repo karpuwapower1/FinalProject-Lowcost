@@ -31,7 +31,7 @@ public class SignUpCommand implements Command {
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		Page page;
+		Page page = null;
 		try {
 			User user = signupUser(request);
 			setAttribute(session, user);
@@ -41,7 +41,7 @@ public class SignUpCommand implements Command {
 			page = Page.SIGN_UP;
 			LOGGER.warn(e);
 		}
-		return page != null ? page.getAddress() : Page.DEFAULT.getAddress();
+		return page != null ? page.getAddress() : new RedirectToDefaultPageCommand().execute(request, response);
 	}
 
 	private User signupUser(HttpServletRequest request) throws ServiceException {

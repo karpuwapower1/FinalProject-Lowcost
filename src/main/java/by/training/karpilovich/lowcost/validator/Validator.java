@@ -15,8 +15,14 @@ public abstract class Validator {
 		next = validator;
 	}
 
-	public boolean hasNext() {
+	protected boolean hasNext() {
 		return next != null;
+	}
+	
+	protected void continueValidate() throws ValidatorException {
+		if (hasNext()) {
+			next.validate();
+		}
 	}
 
 	public abstract void validate() throws ValidatorException;

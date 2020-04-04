@@ -42,7 +42,7 @@ public class DeleteUserCommand implements Command {
 			page = (Page) session.getAttribute(AttributeName.PAGE_FROM.getName());
 			LOGGER.warn(e);
 		}
-		return page == null ? Page.DEFAULT.getAddress() : page.getAddress();
+		return page == null ? new RedirectToDefaultPageCommand().execute(request, response) : page.getAddress();
 	}
 
 	private void deleteUser(User user, String repeatPassword) throws ServiceException {
