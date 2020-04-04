@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import by.training.karpilovich.lowcost.command.AttributeName;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.connection.ConnectionPool;
 import by.training.karpilovich.lowcost.exception.ConnectionPoolException;
@@ -74,6 +75,9 @@ public class ServletController extends HttpServlet {
 		CommandFactory factory = CommandFactory.getInstance();
 		Command command = factory.getCommad(commandParameterValue);
 		String page = command.execute(request, response);
+		
+		LOGGER.debug(request.getSession().getAttribute(AttributeName.ROLE.getName()));
+		
 		request.getRequestDispatcher(page).forward(request, response);
 	}
 
