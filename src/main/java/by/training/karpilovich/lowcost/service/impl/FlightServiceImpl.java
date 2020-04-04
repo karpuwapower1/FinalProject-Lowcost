@@ -13,12 +13,16 @@ import by.training.karpilovich.lowcost.dao.FlightDAO;
 import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.entity.Flight;
 import by.training.karpilovich.lowcost.entity.Plane;
+import by.training.karpilovich.lowcost.entity.coefficient.DateCoefficient;
+import by.training.karpilovich.lowcost.entity.coefficient.LuggageCoefficient;
+import by.training.karpilovich.lowcost.entity.coefficient.PlaceCoefficient;
 import by.training.karpilovich.lowcost.exception.DAOException;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.factory.ServiceFactory;
 import by.training.karpilovich.lowcost.service.CityService;
+import by.training.karpilovich.lowcost.service.CoefficientService;
 import by.training.karpilovich.lowcost.service.FlightService;
 import by.training.karpilovich.lowcost.service.PlaneService;
 import by.training.karpilovich.lowcost.util.DateParser;
@@ -63,9 +67,24 @@ public class FlightServiceImpl implements FlightService {
 	}
 
 	@Override
-	public void addCoefficient(Flight flight, String from, String to, String value) {
-		// TODO Auto-generated method stub
+	public void addLuggageCoefficient(Flight flight, String from, String to, String value) throws ServiceException {
+		CoefficientService service = getCoefficientService();
+		LuggageCoefficient coefficient = service.makeLuggageCoefficientFromParameters(flight.getId(), from, to, value);
+		flight.addLuggageCoefficient(coefficient);
+	}
 
+	@Override
+	public void addDateCoefficient(Flight flight, String from, String to, String value) throws ServiceException {
+		CoefficientService service = getCoefficientService();
+		DateCoefficient coefficient = service.makeDateCoefficientFromParameters(flight.getId(), from, to, value);
+		flight.addDateCoefficient(coefficient);
+	}
+
+	@Override
+	public void addPlaceCoefficient(Flight flight, String from, String to, String value) throws ServiceException {
+		CoefficientService service = getCoefficientService();
+		PlaceCoefficient coefficient = service.makePlaceCoefficientFromParameters(flight.getId(), from, to, value);
+		flight.addPlaceCoefficient(coefficient);
 	}
 
 	@Override
@@ -89,10 +108,11 @@ public class FlightServiceImpl implements FlightService {
 		luggageValidator.setNext(dateValidator);
 		try {
 			validator.validate();
-			return buildFlight(number, from, to, departureDate, price, planeModel, planeModel.getPlaceQuantity(), luggage);
+			return buildFlight(number, from, to, departureDate, price, planeModel, planeModel.getPlaceQuantity(),
+					luggage);
 		} catch (ValidatorException e) {
 			throw new ServiceException(e.getMessage(), e);
-		}	
+		}
 	}
 
 	@Override
@@ -169,6 +189,10 @@ public class FlightServiceImpl implements FlightService {
 		builder.setPlaneModel(model);
 		builder.setDate(date);
 		return builder.getFlight();
+	}
+
+	private CoefficientService getCoefficientService() {
+		return ServiceFactory.getInstance().getCoefficientService();
 	}
 
 }

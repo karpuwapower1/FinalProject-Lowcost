@@ -14,12 +14,17 @@ public interface FlightService {
 
 	void addFlight(String number, String fromId, String toId, String date, String defaultPrice, String model, String permittedLuggage)
 			throws ServiceException;
-	
-	void addCoefficient(Flight flight, String from, String to, String value);
 
 	void removeFlight(String number, String date) throws ServiceException;
 
 	Set<Flight> getFlight(String cityFrom, String cityTo, String date, String passengerQuantity)
 			throws ServiceException;
+	
+	void addLuggageCoefficient(Flight flight, String from, String to, String value) throws ServiceException;
+	
+	void addDateCoefficient(Flight flight, String from, String to, String value) throws ServiceException;
+	
+	void addPlaceCoefficient(Flight flight, String from, String to, String value) throws ServiceException;
+
 
 }
