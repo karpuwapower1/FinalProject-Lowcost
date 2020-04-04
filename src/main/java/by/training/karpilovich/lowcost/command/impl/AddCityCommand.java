@@ -1,37 +1,40 @@
 package by.training.karpilovich.lowcost.command.impl;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import by.training.karpilovich.lowcost.command.AttributeName;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.Page;
-import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.service.CityService;
 
-public class RedirectToDefaultPageCommand implements Command {
+public class AddCityCommand implements Command {
 	
-	private static final Logger LOGGER = LogManager.getLogger(RedirectToDefaultPageCommand.class);
+	private static final String CITY_NAME_PARAMETER = "city";
+	private static final String COUNTRY_NAME_PARAMETER = "country";
+	
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		CityService cityService = getCityService();
+		String cityName = request.getParameter(CITY_NAME_PARAMETER);
+		String countryName = request.getParameter(COUNTRY_NAME_PARAMETER);
+		CityService service = getCityService();
+		
+		Page page = (Page) request.getSession().getAttribute(AttributeName.PAGE_FROM.getName());
 		try {
-			List<City> cities = cityService.getAllCities();
-			request.setAttribute(AttributeName.CITIES.getName(), cities);
-			return Page.DEFAULT.getAddress();
+			service.addCity(cityName, countryName);
+			
 		} catch (ServiceException e) {
-			return Page.INTERNAL_ERROR.getAddress();
+			setErrorMessage(request, response.getLocale(), e.getMessage());
 		}
+		return page == null ? new RedirectToDefaultPageCommand().execute(request, response) : page.getAddress();
 	}
+	
+	
 
 }

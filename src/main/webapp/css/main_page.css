@@ -57,3 +57,14 @@ body .form-control, body .custom-select, body .btn-light {
 	font-size: 18px;
 	color: #696969;
 }
+
+menu .dropdown-item {
+	font-size: 5px;
+	line-height=10px
+}
+
+form {
+    margin: 0;
+    
+
+}
