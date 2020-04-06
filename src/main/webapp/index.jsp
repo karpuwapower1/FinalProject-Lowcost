@@ -1,15 +1,18 @@
-<html>
-<%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" language="java"
+	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
+<html>
+
 <head>
-<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <c:set var="style" value="${pageContext.request.contextPath}" />
 <link rel="stylesheet" href="${style}/css/bootstrap.min.css" />
 <link rel="stylesheet" href="${style}/css/main_page.css" />
+<fmt:setLocale value="${pageContext.response.locale}" scope="session" />
 </head>
 
 <header>
@@ -26,30 +29,27 @@
 			<div class="grid">
 				<form name="select" method="post">
 					<div class="row">
-						<select class="custom-select  custom-select-lg col-md-2"
+						<select class="custom-select  custom-select-lg col-md-3"
 							name="departure" required>
 							<option selected><fmt:message key="departureCounty" /></option>
 							<c:forEach var="city" items="${cities }">
 								<option value="${city.id }">${city.country},${ city.name}</option>
 							</c:forEach>
-						</select> <select class="custom-select  custom-select-lg col-md-2"
+						</select> <select class="custom-select  custom-select-lg col-md-3"
 							name="destination" required>
 							<option selected><fmt:message key="destinationCountry" /></option>
 							<c:forEach var="city" items="${cities }">
 								<option value="${city.id }">${city.country},${ city.name}</option>
 							</c:forEach>
-						</select> <input class="form-control form-control-lg col-md-2"
+						</select> <input class="form-control form-control-lg col-md-3"
 							placeholder="<fmt:message key="departureDate"/>" required
 							class="textbox-n" type="text" onfocus="(this.type='date')"
-							onblur="(this.type='text')" name="departureDate" value="" /> <input
-							class="form-control form-control-lg col-md-2"
-							placeholder="<fmt:message key="returnDate"/>" class="textbox-n"
-							type="text" onfocus="(this.type='date')"
-							onblur="(this.type='text')" name="returnDate" value="" required /> <input
-							type="text" class="form-control form-control-lg col-md-2"
+							onblur="(this.type='text')" name="departureDate" value="" /> 
+						<input type="text" class="form-control form-control-lg col-md-2"
 							name="quantity" id="quantity"
-							placeholder="<fmt:message key="quantity"/>" value="" required pattern="[0-9]" />
-						<button type="submit" class="btn btn-light col-md-2"
+							placeholder="<fmt:message key="quantity"/>" value="" required
+							pattern="[0-9]" />
+						<button type="submit" class="btn btn-light col-md-1"
 							name="command" value="search_flight">
 							<fmt:message key="command" />
 						</button>

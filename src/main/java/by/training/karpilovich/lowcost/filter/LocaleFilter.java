@@ -50,13 +50,13 @@ public class LocaleFilter implements Filter {
 			type = LocaleType.valueOf(locale.toUpperCase());
 		} else {
 			type = defaultLocale;
-			setCookie(response, type);
+			setCookie(response);
 		}
 		LOGGER.debug(type.getCountry() + " " + type.getLanguage());
 		response.setLocale(new Locale(type.getLanguage(), type.getCountry()));
 	}
 	
-	private void setCookie(HttpServletResponse response, LocaleType type) {
+	private void setCookie(HttpServletResponse response) {
 		Cookie cookie = new Cookie(CookieName.LOCALE.getName(), defaultLocale.toString());
 		response.addCookie(cookie);
 	}

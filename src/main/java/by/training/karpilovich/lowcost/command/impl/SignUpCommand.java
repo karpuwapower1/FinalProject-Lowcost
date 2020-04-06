@@ -26,7 +26,7 @@ public class SignUpCommand implements Command {
 	private static final String LAST_NAME_PARAMETER_NAME = "lastName";
 
 	private static final Logger LOGGER = LogManager.getLogger(SignUpCommand.class);
-	
+
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -41,20 +41,20 @@ public class SignUpCommand implements Command {
 			page = Page.SIGN_UP;
 			LOGGER.warn(e);
 		}
-		return page != null ? page.getAddress() : new RedirectToDefaultPageCommand().execute(request, response);
+		return page == null || page == Page.DEFAULT ? new RedirectToDefaultPageCommand().execute(request, response)
+				: page.getAddress();
 	}
 
 	private User signupUser(HttpServletRequest request) throws ServiceException {
 		String email = request.getParameter(EMAIL_PARAMETER_NAME);
 		String password = request.getParameter(PASSWORD_PARAMETER_NAME);
-		String repeatedPassword =  request.getParameter(REPEAT_PASSWORD_PARAMETER_NAME);
+		String repeatedPassword = request.getParameter(REPEAT_PASSWORD_PARAMETER_NAME);
 		String firstName = request.getParameter(FIRST_NAME_PARAMETER_NAME);
 		String lastName = request.getParameter(LAST_NAME_PARAMETER_NAME);
 		UserService userService = getUserService();
 		return userService.signUp(email, password, repeatedPassword, firstName, lastName);
 	}
-	
-	
+
 	private void setAttribute(HttpSession session, User user) {
 		session.setAttribute(AttributeName.ROLE.getName(), user.getRole());
 		session.setAttribute(AttributeName.USER.getName(), user);

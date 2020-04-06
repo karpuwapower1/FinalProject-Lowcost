@@ -5,9 +5,10 @@ import org.apache.logging.log4j.Logger;
 
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.CommandType;
-import by.training.karpilovich.lowcost.command.impl.RedirectToDefaultPageCommand;
+import by.training.karpilovich.lowcost.command.impl.AddCityCommand;
+import by.training.karpilovich.lowcost.command.impl.ChangeLanguageCommand;
 import by.training.karpilovich.lowcost.command.impl.RedirectCommand;
-
+import by.training.karpilovich.lowcost.command.impl.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.command.impl.SearchFlightCommand;
 import by.training.karpilovich.lowcost.command.impl.SignInCommand;
 import by.training.karpilovich.lowcost.command.impl.SignOutCommand;
@@ -48,11 +49,18 @@ public class CommandFactory {
 			case SIGN_OUT:
 				command = new SignOutCommand();
 				break;
+			case ADD_CITY:
+				command = new AddCityCommand();
+				break;
 			case SEARCH_FLIGHT:
 				command = new SearchFlightCommand();
 				break;
 			case REDIRECT:
 				command = new RedirectCommand();
+				break;
+			case CHANGE_LANGUAGE:
+				command = new ChangeLanguageCommand();
+				break;
 			default:
 				break;
 			}
