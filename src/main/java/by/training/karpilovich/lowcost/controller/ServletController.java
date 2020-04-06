@@ -20,7 +20,7 @@ import by.training.karpilovich.lowcost.factory.CommandFactory;
 import by.training.karpilovich.lowcost.repository.CityRepository;
 import by.training.karpilovich.lowcost.repository.impl.CityRepositoryImpl;
 
-@WebServlet(urlPatterns = { "" })
+@WebServlet( "" )
 public class ServletController extends HttpServlet {
 
 	private static final String COMMAND_PARAMETER_NAME = "command";
@@ -30,19 +30,14 @@ public class ServletController extends HttpServlet {
 	@Override
 	public void init() throws ServletException {
 		ConnectionPool pool = ConnectionPool.getInstance();
+		CityRepository repository = CityRepositoryImpl.getInstance();
 		try {
 			pool.init();
-		} catch (ConnectionPoolException e) {
-			throw new ServletException(e);
-		}
-		try {
-		CityRepository repository = CityRepositoryImpl.getInstance();
-		repository.init();
-		} catch (RepositoryException e) {
+			repository.init();
+		} catch (ConnectionPoolException | RepositoryException e) {
 			throw new ServletException(e);
 		}
 		super.init();
-		LOGGER.debug("Servlet is initialized");
 	}
 
 	@Override

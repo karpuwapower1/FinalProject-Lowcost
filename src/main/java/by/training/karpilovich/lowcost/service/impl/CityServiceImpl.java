@@ -51,6 +51,7 @@ public class CityServiceImpl implements CityService {
 			validator.validate();
 			City city = buildCity(name, countryName);
 			cityDAO.addCity(city);
+			LOGGER.debug(city.toString());
 			cityRepository.add(city);
 		} catch (ValidatorException | DAOException | RepositoryException e) {
 			throw new ServiceException(e.getMessage(), e);
@@ -115,14 +116,10 @@ public class CityServiceImpl implements CityService {
 		} catch (RepositoryException e) {
 			throw new ServiceException(e.getMessage());
 		}
-
 	}
-
-	
 
 	private City buildCity(String name, String countryName) {
 		CityBuilder builder = new CityBuilder();
-		builder.setCityIdFromCount();
 		builder.setCityName(name);
 		builder.setCityCountry(countryName);
 		return builder.getCity();

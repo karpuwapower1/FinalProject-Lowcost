@@ -5,8 +5,6 @@ import java.io.Serializable;
 public class City implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
-	private static int count = 0;
 	
 	private String name;
 	private int id;
@@ -37,10 +35,6 @@ public class City implements Serializable {
 		this.id = id;
 	}
 	
-	public void setIdFromCoutn() {
-		id = count++;
-	}
-
 	public String getCountry() {
 		return country;
 	}
