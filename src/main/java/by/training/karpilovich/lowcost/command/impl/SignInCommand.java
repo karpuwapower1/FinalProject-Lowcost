@@ -44,7 +44,8 @@ public class SignInCommand implements Command {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
 			LOGGER.warn(e);
 		}
-		return page != null ? page.getAddress() : Page.SIGN_IN.getAddress();
+		return page == null || page == Page.DEFAULT ? new RedirectToDefaultPageCommand().execute(request, response)
+				: Page.SIGN_IN.getAddress();
 	}
 
 	private void keepInMind(HttpServletRequest request, HttpServletResponse response, String email, String password) {
