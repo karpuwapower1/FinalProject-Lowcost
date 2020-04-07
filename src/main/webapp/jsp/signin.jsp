@@ -3,6 +3,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
+<%@ page import="by.training.karpilovich.lowcost.command.JspParameter"%>
+<%@ page import="by.training.karpilovich.lowcost.command.CommandType"%>
+<%@ page import="by.training.karpilovich.lowcost.command.Page"%>
+
 <html>
 <head>
 <meta charset="utf-8">
@@ -15,7 +19,7 @@
 </head>
 
 <header>
-	<c:set var="page_from" value="<%=by.training.karpilovich.lowcost.command.Page.SIGN_IN%>" scope="request"/>
+	<c:set var="page" value="<%=Page.SIGN_IN%>" scope="request"/>
 	<c:import url="/general/header.jsp" />
 </header>
 
@@ -26,22 +30,26 @@
 				<fmt:message key="title" />
 			</p>
 			<div class="login-form col-md-4 offset-md-4">
-				<input type="email" name="email" class="form-control"
-					placeholder="<fmt:message key="email"/>" value="" required
-					pattern="([a-zA-Z_0-9]{1,}@([a-z]{3,7})\.(ru|com|by|net))" /> <input
-					type="password" name="password" class="form-control"
-					placeholder="<fmt:message key="password"/>" value="" required
+				<input class="form-control" type="email" 
+					name="<%=JspParameter.EMAIL%>" value=""
+					placeholder="<fmt:message key="email"/>"  
+					required pattern="([a-zA-Z_0-9]{1,}@([a-z]{3,7})\.(ru|com|by|net))" /> 
+				<input class="form-control"
+					type="password" name="<%=JspParameter.PASSWORD%>" value=""
+					placeholder="<fmt:message key="password"/>"  required
 					pattern="(\w{5,})" />
 				<button class="btn btn-primary btn-block " type="submit"
-					name="command" value="sign_in">
+					name="<%=JspParameter.COMMAND%>" 
+					value="<%=CommandType.SIGN_IN%>">
 					<fmt:message key="command" />
 				</button>
 
 				<div class="form-check">
-					<input class="form-check-input" type="checkbox" name="memory"
-						value="true">
+					<input class="form-check-input" type="checkbox" 
+					name="<%=JspParameter.REMEMBER%>" value="true">
 					<fmt:message key="memory" />
 				</div>
+				
 			</div>
 			<div class="login-info text-center">
 

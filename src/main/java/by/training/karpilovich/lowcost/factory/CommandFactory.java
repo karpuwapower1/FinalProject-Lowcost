@@ -10,6 +10,7 @@ import by.training.karpilovich.lowcost.command.impl.ChangeLanguageCommand;
 import by.training.karpilovich.lowcost.command.impl.RedirectCommand;
 import by.training.karpilovich.lowcost.command.impl.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.command.impl.SearchFlightCommand;
+import by.training.karpilovich.lowcost.command.impl.ShowAllCitiesCommand;
 import by.training.karpilovich.lowcost.command.impl.SignInCommand;
 import by.training.karpilovich.lowcost.command.impl.SignOutCommand;
 import by.training.karpilovich.lowcost.command.impl.SignUpCommand;
@@ -50,6 +51,9 @@ public class CommandFactory {
 				break;
 			case ADD_CITY:
 				command = new AddCityCommand();
+				break;
+			case SHOW_ALL_CITIES :
+				command = new ShowAllCitiesCommand();
 				break;
 			case SEARCH_FLIGHT:
 				command = new SearchFlightCommand();

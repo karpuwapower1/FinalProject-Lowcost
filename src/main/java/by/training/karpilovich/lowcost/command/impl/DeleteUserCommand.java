@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import by.training.karpilovich.lowcost.command.AttributeName;
+import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.entity.Role;
@@ -29,17 +29,17 @@ public class DeleteUserCommand implements Command {
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		String repeatPassword = request.getParameter(REPEAT_PASSWORD_PARAMETER_NAME);
-		User user = (User) session.getAttribute(AttributeName.USER.getName());
+		User user = (User) session.getAttribute(Attribute.USER.toString());
 		Page page = null;
 		try {
 			deleteUser(user, repeatPassword);
 			session.invalidate();
 			HttpSession newSession = request.getSession();
-			newSession.setAttribute(AttributeName.ROLE.getName(), Role.GUEST);
+			newSession.setAttribute(Attribute.ROLE.toString(), Role.GUEST);
 			page = Page.DEFAULT;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			page = (Page) session.getAttribute(AttributeName.PAGE_FROM.getName());
+			page = (Page) session.getAttribute(Attribute.PAGE_FROM.toString());
 			LOGGER.warn(e);
 		}
 		return page == null ? new RedirectToDefaultPageCommand().execute(request, response) : page.getAddress();

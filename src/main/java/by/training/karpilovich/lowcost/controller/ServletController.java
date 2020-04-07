@@ -11,8 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import by.training.karpilovich.lowcost.command.AttributeName;
+import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
+import by.training.karpilovich.lowcost.command.JspParameter;
 import by.training.karpilovich.lowcost.connection.ConnectionPool;
 import by.training.karpilovich.lowcost.exception.ConnectionPoolException;
 import by.training.karpilovich.lowcost.exception.RepositoryException;
@@ -23,7 +24,6 @@ import by.training.karpilovich.lowcost.repository.impl.CityRepositoryImpl;
 @WebServlet( "" )
 public class ServletController extends HttpServlet {
 
-	private static final String COMMAND_PARAMETER_NAME = "command";
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(ServletController.class);
 
@@ -66,13 +66,10 @@ public class ServletController extends HttpServlet {
 
 	private void handleRequest(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String commandParameterValue = request.getParameter(COMMAND_PARAMETER_NAME);
+		String commandParameterValue = request.getParameter(JspParameter.COMMAND.toString());
 		CommandFactory factory = CommandFactory.getInstance();
 		Command command = factory.getCommad(commandParameterValue);
 		String page = command.execute(request, response);
-		
-		LOGGER.debug(request.getSession().getAttribute(AttributeName.ROLE.getName()));
-		
 		request.getRequestDispatcher(page).forward(request, response);
 	}
 

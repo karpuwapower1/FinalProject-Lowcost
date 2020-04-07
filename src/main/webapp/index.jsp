@@ -23,34 +23,38 @@
 </header>
 
 <body>
-
 	<fmt:bundle basename="pagecontent" prefix="index.select.">
 		<div class="container">
 			<div class="grid">
 				<form name="select" method="post">
 					<div class="row">
 						<select class="custom-select  custom-select-lg col-md-3"
-							name="departure" required>
+							name="<%=by.training.karpilovich.lowcost.command.JspParameter.COUNTRY_FROM%>" 
+							required>
 							<option selected><fmt:message key="departureCounty" /></option>
 							<c:forEach var="city" items="${cities }">
 								<option value="${city.id }">${city.country},${ city.name}</option>
 							</c:forEach>
-						</select> <select class="custom-select  custom-select-lg col-md-3"
-							name="destination" required>
+						</select> 
+						<select class="custom-select  custom-select-lg col-md-3"
+							name="<%=by.training.karpilovich.lowcost.command.JspParameter.COUNTRY_TO%>" required>
 							<option selected><fmt:message key="destinationCountry" /></option>
 							<c:forEach var="city" items="${cities }">
 								<option value="${city.id }">${city.country},${ city.name}</option>
 							</c:forEach>
-						</select> <input class="form-control form-control-lg col-md-3"
+						</select> 
+						<input class="form-control form-control-lg col-md-3"
 							placeholder="<fmt:message key="departureDate"/>" required
 							class="textbox-n" type="text" onfocus="(this.type='date')"
-							onblur="(this.type='text')" name="departureDate" value="" /> 
-						<input type="text" class="form-control form-control-lg col-md-2"
-							name="quantity" id="quantity"
-							placeholder="<fmt:message key="quantity"/>" value="" required
+							onblur="(this.type='text')" 
+							name="<%=by.training.karpilovich.lowcost.command.JspParameter.DATE%>" value="" /> 
+						<input type="text" class="form-control form-control-lg col-md-2" 
+							name="<%=by.training.karpilovich.lowcost.command.JspParameter.QUANTITY%>" value=""
+							placeholder="<fmt:message key="quantity"/>"  required
 							pattern="[0-9]" />
 						<button type="submit" class="btn btn-light col-md-1"
-							name="command" value="search_flight">
+							name="<%=by.training.karpilovich.lowcost.command.JspParameter.COMMAND%>" 
+							value="<%=by.training.karpilovich.lowcost.command.CommandType.SEARCH_FLIGHT%>">
 							<fmt:message key="command" />
 						</button>
 					</div>

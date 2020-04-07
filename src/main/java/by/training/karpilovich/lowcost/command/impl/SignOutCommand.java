@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import by.training.karpilovich.lowcost.command.AttributeName;
+import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.CookieName;
 import by.training.karpilovich.lowcost.entity.Role;
@@ -21,11 +21,11 @@ public class SignOutCommand implements Command {
 		HttpSession session = request.getSession();
 		session.invalidate();
 		HttpSession newSession = request.getSession();
-		newSession.setAttribute(AttributeName.ROLE.getName(), Role.GUEST);
+		newSession.setAttribute(Attribute.ROLE.toString(), Role.GUEST);
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
-			removeCookie(cookies, CookieName.EMAIL.getName(), response);
-			removeCookie(cookies, CookieName.PASSWORD.getName(), response);
+			removeCookie(cookies, CookieName.EMAIL.toString(), response);
+			removeCookie(cookies, CookieName.PASSWORD.toString(), response);
 		}
 		return new RedirectToDefaultPageCommand().execute(request, response);
 	}

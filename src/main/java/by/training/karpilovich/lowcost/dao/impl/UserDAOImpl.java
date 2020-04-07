@@ -49,9 +49,9 @@ public class UserDAOImpl implements UserDAO {
 
 	private static final int SELECT_BY_EMAIL_AND_PASSWORD_RESULT_EMAIL_INDEX = 1;
 	private static final int SELECT_BY_EMAIL_AND_PASSWORD_RESULT_PASSWORD_INDEX = 2;
-	private static final int SELECT_BY_EMAIL_AND_PASSWORD_RESULT_FIRST_NAME_INDEX = 2;
-	private static final int SELECT_BY_EMAIL_AND_PASSWORD_RESULT_LAST_NAME_INDEX = 3;
-	private static final int SELECT_BY_EMAIL_AND_PASSWORD_RESULT_ROLE_INDEX = 4;
+	private static final int SELECT_BY_EMAIL_AND_PASSWORD_RESULT_FIRST_NAME_INDEX = 3;
+	private static final int SELECT_BY_EMAIL_AND_PASSWORD_RESULT_LAST_NAME_INDEX = 4;
+	private static final int SELECT_BY_EMAIL_AND_PASSWORD_RESULT_ROLE_INDEX = 5;
 
 	private static final String COUNT_EMAIL_QUERY = "SELECT count(email) FROM airport_user GROUP BY email HAVING email=?";
 

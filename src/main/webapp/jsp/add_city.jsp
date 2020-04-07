@@ -2,6 +2,11 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+<%@ page import="by.training.karpilovich.lowcost.command.JspParameter"%>
+<%@ page import="by.training.karpilovich.lowcost.command.CommandType"%>
+<%@ page import="by.training.karpilovich.lowcost.command.Page"%>
+
 <html>
 
 <head>
@@ -16,7 +21,7 @@
 
 <header>
 	<c:set var="page"
-		value="<%=by.training.karpilovich.lowcost.command.Page.ADD_CITY%>"
+		value="<%=Page.ADD_CITY%>"
 		scope="request" />
 	<c:import url="/general/header.jsp" />
 </header>
@@ -25,13 +30,24 @@
 	<fmt:bundle basename="pagecontent" prefix="add_city.input.">
 		<form name="input" class="border border-light " method="post">
 			<div class="login-form col-md-4 offset-md-4">
-				<input type="text" name="country" class="form-control"
-					placeholder="<fmt:message key="country"/>" value="" required
-					pattern="([А-Я]{1}[А-Яа-я]{1,})" /> <input type="text" name="city"
-					class="form-control" placeholder="<fmt:message key="city"/>"
-					value="" required pattern="([А-Я]{1}[А-Яа-я]{1,})" />
+				<c:out value="${country}"></c:out>
+				<c:out value="${city}"></c:out>
+				<input type="text" class="form-control"
+					name="<%=JspParameter.COUNTRY_NAME%>"
+					value="" 
+					placeholder="<fmt:message key="country"/>" 
+					required 
+					pattern="([А-Я]{1}[А-Яа-я]{1,})" />
+				 <input type="text"
+					class="form-control"
+					name="<%=JspParameter.CITY_NAME%>"
+					value="" 
+					placeholder="<fmt:message key="city"/>" 
+					required
+					pattern="([А-Я]{1}[А-Яа-я]{1,})" />
 				<button class="btn btn-primary btn-block " type="submit"
-					name="command" value="add_city">
+					name="<%=JspParameter.COMMAND%>" 
+					value="<%=CommandType.ADD_CITY%>">
 					<fmt:message key="add_city" />
 				</button>
 			</div>
