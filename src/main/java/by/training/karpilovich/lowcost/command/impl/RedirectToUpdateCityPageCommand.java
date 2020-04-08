@@ -5,30 +5,39 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.JspParameter;
 import by.training.karpilovich.lowcost.command.Page;
+import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.service.CityService;
 
-public class UpdateCityCommand implements Command {
+public class RedirectToUpdateCityPageCommand implements Command {
+	
+	private static final Logger LOGGER = LogManager.getLogger(RedirectToUpdateCityPageCommand.class);
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String name = request.getParameter(JspParameter.CITY_NAME.toString());
-		String id = request.getParameter(JspParameter.CITY_ID.toString());
-		String country = request.getParameter(JspParameter.COUNTRY_NAME.toString());
 		CityService service = getCityService();
-		String address;
+		HttpSession session = request.getSession();
+		String id = request.getParameter(JspParameter.CITY_ID.toString());
+		Page page;
 		try {
-			service.updateCity(id, name, country);
-			address = new ShowAllCitiesCommand().execute(request, response);
+			City city = service.getCityById(id);
+			session.setAttribute(Attribute.CITY.toString(), city);
+			page = Page.UPDATE_CITY;
 		} catch (ServiceException e) {
+			LOGGER.debug(e);
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			address = Page.UPDATE_CITY.getAddress();
+			page = Page.ALL_CITIES;
 		}
-		return address;
+		return page.getAddress();
 	}
 }

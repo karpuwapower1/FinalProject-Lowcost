@@ -20,39 +20,32 @@
 </head>
 
 <header>
-	<c:set var="page"
-		value="<%=Page.ADD_CITY%>"
-		scope="request" />
+	<c:set var="page" value="<%=Page.ADD_CITY%>" scope="request" />
 	<c:import url="/general/header.jsp" />
 </header>
 
 <body>
-	<fmt:bundle basename="pagecontent" prefix="add_city.input.">
+<p>${ERROR_MESSAGE}</p>
+	<fmt:bundle basename="pagecontent" prefix="update_city.input.">
 		<form name="input" class="border border-light " method="post">
 			<div class="login-form col-md-4 offset-md-4">
+				<input type="hidden" name="<%=JspParameter.CITY_ID%>"
+					value="${CITY.id}">
 				<input type="text" class="form-control"
-					name="<%=JspParameter.COUNTRY_NAME%>"
-					value="" 
-					placeholder="<fmt:message key="country"/>" 
-					required 
+					name="<%=JspParameter.COUNTRY_NAME%>" 
+					value="${CITY.country}" required
 					pattern="([А-Я]{1}[А-Яа-я]{1,})" />
-				 <input type="text"
-					class="form-control"
-					name="<%=JspParameter.CITY_NAME%>"
-					value="" 
-					placeholder="<fmt:message key="city"/>" 
-					required
-					pattern="([А-Я]{1}[А-Яа-я]{1,})" />
+				<input type="text"
+					class="form-control" name="<%=JspParameter.CITY_NAME%>"
+					value="${CITY.name}"
+					required pattern="([А-Я]{1}[А-Яа-я]{1,})" />
 				<button class="btn btn-primary btn-block " type="submit"
-					name="<%=JspParameter.COMMAND%>" 
-					value="<%=CommandType.ADD_CITY%>">
-					<fmt:message key="add_city" />
+					name="<%=JspParameter.COMMAND%>" value="<%=CommandType.UPDATE_CITY%>">
+					<fmt:message key="update_city" />
 				</button>
 			</div>
 		</form>
 	</fmt:bundle>
-	
-	
 
 	<script type="text/javascript" src="${style}/js/jquery-3.3.1.min.js"></script>
 	<script type="text/javascript" src="${style}/js/bootstrap.min.js"></script>

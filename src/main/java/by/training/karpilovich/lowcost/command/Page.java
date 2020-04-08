@@ -3,7 +3,7 @@ package by.training.karpilovich.lowcost.command;
 public enum Page {
 
 	DEFAULT("/index.jsp"), SIGN_IN("/jsp/signin.jsp"), SIGN_UP("/jsp/signup.jsp"), ADD_CITY("/jsp/add_city.jsp"),
-	ALL_CITIES("/jsp/all_cities.jsp"), RESULT("//TODO"), INTERNAL_ERROR("TODO");
+	ALL_CITIES("/jsp/all_cities.jsp"), UPDATE_CITY("/jsp/update_city.jsp"), RESULT("//TODO"), INTERNAL_ERROR("TODO");
 
 	private String address;
 

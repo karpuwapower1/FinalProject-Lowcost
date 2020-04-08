@@ -19,15 +19,13 @@
 </head>
 
 <header>
-	<c:set var="page"
-		value="<%=Page.ALL_CITIES%>"
-		scope="request" />
+	<c:set var="page" value="<%=Page.ALL_CITIES%>" scope="request" />
 	<c:import url="/general/header.jsp" />
 </header>
 
 <body>
+	<p>${ERROR_MESSAGE}</p>
 	<fmt:bundle basename="pagecontent" prefix="all_cities.table.">
-
 		<table class="table table-bordered text-center">
 			<thead>
 				<tr>
@@ -38,23 +36,26 @@
 			<tbody>
 				<c:forEach var="city" items="${CITIES}">
 					<tr>
-					
 						<td><c:out value="${city.name}" /></td>
 						<td><c:out value="${city.country}" /></td>
 						<td>
 							<form name="action" method="post">
-									<input type="hidden" 
-									name="<%=JspParameter.CITY_ID%>" value="${city.id}">
-									<button class="btn btn-primary" type="submit" 
+								<input type="hidden" name="<%=JspParameter.CITY_NAME%>"
+									value="${city.name}"> <input type="hidden"
+									name="<%=JspParameter.COUNTRY_NAME%>" value="${city.country}">
+								<input type="hidden" name="<%=JspParameter.CITY_ID%>"
+									value="${city.id}">
+								<input type="hidden" name="<%=JspParameter.TO_PAGE%>"
+									value="<%=Page.UPDATE_CITY%>">
+								<button class="btn btn-primary" type="submit"
+									name="<%=JspParameter.COMMAND%>" value="<%=CommandType.REDIRECT_TO_UPDATE_CITY_PAGE%>">
+									<fmt:message key="update_button" />
+								</button>
+								<button class="btn btn-primary" type="submit"
 									name="<%=JspParameter.COMMAND%>"
-									value="update_city">
-										<fmt:message key="update_button" />
-									</button>
-									<button class="btn btn-primary" type="submit"
-									name="<%=JspParameter.COMMAND%>"
-									value="delete_city">
-										<fmt:message key="delete_button" />
-									</button>
+									value="<%=CommandType.DELETE_CITY%>">
+									<fmt:message key="delete_button" />
+								</button>
 							</form>
 						</td>
 					</tr>

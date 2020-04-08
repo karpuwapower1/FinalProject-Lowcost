@@ -11,7 +11,7 @@ public interface CityDAO {
 	
 	void updateCity(City city) throws DAOException;
 	
-	void deleteCity(City city) throws DAOException;
+	void deleteCity(City id) throws DAOException;
 	
 	List<City> getAllCities() throws DAOException;
 
