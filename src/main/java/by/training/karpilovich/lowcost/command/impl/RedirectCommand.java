@@ -10,22 +10,21 @@ import javax.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import by.training.karpilovich.lowcost.command.AttributeName;
+import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
+import by.training.karpilovich.lowcost.command.JspParameter;
 import by.training.karpilovich.lowcost.command.Page;
 
 public class RedirectCommand implements Command {
-
-	private static final String TO_PAGE_REQUEST_PARAMETER = "to_page";
-	private static final String FROM_PAGE_REQUEST_PARAMETER = "page_from";
 
 	private static final Logger LOGGER = LogManager.getLogger(RedirectCommand.class);
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String pageTo = request.getParameter(TO_PAGE_REQUEST_PARAMETER);
-		String pageFrom = request.getParameter(FROM_PAGE_REQUEST_PARAMETER);
+		String pageTo = request.getParameter(JspParameter.TO_PAGE.toString());
+		String pageFrom = request.getParameter(JspParameter.FROM_PAGE.toString());
+		LOGGER.debug(pageFrom);
 		setAttribute(request, pageTo, pageFrom);
 		if (pageTo == null || pageTo.isEmpty() || Page.valueOf(pageTo.toUpperCase()) == Page.DEFAULT) {
 			return new RedirectToDefaultPageCommand().execute(request, response);
@@ -35,9 +34,9 @@ public class RedirectCommand implements Command {
 	
 	private void setAttribute(HttpServletRequest request, String pageTo, String pageFrom) {
 		HttpSession session = request.getSession();
-		session.setAttribute(AttributeName.PAGE_TO.getName(), pageTo);
+		session.setAttribute(Attribute.PAGE_TO.toString(), pageTo);
 		if (pageFrom != null && !pageFrom.isEmpty()) {
-			session.setAttribute(AttributeName.PAGE_FROM.getName(), Page.valueOf(pageFrom));
+			session.setAttribute(Attribute.PAGE_FROM.toString(), Page.valueOf(pageFrom));
 			LOGGER.debug(Page.valueOf(pageFrom));
 		}
 	}

@@ -33,7 +33,6 @@ public class CityServiceImpl implements CityService {
 	private final SpecificationFactory specificationFactory = SpecificationFactory.getInstance();
 
 	private CityServiceImpl() {
-
 	}
 
 	private static final class CityCerviceImplInstanceHolder {
@@ -59,15 +58,29 @@ public class CityServiceImpl implements CityService {
 	}
 
 	@Override
-	public void updateCity(String id, String newName, String newCountry) throws ServiceException {
-		// TODO Auto-generated method stub
-
+	public void updateCity(String id, String name, String country) throws ServiceException {
+		Validator validator = getCityValidator(name, country);
+		try {
+			validator.validate();
+			City city = buildCity(name, country);
+			city.setId(getIntFromString(id));
+			cityDAO.updateCity(city);
+			cityRepository.update(city);
+		} catch (ValidatorException | DAOException | RepositoryException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
 	}
 
 	@Override
-	public void deleteCity(String id) throws ServiceException {
-		// TODO Auto-generated method stub
-
+	public void deleteCity(String cityId) throws ServiceException {
+		int id = getIntFromString(cityId);
+		City city = getCityById(id);
+		try {
+			cityDAO.deleteCity(city);
+			cityRepository.delete(city);
+		} catch (DAOException | RepositoryException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
 	}
 
 	@Override
@@ -79,17 +92,11 @@ public class CityServiceImpl implements CityService {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
-
+	
 	@Override
-	public City getCity(String id) throws ServiceException {
-//		String cityName = getCityNameFromRequestParameter(requestParameter);
-//		String countryName = getCountryNameFromRequestParameter(requestParameter);
-//		List<City> cities = getCities(cityName, countryName);
-//		if (cities.size() != 1) {
-//			throw new ServiceException(MessageType.INVALID_CITY.getType());
-//		}
-//		return cities.get(0);
-		return null;
+	public City getCityById(String cityId) throws ServiceException {
+		int id = getIntFromString(cityId);
+		return getCityById(id);
 	}
 
 	@Override
@@ -105,7 +112,6 @@ public class CityServiceImpl implements CityService {
 		} catch (RepositoryException e) {
 			throw new ServiceException(e.getMessage());
 		}
-
 	}
 
 	@Override
@@ -117,7 +123,7 @@ public class CityServiceImpl implements CityService {
 			throw new ServiceException(e.getMessage());
 		}
 	}
-
+	
 	private City buildCity(String name, String countryName) {
 		CityBuilder builder = new CityBuilder();
 		builder.setCityName(name);
@@ -132,6 +138,14 @@ public class CityServiceImpl implements CityService {
 		nameValidator.setNext(countryNameValidator);
 		countryNameValidator.setNext(cityPresenceValidator);
 		return nameValidator;
+	}
+	
+	private int getIntFromString(String value) throws ServiceException {
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			throw new ServiceException(MessageType.INVALID_NUMBER_FORMAT.getMessage());
+		}
 	}
 
 }

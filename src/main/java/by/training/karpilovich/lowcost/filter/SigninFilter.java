@@ -17,7 +17,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import by.training.karpilovich.lowcost.command.AttributeName;
+import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.CookieName;
 import by.training.karpilovich.lowcost.entity.Role;
 import by.training.karpilovich.lowcost.entity.User;
@@ -42,7 +42,7 @@ public class SigninFilter implements Filter {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpSession session = httpRequest.getSession();
 		Cookie[] cookies = httpRequest.getCookies();
-		if (session.getAttribute(AttributeName.ROLE.getName()) == null) {
+		if (session.getAttribute(Attribute.ROLE.toString()) == null) {
 			LOGGER.debug("Inside if");
 			User user = initializeUser(cookies, session);
 			setSessionAttribute(session, user);
@@ -54,8 +54,8 @@ public class SigninFilter implements Filter {
 		User user = null;
 		Optional<String> email;
 		Optional<String> password;
-		if (cookies != null && (email = getCookieValue(cookies, CookieName.EMAIL.getName())).isPresent()
-				&& (password = getCookieValue(cookies, CookieName.PASSWORD.getName())).isPresent()) {
+		if (cookies != null && (email = getCookieValue(cookies, CookieName.EMAIL.toString())).isPresent()
+				&& (password = getCookieValue(cookies, CookieName.PASSWORD.toString())).isPresent()) {
 			ServiceFactory factory = ServiceFactory.getInstance();
 			UserService userService = factory.getUserService();
 			try {
@@ -78,10 +78,10 @@ public class SigninFilter implements Filter {
 
 	private void setSessionAttribute(HttpSession session, User user) {
 		if (user != null) {
-			session.setAttribute(AttributeName.USER.getName(), user);
-			session.setAttribute(AttributeName.ROLE.getName(), user.getRole());
+			session.setAttribute(Attribute.USER.toString(), user);
+			session.setAttribute(Attribute.ROLE.toString(), user.getRole());
 			return;
 		}
-		session.setAttribute(AttributeName.ROLE.getName(), Role.GUEST);
+		session.setAttribute(Attribute.ROLE.toString(), Role.GUEST);
 	}
 }

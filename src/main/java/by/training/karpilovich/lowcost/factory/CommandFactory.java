@@ -7,13 +7,17 @@ import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.CommandType;
 import by.training.karpilovich.lowcost.command.impl.AddCityCommand;
 import by.training.karpilovich.lowcost.command.impl.ChangeLanguageCommand;
+import by.training.karpilovich.lowcost.command.impl.DeleteCityCommand;
 import by.training.karpilovich.lowcost.command.impl.RedirectCommand;
 import by.training.karpilovich.lowcost.command.impl.RedirectToDefaultPageCommand;
+import by.training.karpilovich.lowcost.command.impl.RedirectToUpdateCityPageCommand;
 import by.training.karpilovich.lowcost.command.impl.SearchFlightCommand;
+import by.training.karpilovich.lowcost.command.impl.ShowAllCitiesCommand;
 import by.training.karpilovich.lowcost.command.impl.SignInCommand;
 import by.training.karpilovich.lowcost.command.impl.SignOutCommand;
 
 import by.training.karpilovich.lowcost.command.impl.SignUpCommand;
+import by.training.karpilovich.lowcost.command.impl.UpdateCityCommand;
 
 public class CommandFactory {
 
@@ -51,6 +55,18 @@ public class CommandFactory {
 				break;
 			case ADD_CITY:
 				command = new AddCityCommand();
+				break;
+			case SHOW_ALL_CITIES:
+				command = new ShowAllCitiesCommand();
+				break;
+			case UPDATE_CITY:
+				command = new UpdateCityCommand();
+				break;
+			case DELETE_CITY:
+				command = new DeleteCityCommand();
+				break;
+			case REDIRECT_TO_UPDATE_CITY_PAGE:
+				command = new RedirectToUpdateCityPageCommand();
 				break;
 			case SEARCH_FLIGHT:
 				command = new SearchFlightCommand();

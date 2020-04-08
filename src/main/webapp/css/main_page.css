@@ -65,6 +65,9 @@ menu .dropdown-item {
 
 form {
     margin: 0;
-    
+}
 
+.table {
+	font-family: 'Sen', sans-serif;
+	font-size : 20px;
 }

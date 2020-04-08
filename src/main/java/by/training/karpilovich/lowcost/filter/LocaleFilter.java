@@ -46,7 +46,7 @@ public class LocaleFilter implements Filter {
 		Cookie[] cookies = request.getCookies();
 		LocaleType type;
 		String locale;
-		if (cookies != null && !(locale = findCookie(cookies, CookieName.LOCALE.getName())).isEmpty()) {
+		if (cookies != null && !(locale = findCookie(cookies, CookieName.LOCALE.toString())).isEmpty()) {
 			type = LocaleType.valueOf(locale.toUpperCase());
 		} else {
 			type = defaultLocale;
@@ -57,7 +57,7 @@ public class LocaleFilter implements Filter {
 	}
 	
 	private void setCookie(HttpServletResponse response) {
-		Cookie cookie = new Cookie(CookieName.LOCALE.getName(), defaultLocale.toString());
+		Cookie cookie = new Cookie(CookieName.LOCALE.toString(), defaultLocale.toString());
 		response.addCookie(cookie);
 	}
 

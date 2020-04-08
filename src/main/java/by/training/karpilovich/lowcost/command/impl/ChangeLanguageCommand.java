@@ -13,31 +13,29 @@ import org.apache.logging.log4j.Logger;
 
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.CookieName;
+import by.training.karpilovich.lowcost.command.JspParameter;
 import by.training.karpilovich.lowcost.command.LocaleType;
 import by.training.karpilovich.lowcost.command.Page;
 
 public class ChangeLanguageCommand implements Command {
-
-	private static final String LANGUAGE_PARAMETER = "language";
-	private static final String FROM_PAGE_REQUEST_PARAMETER = "page_from";
-
+	
 	private static final Logger LOGGER = LogManager.getLogger(ChangeLanguageCommand.class);
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String language = request.getParameter(LANGUAGE_PARAMETER);
+		String language = request.getParameter(JspParameter.LANGUAGE.toString());
 		LOGGER.debug(language);
-		LocaleType localeType = LocaleType.valueOf(language.toUpperCase().trim());
+		LocaleType localeType = LocaleType.valueOf(language);
 		setCookie(response, localeType);
 		response.setLocale(new Locale(localeType.getLanguage(), localeType.getCountry()));
 		LOGGER.debug(response.getLocale().getLanguage() + " " + response.getLocale().getCountry());
-		Page page = Page.valueOf(request.getParameter(FROM_PAGE_REQUEST_PARAMETER).toUpperCase());
+		Page page = Page.valueOf(request.getParameter(JspParameter.FROM_PAGE.toString()));
 		return page == Page.DEFAULT ? new RedirectToDefaultPageCommand().execute(request, response) : page.getAddress();
 	}
 
 	private void setCookie(HttpServletResponse response, LocaleType type) {
-		Cookie cookie = new Cookie(CookieName.LOCALE.getName(), type.toString());
+		Cookie cookie = new Cookie(CookieName.LOCALE.toString(), type.toString());
 		response.addCookie(cookie);
 	}
 }

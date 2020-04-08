@@ -8,12 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import by.training.karpilovich.lowcost.command.AttributeName;
+import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.CookieName;
+import by.training.karpilovich.lowcost.command.JspParameter;
 import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ServiceException;
@@ -21,38 +19,32 @@ import by.training.karpilovich.lowcost.service.UserService;
 
 public class SignInCommand implements Command {
 
-	private static final String EMAIL_PARAMETER = "email";
-	private static final String PASSWORD_PARAMETER = "password";
-	private static final String IS_REMEMBER = "memory";
 	private static final int INACTIVE_TIMEOUT = 300;
-
-	private static final Logger LOGGER = LogManager.getLogger(SignInCommand.class);
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Page page = null;
 		HttpSession session = request.getSession();
-		String email = request.getParameter(EMAIL_PARAMETER).trim();
-		String password = request.getParameter(PASSWORD_PARAMETER).trim();
+		String email = request.getParameter(JspParameter.EMAIL.toString()).trim();
+		String password = request.getParameter(JspParameter.PASSWORD.toString()).trim();
 		try {
 			User user = initializeUser(email, password);
 			setAttribute(request, user);
 			keepInMind(request, response, email, password);
-			page = (Page) session.getAttribute(AttributeName.PAGE_FROM.getName());
+			page = (Page) session.getAttribute(Attribute.PAGE_FROM.toString());
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			LOGGER.warn(e);
+			page = Page.SIGN_IN;
 		}
-		return page == null || page == Page.DEFAULT ? new RedirectToDefaultPageCommand().execute(request, response)
-				: Page.SIGN_IN.getAddress();
+		return getReturnedPageAddress(page, request, response);
 	}
 
 	private void keepInMind(HttpServletRequest request, HttpServletResponse response, String email, String password) {
-		String isKeepInMind = request.getParameter(IS_REMEMBER);
+		String isKeepInMind = request.getParameter(JspParameter.REMEMBER.toString());
 		if (isKeepInMind != null) {
-			setCookies(CookieName.EMAIL.getName(), request.getParameter(EMAIL_PARAMETER).trim(), response);
-			setCookies(CookieName.PASSWORD.getName(), request.getParameter(PASSWORD_PARAMETER).trim(), response);
+			setCookies(CookieName.EMAIL.toString(), email, response);
+			setCookies(CookieName.PASSWORD.toString(), password, response);
 		} else {
 			HttpSession session = request.getSession();
 			session.setMaxInactiveInterval(INACTIVE_TIMEOUT);
@@ -65,8 +57,8 @@ public class SignInCommand implements Command {
 
 	private void setAttribute(HttpServletRequest request, User user) {
 		HttpSession session = request.getSession();
-		session.setAttribute(AttributeName.ROLE.getName(), user.getRole());
-		session.setAttribute(AttributeName.USER.getName(), user);
+		session.setAttribute(Attribute.ROLE.toString(), user.getRole());
+		session.setAttribute(Attribute.USER.toString(), user);
 	}
 
 	private User initializeUser(String email, String password) throws ServiceException {

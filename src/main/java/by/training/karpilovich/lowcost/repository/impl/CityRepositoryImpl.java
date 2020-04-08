@@ -53,7 +53,6 @@ public class CityRepositoryImpl implements CityRepository {
 
 	public static CityRepository getInstance() {
 		return CityRepositoryInstanceHolder.INSTANCE;
-
 	}
 
 	@Override

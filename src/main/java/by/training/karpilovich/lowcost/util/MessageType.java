@@ -27,6 +27,7 @@ public enum MessageType {
 	INVALID_CITY_NAME("message.error.invalid_city_name"),
 	INVALID_COUNTRY_NAME("message.error.invalid_contry_name"),
 	CITY_ALREADY_PRESENTS("message.error.city_already_presents"),
+	CITY_CAN_NOT_BE_DELETED("message.error.city_can_not_be_deleted"),
 	
 	INVALID_NUMBER_FORMAT("message.error.invalid_number_format");
 	

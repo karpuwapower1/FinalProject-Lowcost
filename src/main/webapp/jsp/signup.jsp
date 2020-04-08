@@ -3,6 +3,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
+<%@ page import="by.training.karpilovich.lowcost.command.JspParameter"%>
+<%@ page import="by.training.karpilovich.lowcost.command.CommandType"%>
+<%@ page import="by.training.karpilovich.lowcost.command.Page"%>
+
 <html>
 <head>
 <meta charset="utf-8">
@@ -15,7 +19,7 @@
 </head>
 
 <header>
-	<c:set var="page_from" value="<%=by.training.karpilovich.lowcost.command.Page.SIGN_UP%>" scope="request"/>
+	<c:set var="page" value="<%=Page.SIGN_UP%>" scope="request"/>
 	<c:import url="/general/header.jsp" />
 </header>
 
@@ -29,34 +33,36 @@
 
 			<div class="login-form col-md-4 offset-md-4">
 
-				<input type="email" name="email" class="form-control"
-					placeholder="<fmt:message key="email"/>" value="" required
-					pattern="([a-zA-Z_0-9]{1,}@([a-z]{3,7})\.(ru|com|by|net))" /> <input
-					type="password" name="password" id="password" class="form-control"
-					placeholder="<fmt:message key="password"/>" value="" required
-					pattern="(\w{5,})" /> <input type="password" name="repeatPassword"
-					id="repeatPassword" class="form-control"
-					placeholder="<fmt:message key="repeat_password"/>" value=""
-					required pattern="(\w{5,})" /> <input type="text" name="firstName"
-					class="form-control" placeholder="<fmt:message key="first_name"/>"
-					value="" required /> <input type="text" name="lastName"
-					class="form-control" placeholder="<fmt:message key="last_name"/>"
-					value="" />
-
+				<input class="form-control" type="email" 
+					name="<%=JspParameter.EMAIL%>" value=""
+					placeholder="<fmt:message key="email"/>" required
+					pattern="([a-zA-Z_0-9]{1,}@([a-z]{3,7})\.(ru|com|by|net))" /> 
+				<input class="form-control" type="password" 
+					type="password" name="<%=JspParameter.PASSWORD%>" value=""
+					id="password" 
+					placeholder="<fmt:message key="password"/>" required
+					pattern="(\w{5,})" /> 
+				<input class="form-control" type="password" 
+					name="<%=JspParameter.REPEAT_PASSWORD%>" value=""
+					id="repeatPassword" 
+					placeholder="<fmt:message key="repeat_password"/>" required 
+					pattern="(\w{5,})" /> 
+				<input class="form-control" type="text"
+					name="<%=JspParameter.FIRST_NAME%>" value=""
+					 placeholder="<fmt:message key="first_name"/>" required /> 
+				<input class="form-control" type="text" 
+					name="<%=JspParameter.LAST_NAME%>" value=""
+					 placeholder="<fmt:message key="last_name"/>"/>
 
 				<p>${errorMessage}</p>
 
-
 				<button class="btn btn-primary btn-block " type="submit"
-					name="command" value="sign_up"><fmt:message key="command" /></button>
-				
-
-
+					name="<%=JspParameter.COMMAND%>" 
+					value="<%=CommandType.SIGN_UP%>">
+					<fmt:message key="command" /></button>
 			</div>
 		</fmt:bundle>
 	</form>
-
-
 
 	<script type="text/javascript">
 		window.onload = function() {
