@@ -11,7 +11,7 @@ import javax.servlet.http.HttpSession;
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.CookieName;
-import by.training.karpilovich.lowcost.command.JspParameter;
+import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ServiceException;
@@ -26,8 +26,8 @@ public class SignInCommand implements Command {
 			throws ServletException, IOException {
 		Page page = null;
 		HttpSession session = request.getSession();
-		String email = request.getParameter(JspParameter.EMAIL.toString()).trim();
-		String password = request.getParameter(JspParameter.PASSWORD.toString()).trim();
+		String email = request.getParameter(JSPParameter.EMAIL);
+		String password = request.getParameter(JSPParameter.PASSWORD);
 		try {
 			User user = initializeUser(email, password);
 			setAttribute(request, user);
@@ -41,7 +41,7 @@ public class SignInCommand implements Command {
 	}
 
 	private void keepInMind(HttpServletRequest request, HttpServletResponse response, String email, String password) {
-		String isKeepInMind = request.getParameter(JspParameter.REMEMBER.toString());
+		String isKeepInMind = request.getParameter(JSPParameter.REMEMBER);
 		if (isKeepInMind != null) {
 			setCookies(CookieName.EMAIL.toString(), email, response);
 			setCookies(CookieName.PASSWORD.toString(), password, response);

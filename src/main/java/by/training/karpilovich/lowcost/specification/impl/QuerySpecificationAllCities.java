@@ -1,6 +1,6 @@
 package by.training.karpilovich.lowcost.specification.impl;
 
-import java.util.List;
+import java.util.SortedSet;
 
 import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.specification.Specification;
@@ -14,9 +14,8 @@ public class QuerySpecificationAllCities implements Specification {
 		return new QuerySpecificationAllCities();
 	}
 	
-	
 	@Override
-	public List<City> specify(List<City> cities) {
+	public SortedSet<City> specify(SortedSet<City> cities) {
 		return cities;
 	}
 

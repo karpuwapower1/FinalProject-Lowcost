@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.CookieName;
+import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.entity.Role;
 
 public class SignOutCommand implements Command {

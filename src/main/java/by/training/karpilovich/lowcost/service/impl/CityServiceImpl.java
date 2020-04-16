@@ -1,6 +1,7 @@
 package by.training.karpilovich.lowcost.service.impl;
 
-import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,7 +51,6 @@ public class CityServiceImpl implements CityService {
 			validator.validate();
 			City city = buildCity(name, countryName);
 			cityDAO.addCity(city);
-			LOGGER.debug(city.toString());
 			cityRepository.add(city);
 		} catch (ValidatorException | DAOException | RepositoryException e) {
 			throw new ServiceException(e.getMessage(), e);
@@ -84,7 +84,7 @@ public class CityServiceImpl implements CityService {
 	}
 
 	@Override
-	public List<City> getAllCities() throws ServiceException {
+	public SortedSet<City> getAllCities() throws ServiceException {
 		Specification specification = specificationFactory.getQuerySpecificationAllCities();
 		try {
 			return cityRepository.getCities(specification);
@@ -92,7 +92,7 @@ public class CityServiceImpl implements CityService {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
-	
+
 	@Override
 	public City getCityById(String cityId) throws ServiceException {
 		int id = getIntFromString(cityId);
@@ -103,9 +103,9 @@ public class CityServiceImpl implements CityService {
 	public City getCityById(int id) throws ServiceException {
 		try {
 			Specification specification = specificationFactory.getQuerySpecificationById(id);
-			List<City> cities = cityRepository.getCities(specification);
+			Set<City> cities = cityRepository.getCities(specification);
 			if (cities.size() == 1) {
-				return cities.get(0);
+				return cities.iterator().next();
 			}
 			LOGGER.error("Error while getting city by id " + id);
 			throw new ServiceException(MessageType.INTERNAL_ERROR.getMessage());
@@ -115,7 +115,7 @@ public class CityServiceImpl implements CityService {
 	}
 
 	@Override
-	public List<City> getCities(String name, String countryName) throws ServiceException {
+	public SortedSet<City> getCities(String name, String countryName) throws ServiceException {
 		Specification specification = specificationFactory.getQuerySpecificationByNameAndCountryName(name, countryName);
 		try {
 			return cityRepository.getCities(specification);
@@ -123,7 +123,7 @@ public class CityServiceImpl implements CityService {
 			throw new ServiceException(e.getMessage());
 		}
 	}
-	
+
 	private City buildCity(String name, String countryName) {
 		CityBuilder builder = new CityBuilder();
 		builder.setCityName(name);
@@ -139,7 +139,7 @@ public class CityServiceImpl implements CityService {
 		countryNameValidator.setNext(cityPresenceValidator);
 		return nameValidator;
 	}
-	
+
 	private int getIntFromString(String value) throws ServiceException {
 		try {
 			return Integer.parseInt(value);

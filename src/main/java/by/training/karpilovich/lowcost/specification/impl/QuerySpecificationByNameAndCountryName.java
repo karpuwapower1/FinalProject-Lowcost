@@ -1,10 +1,11 @@
 package by.training.karpilovich.lowcost.specification.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.specification.Specification;
+import by.training.karpilovich.lowcost.util.CityByCountryAndNameComparator;
 
 public class QuerySpecificationByNameAndCountryName implements Specification {
 
@@ -23,8 +24,8 @@ public class QuerySpecificationByNameAndCountryName implements Specification {
 
 
 	@Override
-	public List<City> specify(List<City> cities) {
-		List<City> choosen = new ArrayList<>();
+	public SortedSet<City> specify(SortedSet<City> cities) {
+		SortedSet<City> choosen = new TreeSet<>(new CityByCountryAndNameComparator());
 		for (City city : cities) {
 			if (city.getName().equals(name) && city.getCountry().equals(countryName)) {
 				choosen.add(city);
@@ -32,5 +33,4 @@ public class QuerySpecificationByNameAndCountryName implements Specification {
 		}
 		return choosen;
 	}
-
 }

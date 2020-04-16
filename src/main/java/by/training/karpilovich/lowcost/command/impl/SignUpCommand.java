@@ -9,8 +9,9 @@ import javax.servlet.http.HttpSession;
 
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
-import by.training.karpilovich.lowcost.command.JspParameter;
+import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.command.Page;
+import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.service.UserService;
@@ -35,11 +36,11 @@ public class SignUpCommand implements Command {
 	}
 
 	private User signupUser(HttpServletRequest request) throws ServiceException {
-		String email = request.getParameter(JspParameter.EMAIL.toString());
-		String password = request.getParameter(JspParameter.PASSWORD.toString());
-		String repeatedPassword = request.getParameter(JspParameter.REPEAT_PASSWORD.toString());
-		String firstName = request.getParameter(JspParameter.FIRST_NAME.toString());
-		String lastName = request.getParameter(JspParameter.LAST_NAME.toString());
+		String email = request.getParameter(JSPParameter.EMAIL);
+		String password = request.getParameter(JSPParameter.PASSWORD);
+		String repeatedPassword = request.getParameter(JSPParameter.REPEAT_PASSWORD);
+		String firstName = request.getParameter(JSPParameter.FIRST_NAME);
+		String lastName = request.getParameter(JSPParameter.LAST_NAME);
 		UserService userService = getUserService();
 		return userService.signUp(email, password, repeatedPassword, firstName, lastName);
 	}

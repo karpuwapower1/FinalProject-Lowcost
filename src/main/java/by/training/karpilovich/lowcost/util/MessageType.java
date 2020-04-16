@@ -29,7 +29,15 @@ public enum MessageType {
 	CITY_ALREADY_PRESENTS("message.error.city_already_presents"),
 	CITY_CAN_NOT_BE_DELETED("message.error.city_can_not_be_deleted"),
 	
-	INVALID_NUMBER_FORMAT("message.error.invalid_number_format");
+	INVALID_NUMBER_FORMAT("message.error.invalid_number_format"),
+	
+	INVALID_FLIGHT_NUMBER("message.error.invalid_flight_number"),
+	FLIGHT_NUMBER_AND_DATE_PRESENT_ALREADY("message.error.flight_with_number_and_date_present"),
+	NULL_FLIGHT("message.error.null_flight"),
+	
+	INVALID_COEFFICINET_VALUE("message.error.invalid_coefficient_value"),
+	INVALID_COEFFICINET_BOUND_FROM("message.error.invalid_coefficient_bound_from"),
+	INVALID_COEFFICINET_BOUND_TO("message.error.invalid_coefficient_bound_to");
 	
 	private String type;
 	

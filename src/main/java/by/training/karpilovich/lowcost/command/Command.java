@@ -8,12 +8,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import by.training.karpilovich.lowcost.command.impl.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.command.impl.ShowAllCitiesCommand;
+import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.factory.ServiceFactory;
 
 import by.training.karpilovich.lowcost.service.CityService;
+import by.training.karpilovich.lowcost.service.FlightCreatorService;
 import by.training.karpilovich.lowcost.service.FlightService;
+import by.training.karpilovich.lowcost.service.PlaneService;
 import by.training.karpilovich.lowcost.service.UserService;
 import by.training.karpilovich.lowcost.util.LocaleMessageManager;
 
@@ -56,6 +58,18 @@ public interface Command {
 	default CityService getCityService() {
 		return ServiceFactory.getInstance().getCityService();
 	}
+	
+	default PlaneService getPlaneService() {
+		return ServiceFactory.getInstance().getPlaneService();
+	}
+	
+	default FlightCreatorService getFlightCreatorService() {
+		return ServiceFactory.getInstance().getFlightCreatorService();
+	}
+	
+//	default CoefficientService getCoefficientService() {
+//		return ServiceFactory.getInstance().getCoefficientService();
+//	}
 
 	String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
 }

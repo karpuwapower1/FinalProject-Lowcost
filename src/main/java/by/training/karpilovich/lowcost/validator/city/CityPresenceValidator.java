@@ -1,6 +1,6 @@
 package by.training.karpilovich.lowcost.validator.city;
 
-import java.util.List;
+import java.util.Set;
 
 import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.exception.RepositoryException;
@@ -24,14 +24,14 @@ public class CityPresenceValidator extends Validator {
 
 	@Override
 	public void validate() throws ValidatorException {
-		List<City> cities = takeCitiesFromRepository();
+		Set<City> cities = takeCitiesFromRepository();
 		if (cities.size() != 0) {
 			throw new ValidatorException(MessageType.CITY_ALREADY_PRESENTS.getMessage());
 		}
 		continueValidate();
 	}
 
-	private List<City> takeCitiesFromRepository() throws ValidatorException {
+	private Set<City> takeCitiesFromRepository() throws ValidatorException {
 		RepositoryFactory factory = RepositoryFactory.getInstance();
 		CityRepository repository = factory.getCityRepository();
 		SpecificationFactory specificationFactory = SpecificationFactory.getInstance();

@@ -13,9 +13,10 @@ import org.apache.logging.log4j.Logger;
 
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.CookieName;
-import by.training.karpilovich.lowcost.command.JspParameter;
+import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.command.LocaleType;
 import by.training.karpilovich.lowcost.command.Page;
+import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
 
 public class ChangeLanguageCommand implements Command {
 	
@@ -24,13 +25,13 @@ public class ChangeLanguageCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String language = request.getParameter(JspParameter.LANGUAGE.toString());
+		String language = request.getParameter(JSPParameter.LANGUAGE);
 		LOGGER.debug(language);
 		LocaleType localeType = LocaleType.valueOf(language);
 		setCookie(response, localeType);
 		response.setLocale(new Locale(localeType.getLanguage(), localeType.getCountry()));
 		LOGGER.debug(response.getLocale().getLanguage() + " " + response.getLocale().getCountry());
-		Page page = Page.valueOf(request.getParameter(JspParameter.FROM_PAGE.toString()));
+		Page page = Page.valueOf(request.getParameter(JSPParameter.FROM_PAGE));
 		return page == Page.DEFAULT ? new RedirectToDefaultPageCommand().execute(request, response) : page.getAddress();
 	}
 

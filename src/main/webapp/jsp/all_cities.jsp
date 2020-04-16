@@ -1,13 +1,10 @@
+<!DOCTYPE html>
 <%@ page contentType="text/html; charset=UTF-8" language="java"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
-<%@ page import="by.training.karpilovich.lowcost.command.JspParameter"%>
-<%@ page import="by.training.karpilovich.lowcost.command.CommandType"%>
-<%@ page import="by.training.karpilovich.lowcost.command.Page"%>
-
-<html>
+<html lang='en'>
 <head>
 <meta charset="utf-8">
 <meta name="viewport"
@@ -16,10 +13,13 @@
 <link rel="stylesheet" href="${style}/css/bootstrap.min.css" />
 <link rel="stylesheet" href="${style}/css/main_page.css" />
 <fmt:setLocale value="${pageContext.response.locale}" scope="session" />
+<fmt:bundle basename="pagecontent" prefix="title.">
+<title><fmt:message key="all_cities" /></title>
+</fmt:bundle>
 </head>
 
 <header>
-	<c:set var="page" value="<%=Page.ALL_CITIES%>" scope="request" />
+	<c:set var="page" value="ALL_CITIES" scope="request" />
 	<c:import url="/general/header.jsp" />
 </header>
 
@@ -40,20 +40,17 @@
 						<td><c:out value="${city.country}" /></td>
 						<td>
 							<form name="action" method="post">
-								<input type="hidden" name="<%=JspParameter.CITY_NAME%>"
-									value="${city.name}"> <input type="hidden"
-									name="<%=JspParameter.COUNTRY_NAME%>" value="${city.country}">
-								<input type="hidden" name="<%=JspParameter.CITY_ID%>"
+								<input type="hidden" name="city_id"
 									value="${city.id}">
-								<input type="hidden" name="<%=JspParameter.TO_PAGE%>"
-									value="<%=Page.UPDATE_CITY%>">
+								<input type="hidden" name="to_page"
+									value="UPDATE_CITY">
 								<button class="btn btn-primary" type="submit"
-									name="<%=JspParameter.COMMAND%>" value="<%=CommandType.REDIRECT_TO_UPDATE_CITY_PAGE%>">
+									name="command" value="REDIRECT_TO_UPDATE_CITY_PAGE">
 									<fmt:message key="update_button" />
 								</button>
 								<button class="btn btn-primary" type="submit"
-									name="<%=JspParameter.COMMAND%>"
-									value="<%=CommandType.DELETE_CITY%>">
+									name="command"
+									value="DELETE_CITY">
 									<fmt:message key="delete_button" />
 								</button>
 							</form>

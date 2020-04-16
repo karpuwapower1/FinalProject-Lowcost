@@ -1,7 +1,8 @@
 package by.training.karpilovich.lowcost.repository.impl;
 
 import java.util.Iterator;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -16,6 +17,7 @@ import by.training.karpilovich.lowcost.exception.RepositoryException;
 import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.repository.CityRepository;
 import by.training.karpilovich.lowcost.specification.Specification;
+import by.training.karpilovich.lowcost.util.CityByCountryAndNameComparator;
 import by.training.karpilovich.lowcost.util.MessageType;
 
 public class CityRepositoryImpl implements CityRepository {
@@ -25,10 +27,9 @@ public class CityRepositoryImpl implements CityRepository {
 
 	private static final Logger LOGGER = LogManager.getLogger(CityRepositoryImpl.class);
 
-	private List<City> cities;
+	private SortedSet<City> cities = new ConcurrentSkipListSet<>(new CityByCountryAndNameComparator());
 
 	private CityRepositoryImpl() {
-		
 	}
 
 	private static final class CityRepositoryInstanceHolder {
@@ -40,7 +41,7 @@ public class CityRepositoryImpl implements CityRepository {
 			DAOFactory factory = DAOFactory.getInstance();
 			CityDAO cityDAO = factory.getCityDAO();
 			try {
-				cities = cityDAO.getAllCities();
+				cities.addAll(cityDAO.getAllCities());
 				isRepositoryInitialized.set(true);
 			} catch (DAOException e) {
 				LOGGER.fatal("Exception while initializing a repository " + e);
@@ -78,7 +79,7 @@ public class CityRepositoryImpl implements CityRepository {
 	}
 
 	@Override
-	public List<City> getCities(Specification specification) throws RepositoryException {
+	public SortedSet<City> getCities(Specification specification) throws RepositoryException {
 		checkRepositoryBeenInitialized();
 		return specification.specify(cities);
 	}

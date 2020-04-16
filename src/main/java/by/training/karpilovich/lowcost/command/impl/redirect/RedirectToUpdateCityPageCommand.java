@@ -1,4 +1,4 @@
-package by.training.karpilovich.lowcost.command.impl;
+package by.training.karpilovich.lowcost.command.impl.redirect;
 
 import java.io.IOException;
 
@@ -12,11 +12,10 @@ import org.apache.logging.log4j.Logger;
 
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
-import by.training.karpilovich.lowcost.command.JspParameter;
+import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.exception.ServiceException;
-import by.training.karpilovich.lowcost.service.CityService;
 
 public class RedirectToUpdateCityPageCommand implements Command {
 	
@@ -25,12 +24,11 @@ public class RedirectToUpdateCityPageCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		CityService service = getCityService();
 		HttpSession session = request.getSession();
-		String id = request.getParameter(JspParameter.CITY_ID.toString());
+		String id = request.getParameter(JSPParameter.CITY_ID);
 		Page page;
 		try {
-			City city = service.getCityById(id);
+			City city = getCityService().getCityById(id);
 			session.setAttribute(Attribute.CITY.toString(), city);
 			page = Page.UPDATE_CITY;
 		} catch (ServiceException e) {

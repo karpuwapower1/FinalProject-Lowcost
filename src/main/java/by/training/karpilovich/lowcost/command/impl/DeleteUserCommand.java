@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.Page;
+import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.entity.Role;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ServiceException;

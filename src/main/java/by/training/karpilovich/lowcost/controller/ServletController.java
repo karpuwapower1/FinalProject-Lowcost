@@ -12,7 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.karpilovich.lowcost.command.Command;
-import by.training.karpilovich.lowcost.command.JspParameter;
+import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.connection.ConnectionPool;
 import by.training.karpilovich.lowcost.exception.ConnectionPoolException;
 import by.training.karpilovich.lowcost.exception.RepositoryException;
@@ -20,7 +20,7 @@ import by.training.karpilovich.lowcost.factory.CommandFactory;
 import by.training.karpilovich.lowcost.repository.CityRepository;
 import by.training.karpilovich.lowcost.repository.impl.CityRepositoryImpl;
 
-@WebServlet( "" )
+@WebServlet("")
 public class ServletController extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -40,12 +40,6 @@ public class ServletController extends HttpServlet {
 	}
 
 	@Override
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		handleRequest(request, response);
-	}
-
-	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		handleRequest(request, response);
@@ -57,15 +51,9 @@ public class ServletController extends HttpServlet {
 		handleRequest(request, response);
 	}
 
-	@Override
-	protected void doPut(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		handleRequest(request, response);
-	}
-
 	private void handleRequest(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String commandParameterValue = request.getParameter(JspParameter.COMMAND.toString());
+		String commandParameterValue = request.getParameter(JSPParameter.COMMAND);
 		CommandFactory factory = CommandFactory.getInstance();
 		Command command = factory.getCommad(commandParameterValue);
 		String page = command.execute(request, response);
@@ -81,7 +69,5 @@ public class ServletController extends HttpServlet {
 			throw new RuntimeException();
 		}
 		super.destroy();
-		LOGGER.debug("Servlet is destroied");
 	}
-
 }
