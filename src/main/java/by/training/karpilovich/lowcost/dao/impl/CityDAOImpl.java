@@ -5,8 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,8 +36,8 @@ public class CityDAOImpl implements CityDAO {
 
 	private static final int DELETE_QUERY_ID_INDEX = 1;
 
-	private static final String SELECT_ALL_CITIES_QUERY = "" + " SELECT id, name, country_name " + " FROM city ORDER "
-			+ " BY country_name, name";
+	private static final String SELECT_ALL_CITIES_QUERY = " SELECT id, name, country_name " + " FROM city "
+			+ " ORDER BY country_name, name";
 
 	private static final int RESULT_SELECT_ALL_CITIES_QUERY_ID_INDEX = 1;
 	private static final int RESULT_SELECT_ALL_CITIES_QUERY_NAME_INDEX = 2;
@@ -65,14 +65,16 @@ public class CityDAOImpl implements CityDAO {
 	public void addCity(City city) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
-				PreparedStatement addStatement = prepareAddStatement(connection, city);
+				PreparedStatement addStatement = connection.prepareStatement(ADD_QUERY);
 				PreparedStatement selectIdStatement = connection.prepareStatement(SELECT_LAST_INSERTED_INDEX);) {
+			prepareAddStatement(addStatement, city);
 			addStatement.executeUpdate();
-			ResultSet resultSet = selectIdStatement.executeQuery();
-			if (!resultSet.next()) {
-				throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+			try (ResultSet resultSet = selectIdStatement.executeQuery()) {
+				if (!resultSet.next()) {
+					throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+				}
+				city.setId(resultSet.getInt(RESULT_SELECT_LAST_INSERTED_INDEX));
 			}
-			city.setId(resultSet.getInt(RESULT_SELECT_LAST_INSERTED_INDEX));
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("Error while adding a city " + city, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
@@ -83,7 +85,8 @@ public class CityDAOImpl implements CityDAO {
 	public void updateCity(City city) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = prepareUpdateStatement(connection, city);) {
+				PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);) {
+			prepareUpdateStatement(statement, city); 
 			statement.executeUpdate();
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("Error while updating a city " + city, e);
@@ -95,8 +98,10 @@ public class CityDAOImpl implements CityDAO {
 	public void deleteCity(City city) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = prepareDeleteStatement(connection, city.getId());) {
+				PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);) {
+			prepareDeleteStatement(statement, city.getId());
 			statement.executeUpdate();
+			
 		} catch (SQLIntegrityConstraintViolationException e) {
 			throw new DAOException(MessageType.CITY_CAN_NOT_BE_DELETED.getMessage(), e);
 		} catch (SQLException | ConnectionPoolException e) {
@@ -106,12 +111,12 @@ public class CityDAOImpl implements CityDAO {
 	}
 
 	@Override
-	public List<City> getAllCities() throws DAOException {
+	public Set<City> getAllCities() throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(SELECT_ALL_CITIES_QUERY);
 				ResultSet resultSet = statement.executeQuery()) {
-			List<City> cities = new ArrayList<>();
+			Set<City> cities = new HashSet<>();
 			while (resultSet.next()) {
 				cities.add(buildCity(resultSet));
 			}
@@ -120,28 +125,21 @@ public class CityDAOImpl implements CityDAO {
 			LOGGER.error("Error while getting all cities");
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
 		}
-
 	}
 
-	private PreparedStatement prepareAddStatement(Connection connection, City city) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(ADD_QUERY);
+	private void prepareAddStatement(PreparedStatement statement, City city) throws SQLException {
 		statement.setString(ADD_QUERY_NAME_INDEX, city.getName());
 		statement.setString(ADD_QUERY_COUNTRY_NAME_INDEX, city.getCountry());
-		return statement;
 	}
 
-	private PreparedStatement prepareUpdateStatement(Connection connection, City city) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);
+	private void prepareUpdateStatement(PreparedStatement statement, City city) throws SQLException {
 		statement.setString(UPDATE_QUERY_NAME_INDEX, city.getName());
 		statement.setString(UPDATE_QUERY_COUNTRY_NAME_INDEX, city.getCountry());
 		statement.setInt(UPDATE_QUERY_COUNTRY_ID_INDEX, city.getId());
-		return statement;
 	}
 
-	private PreparedStatement prepareDeleteStatement(Connection connection, int id) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);
+	private void prepareDeleteStatement(PreparedStatement statement, int id) throws SQLException {
 		statement.setInt(DELETE_QUERY_ID_INDEX, id);
-		return statement;
 	}
 
 	private City buildCity(ResultSet resultSet) throws SQLException {

@@ -1,6 +1,6 @@
 package by.training.karpilovich.lowcost.repository;
 
-import java.util.List;
+import java.util.SortedSet;
 
 import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.exception.RepositoryException;
@@ -16,7 +16,7 @@ public interface CityRepository {
 	
 	void update(City city) throws RepositoryException;
 	
-	List<City> getCities(Specification specification) throws RepositoryException;
+	SortedSet<City> getCities(Specification specification) throws RepositoryException;
 	
 	
 

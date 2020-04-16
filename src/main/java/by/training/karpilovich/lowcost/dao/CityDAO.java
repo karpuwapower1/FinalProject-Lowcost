@@ -1,6 +1,6 @@
 package by.training.karpilovich.lowcost.dao;
 
-import java.util.List;
+import java.util.Set;
 
 import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.exception.DAOException;
@@ -13,6 +13,6 @@ public interface CityDAO {
 	
 	void deleteCity(City id) throws DAOException;
 	
-	List<City> getAllCities() throws DAOException;
+	Set<City> getAllCities() throws DAOException;
 
 }

@@ -1,6 +1,6 @@
 package by.training.karpilovich.lowcost.service;
 
-import java.util.List;
+import java.util.SortedSet;
 
 import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.exception.ServiceException;
@@ -13,9 +13,9 @@ public interface CityService {
 	
 	void deleteCity(String id) throws ServiceException;
 	
-	List<City> getAllCities() throws ServiceException;
+	SortedSet<City> getAllCities() throws ServiceException;
 	
-	List<City> getCities(String name, String countryName) throws ServiceException;
+	SortedSet<City> getCities(String name, String countryName) throws ServiceException;
 	
 	City getCityById(int id) throws ServiceException;
 	

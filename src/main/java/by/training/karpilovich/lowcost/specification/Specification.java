@@ -1,11 +1,11 @@
 package by.training.karpilovich.lowcost.specification;
 
-import java.util.List;
+import java.util.SortedSet;
 
 import by.training.karpilovich.lowcost.entity.City;
 
 public interface Specification {
 
-	List<City> specify(List<City> cities);
-	
+	SortedSet<City> specify(SortedSet<City> cities);
+
 }

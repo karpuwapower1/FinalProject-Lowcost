@@ -63,7 +63,8 @@ public class PlaneDAOImpl implements PlaneDAO {
 	public void addPlane(Plane plane) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = prepareAddStatement(connection, plane)) {
+				PreparedStatement statement = connection.prepareStatement(ADD_PLANE_QUERY);) {
+			prepareAddStatement(statement, plane);
 			statement.executeUpdate();
 		} catch (ConnectionPoolException | SQLException e) {
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
@@ -74,7 +75,8 @@ public class PlaneDAOImpl implements PlaneDAO {
 	public void updatePlane(Plane plane, Plane update) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = prepareUpdateStatement(connection, plane, update)) {
+				PreparedStatement statement = connection.prepareStatement(UPDATE_PLANE_QUERY);) {
+			prepareUpdateStatement(statement, plane, update);
 			statement.executeUpdate();
 		} catch (ConnectionPoolException | SQLException e) {
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
@@ -85,7 +87,8 @@ public class PlaneDAOImpl implements PlaneDAO {
 	public void deletePlane(Plane plane) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = prepareDeleteStatement(connection, plane)) {
+				PreparedStatement statement = connection.prepareStatement(DELETE_PLANE_QUERY);) {
+			prepareDeleteStatement(statement, plane);
 			statement.executeUpdate();
 		} catch (ConnectionPoolException | SQLException e) {
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
@@ -96,7 +99,7 @@ public class PlaneDAOImpl implements PlaneDAO {
 	public List<Plane> getAllPlanes() throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = prepareSelectAllPlaneStatement(connection);
+				PreparedStatement statement = connection.prepareStatement(SELECT_ALL_PLANES_QUERY);
 				ResultSet resultSet = statement.executeQuery();) {
 			List<Plane> planes = new ArrayList<>();
 			while (resultSet.next()) {
@@ -112,51 +115,37 @@ public class PlaneDAOImpl implements PlaneDAO {
 	public Optional<Plane> getPlaneByModelName(String model) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = prepareSelectPlaneByModelStatement(connection, model);
-				ResultSet resultSet = statement.executeQuery();) {
-			Optional<Plane> plane = Optional.empty();
-			if (resultSet.next()) {
-				plane = Optional.of(buildPlaneFromSelectPlanByModelResultSet(resultSet));
+				PreparedStatement statement = connection.prepareStatement(SELECT_PLANE_BY_MODEL_QUERY);) {
+			prepareSelectPlaneByModelStatement(statement, model);
+			try (ResultSet resultSet = statement.executeQuery();) {
+				Optional<Plane> plane = Optional.empty();
+				if (resultSet.next()) {
+					plane = Optional.of(buildPlaneFromSelectPlanByModelResultSet(resultSet));
+				}
+				return plane;
 			}
-			return plane;
 		} catch (ConnectionPoolException | SQLException e) {
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
 		}
 	}
 
-	private PreparedStatement prepareAddStatement(Connection connection, Plane plane) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(ADD_PLANE_QUERY);
+	private void prepareAddStatement(PreparedStatement statement, Plane plane) throws SQLException {
 		statement.setString(ADD_QUERY_MODEL_INDEX, plane.getModel());
 		statement.setInt(ADD_QUERY_PLACE_QUANTITY_INDEX, plane.getPlaceQuantity());
-		return statement;
 	}
 
-	private PreparedStatement prepareUpdateStatement(Connection connection, Plane plane, Plane update)
-			throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(UPDATE_PLANE_QUERY);
+	private void prepareUpdateStatement(PreparedStatement statement, Plane plane, Plane update) throws SQLException {
 		statement.setString(UPDATE_QUERY_NEW_MODEL_INDEX, update.getModel());
 		statement.setInt(UPDATE_QUERY_NEW_PLACE_QUANTITY_INDEX, update.getPlaceQuantity());
 		statement.setString(UPDATE_QUERY_OLD_MODEL_INDEX, plane.getModel());
-		return statement;
 	}
 
-	private PreparedStatement prepareDeleteStatement(Connection connection, Plane plane) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(DELETE_PLANE_QUERY);
+	private void prepareDeleteStatement(PreparedStatement statement, Plane plane) throws SQLException {
 		statement.setString(DELETE_QUERY_MODEL_INDEX, plane.getModel());
-		;
-		return statement;
 	}
 
-	private PreparedStatement prepareSelectAllPlaneStatement(Connection connection) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(SELECT_ALL_PLANES_QUERY);
-		return statement;
-	}
-
-	private PreparedStatement prepareSelectPlaneByModelStatement(Connection connection, String model)
-			throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(SELECT_PLANE_BY_MODEL_QUERY);
+	private void prepareSelectPlaneByModelStatement(PreparedStatement statement, String model) throws SQLException {
 		statement.setString(SELECT_PLANE_BY_MODEL_QUERY_MODEL_INDEX, model);
-		return statement;
 	}
 
 	private Plane buildPlaneFromSelectAllPlanesResultSet(ResultSet resultSet) throws SQLException {
@@ -177,5 +166,4 @@ public class PlaneDAOImpl implements PlaneDAO {
 		builder.setPlanePlaceQuantity(placeQuantity);
 		return builder.getPlane();
 	}
-
 }

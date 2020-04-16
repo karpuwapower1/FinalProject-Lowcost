@@ -122,5 +122,4 @@ public class PlaneServiceImpl implements PlaneService {
 		DAOFactory factory = DAOFactory.getInstance();
 		return factory.getPlaneDAO();
 	}
-
 }

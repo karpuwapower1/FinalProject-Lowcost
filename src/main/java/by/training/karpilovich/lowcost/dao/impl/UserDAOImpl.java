@@ -76,7 +76,8 @@ public class UserDAOImpl implements UserDAO {
 	public int add(User user) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = prepareAddStatement(connection, user);) {
+				PreparedStatement statement = connection.prepareStatement(ADD_QUERY);) {
+			prepareAddStatement(statement, user);
 			return statement.executeUpdate();
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while adding a user" + user.toString(), e);
@@ -88,7 +89,8 @@ public class UserDAOImpl implements UserDAO {
 	public int update(User user) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = prepareUpdateStatement(connection, user);) {
+				PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);) {
+			prepareUpdateStatement(statement, user);
 			return statement.executeUpdate();
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while updateng a user" + user.toString(), e);
@@ -100,7 +102,8 @@ public class UserDAOImpl implements UserDAO {
 	public int delete(User user) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = prepareDeleteStatement(connection, user);) {
+				PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);) {
+			prepareDeleteStatement(statement, user);
 			return statement.executeUpdate();
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while deleting a user" + user.toString(), e);
@@ -112,13 +115,15 @@ public class UserDAOImpl implements UserDAO {
 	public Optional<User> selectUserByEmaiAndPassword(String email, String password) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = prepageSelectByEmailAndPasswordStatement(connection, email, password);
-				ResultSet resultSet = statement.executeQuery()) {
-			Optional<User> optional = Optional.empty();
-			if (resultSet.next()) {
-				optional = Optional.of(buildUser(resultSet));
+				PreparedStatement statement = connection.prepareStatement(SELECT_BY_EMAIL_AND_PASSWORD_QUERY);) {
+			prepareSelectByEmailAndPasswordStatement(statement, email, password);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				Optional<User> optional = Optional.empty();
+				if (resultSet.next()) {
+					optional = Optional.of(buildUser(resultSet));
+				}
+				return optional;
 			}
-			return optional;
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while select user by email and password email=" + email + " password=" + password, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
@@ -129,57 +134,48 @@ public class UserDAOImpl implements UserDAO {
 	public int countUserWithEmail(String email) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = prepareCountEmailStatementStatement(connection, email);
-				ResultSet resultSet = statement.executeQuery()) {
-			int result = 0;
-			if (resultSet.next()) {
-				result = resultSet.getInt(COUNT_EMAIL_QUERY_RESULT_INDEX);
+				PreparedStatement statement = connection.prepareStatement(COUNT_EMAIL_QUERY);) {
+			prepareCountEmailStatementStatement(statement, email);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				int result = 0;
+				if (resultSet.next()) {
+					result = resultSet.getInt(COUNT_EMAIL_QUERY_RESULT_INDEX);
+				}
+				return result;
 			}
-			return result;
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while counting email=" + email, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
 		}
 	}
 
-	private PreparedStatement prepareAddStatement(Connection connection, User user) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(ADD_QUERY);
+	private void prepareAddStatement(PreparedStatement statement, User user) throws SQLException {
 		statement.setString(EMAIL_ADD_QUERY_INDEX, user.getEmail());
 		statement.setString(PASSWORD_ADD_QUERY_INDEX, user.getPassword());
 		statement.setString(FIRST_NAME_ADD_QUERY_INDEX, user.getFirstName());
 		statement.setString(LAST_NAME_ADD_QUERY_INDEX, user.getLastName());
-		return statement;
 	}
 
-	private PreparedStatement prepareDeleteStatement(Connection connection, User user) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);
+	private void prepareDeleteStatement(PreparedStatement statement, User user) throws SQLException {
 		statement.setString(EMAIL_DELETE_QUERY_INDEX, user.getEmail());
-		return statement;
 	}
 
-	private PreparedStatement prepareUpdateStatement(Connection connection, User user) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);
+	private void prepareUpdateStatement(PreparedStatement statement, User user) throws SQLException {
 		statement.setString(UPDATE_QUERY_PASSWORD_INDEX, user.getPassword());
 		statement.setString(UPDATE_QUERY_FIRST_NAME_INDEX, user.getFirstName());
 		statement.setString(UPDATE_QUERY_LAST_NAME_INDEX, user.getLastName());
 		statement.setInt(UPDATE_QUERY_ROLE_INDEX, user.getRole().getId());
 		statement.setString(UPDATE_QUERY_CONDITION_EMAIL_INDEX, user.getEmail());
-		return statement;
 	}
 
-	private PreparedStatement prepageSelectByEmailAndPasswordStatement(Connection connection, String email,
-			String password) throws SQLException {
-		PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BY_EMAIL_AND_PASSWORD_QUERY);
-		preparedStatement.setString(EMAIL_SELECT_BY_EMAIL_AND_PASSWORD_QUERY_INDEX, email);
-		preparedStatement.setString(PASSWORD_SELECT_BY_EMAIL_AND_PASSWORD_QUERY_INDEX, password);
-		return preparedStatement;
-	}
-
-	private PreparedStatement prepareCountEmailStatementStatement(Connection connection, String email)
+	private void prepareSelectByEmailAndPasswordStatement(PreparedStatement statement, String email, String password)
 			throws SQLException {
-		PreparedStatement preparedStatement = connection.prepareStatement(COUNT_EMAIL_QUERY);
-		preparedStatement.setString(COUNT_EMAIL_QUERY_EMAIL_INDEX, email);
-		return preparedStatement;
+		statement.setString(EMAIL_SELECT_BY_EMAIL_AND_PASSWORD_QUERY_INDEX, email);
+		statement.setString(PASSWORD_SELECT_BY_EMAIL_AND_PASSWORD_QUERY_INDEX, password);
+	}
+
+	private void prepareCountEmailStatementStatement(PreparedStatement statement, String email) throws SQLException {
+		statement.setString(COUNT_EMAIL_QUERY_EMAIL_INDEX, email);
 	}
 
 	private User buildUser(ResultSet resultSet) throws SQLException {

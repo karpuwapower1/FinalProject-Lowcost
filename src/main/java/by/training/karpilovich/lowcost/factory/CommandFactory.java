@@ -6,17 +6,25 @@ import org.apache.logging.log4j.Logger;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.CommandType;
 import by.training.karpilovich.lowcost.command.impl.AddCityCommand;
+import by.training.karpilovich.lowcost.command.impl.AddDateCoefficientCommand;
+import by.training.karpilovich.lowcost.command.impl.AddFlightCommand;
+import by.training.karpilovich.lowcost.command.impl.AddPlaceCoefficientCommand;
 import by.training.karpilovich.lowcost.command.impl.ChangeLanguageCommand;
+import by.training.karpilovich.lowcost.command.impl.CreateFlightCommand;
 import by.training.karpilovich.lowcost.command.impl.DeleteCityCommand;
-import by.training.karpilovich.lowcost.command.impl.RedirectCommand;
-import by.training.karpilovich.lowcost.command.impl.RedirectToDefaultPageCommand;
-import by.training.karpilovich.lowcost.command.impl.RedirectToUpdateCityPageCommand;
 import by.training.karpilovich.lowcost.command.impl.SearchFlightCommand;
 import by.training.karpilovich.lowcost.command.impl.ShowAllCitiesCommand;
+import by.training.karpilovich.lowcost.command.impl.ShowAllFlightsCommand;
 import by.training.karpilovich.lowcost.command.impl.SignInCommand;
 import by.training.karpilovich.lowcost.command.impl.SignOutCommand;
 import by.training.karpilovich.lowcost.command.impl.SignUpCommand;
 import by.training.karpilovich.lowcost.command.impl.UpdateCityCommand;
+import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToPageCommand;
+import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToAddDateCoefficientPageCommand;
+import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToAddPlaceCoefficientPageCommand;
+import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToCreateFlightPageCommand;
+import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
+import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToUpdateCityPageCommand;
 
 public class CommandFactory {
 
@@ -67,11 +75,35 @@ public class CommandFactory {
 			case REDIRECT_TO_UPDATE_CITY_PAGE:
 				command = new RedirectToUpdateCityPageCommand();
 				break;
+			case REDIRECT_TO_CREATE_FLIGTH_PAGE:
+				command = new RedirectToCreateFlightPageCommand();
+				break;
+			case CREATE_FLIGHT:
+				command = new CreateFlightCommand();
+				break;
+			case REDIRECT_TO_ADD_DATE_COEFFICIENT_PAGE:
+				command = new RedirectToAddDateCoefficientPageCommand();
+				break;
+			case ADD_DATE_COEFFICIENT:
+				command = new AddDateCoefficientCommand();
+				break;
+			case REDIRECT_TO_ADD_PLACE_COEFFICIENT_PAGE:
+				command = new RedirectToAddPlaceCoefficientPageCommand();
+				break;
+			case ADD_PLACE_COEFFICIENT:
+				command = new AddPlaceCoefficientCommand();
+				break;
+			case ADD_FLIGHT:
+				command = new AddFlightCommand();
+				break;
 			case SEARCH_FLIGHT:
 				command = new SearchFlightCommand();
 				break;
+			case SHOW_ALL_FLIGHTS:
+				command = new ShowAllFlightsCommand();
+				break;
 			case REDIRECT:
-				command = new RedirectCommand();
+				command = new RedirectToPageCommand();
 				break;
 			case CHANGE_LANGUAGE:
 				command = new ChangeLanguageCommand();
@@ -84,5 +116,4 @@ public class CommandFactory {
 		}
 		return command;
 	}
-
 }
