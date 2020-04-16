@@ -1,5 +1,6 @@
 package by.training.karpilovich.lowcost.dao.impl;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,38 +21,49 @@ import by.training.karpilovich.lowcost.util.MessageType;
 
 public class UserDAOImpl implements UserDAO {
 
-	private static final String ADD_QUERY = "INSERT INTO airport_user(email, user_password, first_name, last_name) "
-			+ " VALUES (?,?,?,?)";
+	private static final String ADD_QUERY = "INSERT INTO airport_user(email, user_password, first_name, last_name, balance_amount) "
+			+ " VALUES (?,?,?,?,?)";
 
 	private static final int EMAIL_ADD_QUERY_INDEX = 1;
 	private static final int PASSWORD_ADD_QUERY_INDEX = 2;
 	private static final int FIRST_NAME_ADD_QUERY_INDEX = 3;
 	private static final int LAST_NAME_ADD_QUERY_INDEX = 4;
+	private static final int BALANCE_AMOUNT_ADD_QUERY_INDEX = 5;
 
 	private static final String DELETE_QUERY = "DELETE FROM airport_user WHERE email=?";
 
 	private static final int EMAIL_DELETE_QUERY_INDEX = 1;
 
 	private static final String UPDATE_QUERY = "UPDATE airport_user "
-			+ "set password=?, first_name=?, last_name=? role_id=? " + "WHERE email=?";
+			+ "SET password=?, first_name=?, last_name=? role_id=? balance_amount=?" + "WHERE email=?";
 
 	private static final int UPDATE_QUERY_PASSWORD_INDEX = 1;
 	private static final int UPDATE_QUERY_FIRST_NAME_INDEX = 2;
 	private static final int UPDATE_QUERY_LAST_NAME_INDEX = 3;
 	private static final int UPDATE_QUERY_ROLE_INDEX = 4;
-	private static final int UPDATE_QUERY_CONDITION_EMAIL_INDEX = 5;
+	private static final int UPDATE_QUERY_BALANCE_AMOUNT_INDEX = 5;
+	private static final int UPDATE_QUERY_CONDITION_EMAIL_INDEX = 6;
+	
+	private static final String UPDATE_BALANCE_QUERY = "UPDATE airport_user "
+			+ "SET balance_amount=?" + "WHERE email=?";
 
-	private static final String SELECT_BY_EMAIL_AND_PASSWORD_QUERY = "SELECT email, user_password, first_name, last_name, user_role.name "
-			+ " FROM airport_user JOIN user_role on airport_user.user_role_id=user_role.id WHERE email=? AND user_password=?";
+	private static final int UPDATE_BALANCE_QUERY_BALANCE_AMOUNT_INDEX = 1;
+	private static final int UPDATE_BALANCE_QUERY_CONDITION_EMAIL_INDEX = 2;
+
+	private static final String SELECT_BY_EMAIL_AND_PASSWORD_QUERY = "SELECT email, user_password, first_name, last_name, "
+			+ " user_role.name AS role_name, balance_amount "
+			+ " FROM airport_user "
+			+ " JOIN user_role on airport_user.user_role_id=user_role.id WHERE email=? AND user_password=?";
 
 	private static final int EMAIL_SELECT_BY_EMAIL_AND_PASSWORD_QUERY_INDEX = 1;
 	private static final int PASSWORD_SELECT_BY_EMAIL_AND_PASSWORD_QUERY_INDEX = 2;
 
-	private static final int SELECT_BY_EMAIL_AND_PASSWORD_RESULT_EMAIL_INDEX = 1;
-	private static final int SELECT_BY_EMAIL_AND_PASSWORD_RESULT_PASSWORD_INDEX = 2;
-	private static final int SELECT_BY_EMAIL_AND_PASSWORD_RESULT_FIRST_NAME_INDEX = 3;
-	private static final int SELECT_BY_EMAIL_AND_PASSWORD_RESULT_LAST_NAME_INDEX = 4;
-	private static final int SELECT_BY_EMAIL_AND_PASSWORD_RESULT_ROLE_INDEX = 5;
+	private static final String SELECT_BY_EMAIL_AND_PASSWORD_RESULT_EMAIL = "email";
+	private static final String SELECT_BY_EMAIL_AND_PASSWORD_RESULT_PASSWORD = "user_password";
+	private static final String SELECT_BY_EMAIL_AND_PASSWORD_RESULT_FIRST_NAME = "first_name";
+	private static final String SELECT_BY_EMAIL_AND_PASSWORD_RESULT_LAST_NAME = "last_name";
+	private static final String SELECT_BY_EMAIL_AND_PASSWORD_RESULT_ROLE = "role_name";
+	private static final String SELECT_BY_EMAIL_AND_PASSWORD_RESULT_BALANCE_AMOUNT = "balance_amount";
 
 	private static final String COUNT_EMAIL_QUERY = "SELECT count(email) FROM airport_user GROUP BY email HAVING email=?";
 
@@ -73,41 +85,41 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	@Override
-	public int add(User user) throws DAOException {
+	public void add(User user) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(ADD_QUERY);) {
 			prepareAddStatement(statement, user);
-			return statement.executeUpdate();
+			statement.executeUpdate();
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while adding a user" + user.toString(), e);
-			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
 
 	@Override
-	public int update(User user) throws DAOException {
+	public void update(User user) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);) {
 			prepareUpdateStatement(statement, user);
-			return statement.executeUpdate();
+			statement.executeUpdate();
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while updateng a user" + user.toString(), e);
-			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
 
 	@Override
-	public int delete(User user) throws DAOException {
+	public void delete(User user) throws DAOException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);) {
 			prepareDeleteStatement(statement, user);
-			return statement.executeUpdate();
+			statement.executeUpdate();
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while deleting a user" + user.toString(), e);
-			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
 
@@ -126,7 +138,7 @@ public class UserDAOImpl implements UserDAO {
 			}
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while select user by email and password email=" + email + " password=" + password, e);
-			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
 
@@ -145,8 +157,24 @@ public class UserDAOImpl implements UserDAO {
 			}
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while counting email=" + email, e);
-			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
+	}
+	
+	
+
+	@Override
+	public void updateUserBalance(User user, BigDecimal balance) throws DAOException {
+		ConnectionPool pool= ConnectionPool.getInstance();
+		try (Connection connection = pool.getConnection();
+				PreparedStatement statement = connection.prepareStatement(UPDATE_BALANCE_QUERY);) {
+			prepareUpdateBalanceQuery(statement, user, balance);
+			statement.executeUpdate();
+		} catch (ConnectionPoolException | SQLException e) {
+			LOGGER.error("Error while updating user's balance. User= " + user + " balance=" + balance, e);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
+		}
+		
 	}
 
 	private void prepareAddStatement(PreparedStatement statement, User user) throws SQLException {
@@ -154,6 +182,7 @@ public class UserDAOImpl implements UserDAO {
 		statement.setString(PASSWORD_ADD_QUERY_INDEX, user.getPassword());
 		statement.setString(FIRST_NAME_ADD_QUERY_INDEX, user.getFirstName());
 		statement.setString(LAST_NAME_ADD_QUERY_INDEX, user.getLastName());
+		statement.setBigDecimal(BALANCE_AMOUNT_ADD_QUERY_INDEX, user.getBalanceAmount());
 	}
 
 	private void prepareDeleteStatement(PreparedStatement statement, User user) throws SQLException {
@@ -166,6 +195,7 @@ public class UserDAOImpl implements UserDAO {
 		statement.setString(UPDATE_QUERY_LAST_NAME_INDEX, user.getLastName());
 		statement.setInt(UPDATE_QUERY_ROLE_INDEX, user.getRole().getId());
 		statement.setString(UPDATE_QUERY_CONDITION_EMAIL_INDEX, user.getEmail());
+		statement.setBigDecimal(UPDATE_QUERY_BALANCE_AMOUNT_INDEX, user.getBalanceAmount());
 	}
 
 	private void prepareSelectByEmailAndPasswordStatement(PreparedStatement statement, String email, String password)
@@ -177,15 +207,21 @@ public class UserDAOImpl implements UserDAO {
 	private void prepareCountEmailStatementStatement(PreparedStatement statement, String email) throws SQLException {
 		statement.setString(COUNT_EMAIL_QUERY_EMAIL_INDEX, email);
 	}
+	
+	private void prepareUpdateBalanceQuery(PreparedStatement statement, User user, BigDecimal amount) throws SQLException {
+		statement.setString(UPDATE_BALANCE_QUERY_CONDITION_EMAIL_INDEX, user.getEmail());
+		statement.setBigDecimal(UPDATE_BALANCE_QUERY_BALANCE_AMOUNT_INDEX, amount);
+	}
 
 	private User buildUser(ResultSet resultSet) throws SQLException {
 		UserBuilder builder = new UserBuilder();
 		builder.setUserRole(
-				Role.valueOf(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_ROLE_INDEX).toUpperCase()));
-		builder.setUserEmail(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_EMAIL_INDEX));
-		builder.setUserPassword(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_PASSWORD_INDEX));
-		builder.setUserFirstName(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_FIRST_NAME_INDEX));
-		builder.setUserLastName(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_LAST_NAME_INDEX));
+				Role.valueOf(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_ROLE).toUpperCase()));
+		builder.setUserEmail(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_EMAIL));
+		builder.setUserPassword(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_PASSWORD));
+		builder.setUserFirstName(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_FIRST_NAME));
+		builder.setUserLastName(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_LAST_NAME));
+		builder.setBalanceAmount(resultSet.getBigDecimal(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_BALANCE_AMOUNT));
 		return builder.getUser();
 	}
 }

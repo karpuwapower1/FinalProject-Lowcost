@@ -1,5 +1,6 @@
 package by.training.karpilovich.lowcost.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,8 +17,10 @@ import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.service.UserService;
 import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
+import by.training.karpilovich.lowcost.validator.user.AmountValidator;
 import by.training.karpilovich.lowcost.validator.user.EmailPresenceValidator;
 import by.training.karpilovich.lowcost.validator.user.EmailValidator;
+import by.training.karpilovich.lowcost.validator.user.FundsValidator;
 import by.training.karpilovich.lowcost.validator.user.NameValidator;
 import by.training.karpilovich.lowcost.validator.user.PasswordMatchValidator;
 import by.training.karpilovich.lowcost.validator.user.PasswordValidator;
@@ -61,7 +64,7 @@ public class UserServiceImpl implements UserService {
 		Validator validator = getUserValidator(email, password, repeatPassword, firstName);
 		try {
 			validator.validate();
-			User user = buildUser(email, password, firstName, lastName);
+			User user = buildUser(email, password, firstName, lastName, BigDecimal.ZERO);
 			userDAO.add(user);
 			return user;
 		} catch (ValidatorException | DAOException e) {
@@ -91,6 +94,41 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
+	public User deposit(User user, String amount) throws ServiceException {
+		if (user == null) {
+			throw new ServiceException(MessageType.USER_IS_NULL.getMessage());
+		}
+		BigDecimal additionalAmount = takeBigDecimalFromString(amount);
+		Validator validator = new AmountValidator(additionalAmount);
+		try {
+			validator.validate();
+			BigDecimal newBalance = user.getBalanceAmount().add(additionalAmount);
+			userDAO.updateUserBalance(user, newBalance);
+			user.setBalanceAmount(newBalance);
+			return user;
+		} catch (ValidatorException | DAOException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public User withdrow(User user, String amount) throws ServiceException {
+		BigDecimal substracted = takeBigDecimalFromString(amount);
+		Validator validator = new AmountValidator(substracted);
+		Validator fundsValidator = new FundsValidator(user.getBalanceAmount(), substracted);
+		validator.setNext(fundsValidator);
+		try {
+			validator.validate();
+			BigDecimal newBalance = user.getBalanceAmount().subtract(substracted);
+			userDAO.updateUserBalance(user, newBalance);
+			user.setBalanceAmount(newBalance);
+			return user;
+		} catch (ValidatorException | DAOException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+
 	private Validator getUserValidator(String email, String password, String repeatPassword, String firstName) {
 		Validator validator = new EmailValidator(email);
 		Validator emailPresenceValidator = new EmailPresenceValidator(email);
@@ -111,14 +149,22 @@ public class UserServiceImpl implements UserService {
 		return validator;
 	}
 
-	private User buildUser(String email, String password, String firstName, String lastName) {
+	private User buildUser(String email, String password, String firstName, String lastName, BigDecimal amount) {
 		UserBuilder builder = new UserBuilder();
 		builder.setUserEmail(email);
 		builder.setUserPassword(password);
 		builder.setUserFirstName(firstName);
 		builder.setUserLastName(lastName);
 		builder.setUserRole(Role.USER);
+		builder.setBalanceAmount(amount);
 		return builder.getUser();
 	}
 
+	private BigDecimal takeBigDecimalFromString(String value) throws ServiceException {
+		try {
+			return new BigDecimal(value);
+		} catch (NumberFormatException e) {
+			throw new ServiceException(MessageType.INVALID_NUMBER_FORMAT.getMessage());
+		}
+	}
 }

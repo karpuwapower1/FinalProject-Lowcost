@@ -1,5 +1,7 @@
 package by.training.karpilovich.lowcost.builder;
 
+import java.math.BigDecimal;
+
 import by.training.karpilovich.lowcost.entity.Role;
 import by.training.karpilovich.lowcost.entity.User;
 
@@ -30,9 +32,12 @@ public class UserBuilder {
 	public void setUserRole(Role role) {
 		user.setRole(role);
 	}
+	
+	public void setBalanceAmount(BigDecimal balanceAmount) {
+		user.setBalanceAmount(balanceAmount);
+	}
 
 	public User getUser() {
 		return user;
 	}
-
 }

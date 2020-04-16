@@ -1,6 +1,7 @@
 package by.training.karpilovich.lowcost.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class User implements Serializable {
 
@@ -11,16 +12,9 @@ public class User implements Serializable {
 	private String firstName;
 	private String lastName;
 	private Role role;
+	private BigDecimal balanceAmount;
 
 	public User() {
-	}
-
-	public User(String email, String password, String firstName, String lastName, Role role) {
-		this.email = email;
-		this.password = password;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.role = role;
 	}
 
 	public String getEmail() {
@@ -63,10 +57,19 @@ public class User implements Serializable {
 		this.role = role;
 	}
 
+	public BigDecimal getBalanceAmount() {
+		return balanceAmount;
+	}
+
+	public void setBalanceAmount(BigDecimal balanceAmount) {
+		this.balanceAmount = balanceAmount;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((balanceAmount == null) ? 0 : balanceAmount.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
@@ -79,9 +82,16 @@ public class User implements Serializable {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null || getClass() != obj.getClass())
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
+		if (balanceAmount == null) {
+			if (other.balanceAmount != null)
+				return false;
+		} else if (!balanceAmount.equals(other.balanceAmount))
+			return false;
 		if (email == null) {
 			if (other.email != null)
 				return false;
@@ -109,8 +119,7 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " [email=" + email + ", password=" + password
-				+ ", firstName=" + firstName + ", lastName=" + lastName + ", role=" + role.toString() + "]";
+		return getClass().getSimpleName() + " [email=" + email + ", password=" + password + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", role=" + role + ", balanceAmount=" + balanceAmount + "]";
 	}
-
 }

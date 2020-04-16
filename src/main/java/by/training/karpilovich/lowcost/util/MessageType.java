@@ -37,7 +37,10 @@ public enum MessageType {
 	
 	INVALID_COEFFICINET_VALUE("message.error.invalid_coefficient_value"),
 	INVALID_COEFFICINET_BOUND_FROM("message.error.invalid_coefficient_bound_from"),
-	INVALID_COEFFICINET_BOUND_TO("message.error.invalid_coefficient_bound_to");
+	INVALID_COEFFICINET_BOUND_TO("message.error.invalid_coefficient_bound_to"),
+	
+	INSUFFICIENT_FUNDS("message.error.insufficient_funds"),
+	INVALID_AMOUNT("message.error.invalid_amount");
 	
 	private String type;
 	
