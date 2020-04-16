@@ -1,16 +1,35 @@
-package by.training.karpilovich.lowcost.builder.coefficient;
+package by.training.karpilovich.lowcost.builder;
 
-import by.training.karpilovich.lowcost.entity.coefficient.DateCoefficient;
+import java.math.BigDecimal;
+import java.util.Calendar;
 
-public class DateCoefficientBuilder extends AbstractCoefficientBuilder {
+import by.training.karpilovich.lowcost.entity.DateCoefficient;
 
+public class DateCoefficientBuilder {
+
+	private DateCoefficient coefficient;
+	
 	public DateCoefficientBuilder() {
 		coefficient = new DateCoefficient();
 	}
-
-	@Override
-	public DateCoefficient getCoefficient() {
-		return (DateCoefficient) coefficient;
+	
+	public void setFlightId(int flightId) {
+		coefficient.setFlightId(flightId);
 	}
-
+	
+	public void setFrom(Calendar from) {
+		coefficient.setFrom(from);
+	}
+	
+	public void setTo(Calendar to) {
+		coefficient.setTo(to);
+	}
+	
+	public void setValue(BigDecimal value) {
+		coefficient.setValue(value);
+	}
+	
+	public DateCoefficient getCoefficient() {
+		return coefficient;
+	}
 }

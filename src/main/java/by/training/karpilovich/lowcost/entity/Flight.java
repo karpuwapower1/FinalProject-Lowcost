@@ -3,13 +3,6 @@ package by.training.karpilovich.lowcost.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.Set;
-import java.util.TreeSet;
-
-import by.training.karpilovich.lowcost.entity.coefficient.DateCoefficient;
-import by.training.karpilovich.lowcost.entity.coefficient.LuggageCoefficient;
-import by.training.karpilovich.lowcost.entity.coefficient.PlaceCoefficient;
-import by.training.karpilovich.lowcost.util.CoefficientByBoundComparator;
 
 public class Flight implements Serializable {
 
@@ -24,23 +17,10 @@ public class Flight implements Serializable {
 	private BigDecimal price;
 	private int permittedLuggageWeigth;
 	private int availablePlaceQuantity;
-	private Set<LuggageCoefficient> luggageCoefficients = new TreeSet<>(new CoefficientByBoundComparator());
-	private Set<PlaceCoefficient> placeCoefficients = new TreeSet<>(new CoefficientByBoundComparator());
-	private Set<DateCoefficient> dateCoefficients = new TreeSet<>(new CoefficientByBoundComparator());
+	private BigDecimal primaryBoardingPrice;
+	private BigDecimal priceForEveryKgOverweight;
 
 	public Flight() {
-	}
-
-	public Flight(String number, Plane planeModel, City from, City to, Calendar date, BigDecimal price,
-			int permittedLuggageWeigth, int availablePlaceQuantity) {
-		this.number = number;
-		this.planeModel = planeModel;
-		this.from = from;
-		this.to = to;
-		this.date = date;
-		this.price = price;
-		this.permittedLuggageWeigth = permittedLuggageWeigth;
-		this.availablePlaceQuantity = availablePlaceQuantity;
 	}
 
 	public int getId() {
@@ -115,53 +95,45 @@ public class Flight implements Serializable {
 		this.availablePlaceQuantity = availablePlaceQuantity;
 	}
 
-	public Set<LuggageCoefficient> getLuggageCoefficient() {
-		return luggageCoefficients;
+	public BigDecimal getPrimaryBoardingPrice() {
+		return primaryBoardingPrice;
 	}
 
-	public void setLuggageCoefficient(Set<LuggageCoefficient> luggageCoefficient) {
-		this.luggageCoefficients = luggageCoefficient;
+	public void setPrimaryBoardingPrice(BigDecimal primaryBoardingPrice) {
+		this.primaryBoardingPrice = primaryBoardingPrice;
 	}
 
-	public Set<PlaceCoefficient> getPlaceCoefficient() {
-		return placeCoefficients;
+	public BigDecimal getPriceForEveryKgOverweight() {
+		return priceForEveryKgOverweight;
 	}
 
-	public void setPlaceCoefficient(Set<PlaceCoefficient> placeCoefficient) {
-		this.placeCoefficients = placeCoefficient;
-	}
-
-	public Set<DateCoefficient> getDateCoefficient() {
-		return dateCoefficients;
-	}
-
-	public void setDateCoefficient(Set<DateCoefficient> dateCoefficient) {
-		this.dateCoefficients = dateCoefficient;
+	public void setPriceForEveryKgOverweight(BigDecimal priceForEveryKgOverweight) {
+		this.priceForEveryKgOverweight = priceForEveryKgOverweight;
 	}
 	
-	public void addLuggageCoefficient(LuggageCoefficient luggageCoefficient) {
-		luggageCoefficients.add(luggageCoefficient);
-	}
-	
-	public void addPlaceCoefficient(PlaceCoefficient placeCoefficient) {
-		placeCoefficients.add(placeCoefficient);
-	}
-	
-	public void addDateCoefficient(DateCoefficient dateCoefficient) {
-		dateCoefficients.add(dateCoefficient);
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " [id=" + id + ", number=" + number + ", planeModel=" + planeModel
+				+ ", from=" + from + ", to=" + to + ", date=" + date + ", price=" + price + ", permittedLuggageWeigth="
+				+ permittedLuggageWeigth + ", availablePlaceQuantity=" + availablePlaceQuantity
+				+ ", primaryBoardingPrice=" + primaryBoardingPrice + ", priceForEveryKgOverweight="
+				+ priceForEveryKgOverweight + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = id;
+		int result = 1;
 		result = prime * result + availablePlaceQuantity;
 		result = prime * result + ((date == null) ? 0 : date.hashCode());
-		result = prime * result + ((price == null) ? 0 : price.hashCode());
 		result = prime * result + ((from == null) ? 0 : from.hashCode());
+		result = prime * result + id;
 		result = prime * result + ((number == null) ? 0 : number.hashCode());
 		result = prime * result + permittedLuggageWeigth;
 		result = prime * result + ((planeModel == null) ? 0 : planeModel.hashCode());
+		result = prime * result + ((price == null) ? 0 : price.hashCode());
+		result = prime * result + ((priceForEveryKgOverweight == null) ? 0 : priceForEveryKgOverweight.hashCode());
+		result = prime * result + ((primaryBoardingPrice == null) ? 0 : primaryBoardingPrice.hashCode());
 		result = prime * result + ((to == null) ? 0 : to.hashCode());
 		return result;
 	}
@@ -170,12 +142,11 @@ public class Flight implements Serializable {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null || getClass() != obj.getClass())
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
 			return false;
 		Flight other = (Flight) obj;
-		if (id != other.id) {
-			return false;
-		}
 		if (availablePlaceQuantity != other.availablePlaceQuantity)
 			return false;
 		if (date == null) {
@@ -183,15 +154,12 @@ public class Flight implements Serializable {
 				return false;
 		} else if (!date.equals(other.date))
 			return false;
-		if (price == null) {
-			if (other.price != null)
-				return false;
-		} else if (!price.equals(other.price))
-			return false;
 		if (from == null) {
 			if (other.from != null)
 				return false;
 		} else if (!from.equals(other.from))
+			return false;
+		if (id != other.id)
 			return false;
 		if (number == null) {
 			if (other.number != null)
@@ -205,20 +173,27 @@ public class Flight implements Serializable {
 				return false;
 		} else if (!planeModel.equals(other.planeModel))
 			return false;
+		if (price == null) {
+			if (other.price != null)
+				return false;
+		} else if (!price.equals(other.price))
+			return false;
+		if (priceForEveryKgOverweight == null) {
+			if (other.priceForEveryKgOverweight != null)
+				return false;
+		} else if (!priceForEveryKgOverweight.equals(other.priceForEveryKgOverweight))
+			return false;
+		if (primaryBoardingPrice == null) {
+			if (other.primaryBoardingPrice != null)
+				return false;
+		} else if (!primaryBoardingPrice.equals(other.primaryBoardingPrice))
+			return false;
 		if (to == null) {
 			if (other.to != null)
 				return false;
 		} else if (!to.equals(other.to))
 			return false;
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() + " [id=" + id + " number=" + number + ", planeModel=" + planeModel + ", from="
-				+ from.toString() + ", to=" + to.toString() + ", date=" + date + ", price=" + price
-				+ ", permittedLuggageWeigth=" + permittedLuggageWeigth + ", availablePlaceQuantity="
-				+ availablePlaceQuantity + "]";
 	}
 
 }
