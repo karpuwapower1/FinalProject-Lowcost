@@ -1,11 +1,13 @@
+<!DOCTYPE html>
 <%@ page contentType="text/html; charset=UTF-8" language="java"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
-<html>
+<html lang='en'>
 
 <head>
+
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -13,11 +15,14 @@
 <link rel="stylesheet" href="${style}/css/bootstrap.min.css" />
 <link rel="stylesheet" href="${style}/css/main_page.css" />
 <fmt:setLocale value="${pageContext.response.locale}" scope="session" />
+<fmt:bundle basename="pagecontent" prefix="title.">
+<title><fmt:message key="main_page" /></title>
+</fmt:bundle>
 </head>
 
 <header>
 	<c:set var="page"
-		value="<%=by.training.karpilovich.lowcost.command.Page.DEFAULT%>"
+		value="DEFAULT"
 		scope="request" />
 	<c:import url="/general/header.jsp" />
 </header>
@@ -29,32 +34,27 @@
 				<form name="select" method="post">
 					<div class="row">
 						<select class="custom-select  custom-select-lg col-md-3"
-							name="<%=by.training.karpilovich.lowcost.command.JspParameter.COUNTRY_FROM%>" 
-							required>
+							name="country_from" required>
 							<option selected><fmt:message key="departureCounty" /></option>
-							<c:forEach var="city" items="${cities }">
+							<c:forEach var="city" items="${CITIES }">
 								<option value="${city.id }">${city.country},${ city.name}</option>
 							</c:forEach>
-						</select> 
-						<select class="custom-select  custom-select-lg col-md-3"
-							name="<%=by.training.karpilovich.lowcost.command.JspParameter.COUNTRY_TO%>" required>
+						</select> <select class="custom-select  custom-select-lg col-md-3"
+							name="country_to" required>
 							<option selected><fmt:message key="destinationCountry" /></option>
-							<c:forEach var="city" items="${cities }">
+							<c:forEach var="city" items="${CITIES }">
 								<option value="${city.id }">${city.country},${ city.name}</option>
 							</c:forEach>
-						</select> 
-						<input class="form-control form-control-lg col-md-3"
+						</select> <input class="form-control form-control-lg col-md-3"
 							placeholder="<fmt:message key="departureDate"/>" required
 							class="textbox-n" type="text" onfocus="(this.type='date')"
-							onblur="(this.type='text')" 
-							name="<%=by.training.karpilovich.lowcost.command.JspParameter.DATE%>" value="" /> 
-						<input type="text" class="form-control form-control-lg col-md-2" 
-							name="<%=by.training.karpilovich.lowcost.command.JspParameter.QUANTITY%>" value=""
-							placeholder="<fmt:message key="quantity"/>"  required
+							onblur="(this.type='text')" name="date" value="" /> <input
+							type="text" class="form-control form-control-lg col-md-2"
+							name="quantity" value=""
+							placeholder="<fmt:message key="quantity"/>" required
 							pattern="[0-9]" />
 						<button type="submit" class="btn btn-light col-md-1"
-							name="<%=by.training.karpilovich.lowcost.command.JspParameter.COMMAND%>" 
-							value="<%=by.training.karpilovich.lowcost.command.CommandType.SEARCH_FLIGHT%>">
+							name="command" value="search_flight">
 							<fmt:message key="command" />
 						</button>
 					</div>

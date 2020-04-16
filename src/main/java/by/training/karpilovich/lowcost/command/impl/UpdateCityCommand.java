@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import by.training.karpilovich.lowcost.command.Command;
-import by.training.karpilovich.lowcost.command.JspParameter;
+import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.service.CityService;
@@ -17,9 +17,9 @@ public class UpdateCityCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String name = request.getParameter(JspParameter.CITY_NAME.toString());
-		String id = request.getParameter(JspParameter.CITY_ID.toString());
-		String country = request.getParameter(JspParameter.COUNTRY_NAME.toString());
+		String name = request.getParameter(JSPParameter.CITY_NAME);
+		String id = request.getParameter(JSPParameter.CITY_ID);
+		String country = request.getParameter(JSPParameter.COUNTRY);
 		CityService service = getCityService();
 		String address;
 		try {

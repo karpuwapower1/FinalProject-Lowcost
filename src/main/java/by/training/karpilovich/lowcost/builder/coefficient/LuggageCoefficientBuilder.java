@@ -1,15 +1,29 @@
 package by.training.karpilovich.lowcost.builder.coefficient;
 
-import by.training.karpilovich.lowcost.entity.coefficient.LuggageCoefficient;
+import java.math.BigDecimal;
 
-public class LuggageCoefficientBuilder extends AbstractCoefficientBuilder {
+import by.training.karpilovich.lowcost.entity.coefficient.AbstractCoefficient;
 
-	public LuggageCoefficientBuilder() {
-		coefficient = new LuggageCoefficient();
+public abstract class AbstractCoefficientBuilder {
+	
+	protected AbstractCoefficient coefficient;
+	
+	public void setFlightId(int flightId) {
+		coefficient.setFlightId(flightId);
 	}
-
-	public LuggageCoefficient getCoefficient() {
-		return (LuggageCoefficient) coefficient;
+	
+	public void setBoundFrom(int boundFrom) {
+		coefficient.setBoundFrom(boundFrom);
 	}
+	
+	public void setBoundTo(int boundTo) {
+		coefficient.setBoundTo(boundTo);
+	}
+	
+	public void setValue(BigDecimal value) {
+		coefficient.setValue(value);
+	}
+	
+	abstract <T extends AbstractCoefficient> T getCoefficient();
 
 }

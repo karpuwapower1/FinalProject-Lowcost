@@ -1,7 +1,7 @@
-package by.training.karpilovich.lowcost.command.impl;
+package by.training.karpilovich.lowcost.command.impl.redirect;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ public class RedirectToDefaultPageCommand implements Command {
 			throws ServletException, IOException {
 		CityService cityService = getCityService();
 		try {
-			List<City> cities = cityService.getAllCities();
+			Set<City> cities = cityService.getAllCities();
 			request.setAttribute(Attribute.CITIES.toString(), cities);
 			return Page.DEFAULT.getAddress();
 		} catch (ServiceException e) {

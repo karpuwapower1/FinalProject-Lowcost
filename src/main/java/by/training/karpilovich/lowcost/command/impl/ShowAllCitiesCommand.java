@@ -1,7 +1,7 @@
 package by.training.karpilovich.lowcost.command.impl;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +22,7 @@ public class ShowAllCitiesCommand implements Command {
 		CityService cityService = getCityService();
 		Page page = null;
 		try {
-			List<City> cities = cityService.getAllCities();
+			Set<City> cities = cityService.getAllCities();
 			request.setAttribute(Attribute.CITIES.toString(), cities);
 			page = Page.ALL_CITIES;
 		} catch (ServiceException e) {

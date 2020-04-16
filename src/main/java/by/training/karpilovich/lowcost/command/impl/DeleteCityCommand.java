@@ -7,19 +7,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import by.training.karpilovich.lowcost.command.Command;
-import by.training.karpilovich.lowcost.command.JspParameter;
+import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.exception.ServiceException;
-import by.training.karpilovich.lowcost.service.CityService;
 
 public class DeleteCityCommand implements Command {
-	
+
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String id = request.getParameter(JspParameter.CITY_ID.toString());
-		CityService service = getCityService();
+		String id = request.getParameter(JSPParameter.CITY_ID);
 		try {
-			service.deleteCity(id);
+			getCityService().deleteCity(id);
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
 		}
