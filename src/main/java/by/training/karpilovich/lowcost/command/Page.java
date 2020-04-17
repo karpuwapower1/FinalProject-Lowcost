@@ -6,7 +6,9 @@ public enum Page {
 	ALL_CITIES("/jsp/all_cities.jsp"), UPDATE_CITY("/jsp/update_city.jsp"), CREATE_FLIGHT("/jsp/create_flight.jsp"), 
 	FLIGHT_PREVIEW("/jsp/flight_preview.jsp"), ADD_PLACE_COEFFICIENT("/jsp/add_place_coefficient.jsp"),
 	ADD_DATE_COEFFICIENT("/jsp/add_date_coefficient.jsp"),
-	RESULT("/jsp/show_flights.jsp"), INTERNAL_ERROR("TODO");
+	RESULT("/jsp/show_flights.jsp"), 
+	DEPOSIT("/jsp/deposit.jsp"),
+	INTERNAL_ERROR("TODO");
 
 	private String address;
 

@@ -30,4 +30,5 @@ public class JSPParameter {
 	public static final String VALUE = "value";
 	public static final String LUGGAGE = "luggage";
 	public static final String OVERWEIGHT_PRICE = "overweight_price";
+	public static final String AMOUNT = "amount";
 }
