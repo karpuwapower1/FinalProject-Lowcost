@@ -30,6 +30,9 @@ public class AddFlightCommand extends CoefficientCreatorHelper implements Comman
 		FlightService service = getFlightService();
 		try {
 			service.addFlight(flight, placeCoefficients, dateCoefficients);
+			session.removeAttribute(Attribute.FLIGHT.toString());
+			session.removeAttribute(Attribute.DATE_COEFFICIENT.toString());
+			session.removeAttribute(Attribute.PLACE_COEFFICIENT.toString());
 			return Page.CREATE_FLIGHT.getAddress();
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());

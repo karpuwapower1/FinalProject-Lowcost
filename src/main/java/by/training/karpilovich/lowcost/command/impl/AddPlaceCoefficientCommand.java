@@ -28,14 +28,13 @@ public class AddPlaceCoefficientCommand extends CoefficientCreatorHelper impleme
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String from = request.getParameter(JSPParameter.BOUND_FROM);
 		String to = request.getParameter(JSPParameter.BOUND_TO);
 		String value = request.getParameter(JSPParameter.VALUE);
 		HttpSession session = request.getSession();
 		Flight flight = (Flight) session.getAttribute(Attribute.FLIGHT.toString());
 		SortedSet<PlaceCoefficient> coefficients = getPlaceCoefficientFromSession(session);
 		try {
-			getFlightCreatorService().addPlaceCoefficient(flight, coefficients, from, to, value);
+			getFlightCreatorService().addPlaceCoefficient(flight, coefficients, to, value);
 			session.setAttribute(Attribute.PLACE_COEFFICIENT.toString(), coefficients);
 			return Page.FLIGHT_PREVIEW.getAddress();
 		} catch (ServiceException e) {

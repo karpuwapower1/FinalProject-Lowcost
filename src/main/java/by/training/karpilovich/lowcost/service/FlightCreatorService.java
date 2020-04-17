@@ -18,9 +18,9 @@ public interface FlightCreatorService {
 
 	Calendar getNextBoundFromValueDateCoefficient(SortedSet<DateCoefficient> coefficinets) throws ServiceException;
 
-	void addDateCoefficient(Flight flight, SortedSet<DateCoefficient> coefficients, String from, String to,
+	void addDateCoefficient(Flight flight, SortedSet<DateCoefficient> coefficients, String to,
 			String value) throws ServiceException;
 
-	void addPlaceCoefficient(Flight flight, SortedSet<PlaceCoefficient> coefficients, String from, String to,
+	void addPlaceCoefficient(Flight flight, SortedSet<PlaceCoefficient> coefficients, String to,
 			String value) throws ServiceException;
 }

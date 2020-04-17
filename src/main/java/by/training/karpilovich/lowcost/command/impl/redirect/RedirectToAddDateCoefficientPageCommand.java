@@ -16,7 +16,6 @@ import by.training.karpilovich.lowcost.command.util.CoefficientCreatorHelper;
 import by.training.karpilovich.lowcost.entity.DateCoefficient;
 import by.training.karpilovich.lowcost.entity.Flight;
 import by.training.karpilovich.lowcost.exception.ServiceException;
-import by.training.karpilovich.lowcost.util.DateParser;
 
 public class RedirectToAddDateCoefficientPageCommand extends CoefficientCreatorHelper implements Command {
 
@@ -28,8 +27,8 @@ public class RedirectToAddDateCoefficientPageCommand extends CoefficientCreatorH
 		SortedSet<DateCoefficient> coefficinents = getDateCoefficientFromSession(session);
 		try {
 			Calendar boundFrom = getFlightCreatorService().getNextBoundFromValueDateCoefficient(coefficinents);
-			request.setAttribute(Attribute.MAX_BOUND_VALUE.toString(), DateParser.format(flight.getDate()));
-			request.setAttribute(Attribute.BOUND_FROM.toString(), DateParser.format(boundFrom));
+			request.setAttribute(Attribute.MAX_BOUND_VALUE.toString(), flight.getDate());
+			request.setAttribute(Attribute.BOUND_FROM.toString(), boundFrom);
 			return Page.ADD_DATE_COEFFICIENT.getAddress();
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());

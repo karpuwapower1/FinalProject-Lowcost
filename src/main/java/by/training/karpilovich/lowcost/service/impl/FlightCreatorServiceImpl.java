@@ -63,9 +63,9 @@ public class FlightCreatorServiceImpl implements FlightCreatorService {
 	}
 
 	@Override
-	public void addDateCoefficient(Flight flight, SortedSet<DateCoefficient> coefficients, String from, String to,
+	public void addDateCoefficient(Flight flight, SortedSet<DateCoefficient> coefficients, String to,
 			String value) throws ServiceException {
-		Calendar dateFrom = takeDateFromString(from);
+		Calendar dateFrom = getNextBoundFromValueDateCoefficient(coefficients);
 		Calendar dateTo = takeDateFromString(to);
 		BigDecimal coefficientValue = takeBigDecimalFromString(value);
 		Validator validator = createDateCoefficientValidator(flight, dateFrom, dateTo, coefficientValue);
@@ -81,9 +81,9 @@ public class FlightCreatorServiceImpl implements FlightCreatorService {
 	}
 
 	@Override
-	public void addPlaceCoefficient(Flight flight, SortedSet<PlaceCoefficient> coefficients, String from, String to,
+	public void addPlaceCoefficient(Flight flight, SortedSet<PlaceCoefficient> coefficients, String to,
 			String value) throws ServiceException {
-		int boundFrom = takeIntFromString(from);
+		int boundFrom = getNextBoundFromValuePlaceCoefficient(coefficients);
 		int boundTo = takeIntFromString(to);
 		BigDecimal coefficientValue = takeBigDecimalFromString(value);
 		Validator validator = createPlaceCoefficientValidator(flight, boundFrom, boundTo, coefficientValue);
@@ -133,9 +133,10 @@ public class FlightCreatorServiceImpl implements FlightCreatorService {
 			throws ServiceException {
 		Calendar calendar = new GregorianCalendar();
 		if (coefficients != null && !coefficients.isEmpty()) {
-			calendar = coefficients.last().getTo();
+			calendar.setTimeInMillis(coefficients.last().getTo().getTimeInMillis());
 			calendar.add(Calendar.DATE, ServiceConstant.INCREASE_ONE_DAY_VALUE);
 		}
+		LOGGER.debug("next bound = " + DateParser.format(calendar));
 		return calendar;
 	}
 

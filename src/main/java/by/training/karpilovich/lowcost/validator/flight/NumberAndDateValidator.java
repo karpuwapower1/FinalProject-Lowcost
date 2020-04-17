@@ -23,7 +23,7 @@ public class NumberAndDateValidator extends Validator {
 	public void validate() throws ValidatorException {
 		FlightService service = ServiceFactory.getInstance().getFlightService();
 		try {
-			if (service.getFlightCountWithNumberAndDate(number, date) != 0) {
+			if (service.getFlightCountWithNumberAndDate(number, date) > 0) {
 				throw new ValidatorException(MessageType.FLIGHT_NUMBER_AND_DATE_PRESENT_ALREADY.getMessage());
 			}
 		} catch (ServiceException e) {

@@ -45,7 +45,7 @@ public class UserDAOImpl implements UserDAO {
 	private static final int UPDATE_QUERY_CONDITION_EMAIL_INDEX = 6;
 	
 	private static final String UPDATE_BALANCE_QUERY = "UPDATE airport_user "
-			+ "SET balance_amount=?" + "WHERE email=?";
+			+ " SET balance_amount=? " + " WHERE email=? ";
 
 	private static final int UPDATE_BALANCE_QUERY_BALANCE_AMOUNT_INDEX = 1;
 	private static final int UPDATE_BALANCE_QUERY_CONDITION_EMAIL_INDEX = 2;

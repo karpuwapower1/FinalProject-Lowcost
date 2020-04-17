@@ -59,7 +59,7 @@ public class FlightDAOImpl implements FlightDAO {
 	private static final int ADD_COEFFICIENT_QUERY_VALUE_INDEX = 3;
 
 	private static final String COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY = "SELECT count(number) " + " FROM flight "
-			+ " GROUP BY number, date " + " HAVING number = ? AND DATE(date) <> ?";
+			+ " GROUP BY number, date " + " HAVING number = ? AND DATE(date) = ?";
 
 	private static final int COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY_NUMBER_INDEX = 1;
 	private static final int COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY_DATE_INDEX = 2;

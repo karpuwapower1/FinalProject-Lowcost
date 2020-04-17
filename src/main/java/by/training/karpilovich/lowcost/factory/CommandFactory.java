@@ -12,6 +12,7 @@ import by.training.karpilovich.lowcost.command.impl.AddPlaceCoefficientCommand;
 import by.training.karpilovich.lowcost.command.impl.ChangeLanguageCommand;
 import by.training.karpilovich.lowcost.command.impl.CreateFlightCommand;
 import by.training.karpilovich.lowcost.command.impl.DeleteCityCommand;
+import by.training.karpilovich.lowcost.command.impl.DepositCommand;
 import by.training.karpilovich.lowcost.command.impl.SearchFlightCommand;
 import by.training.karpilovich.lowcost.command.impl.ShowAllCitiesCommand;
 import by.training.karpilovich.lowcost.command.impl.ShowAllFlightsCommand;
@@ -19,11 +20,11 @@ import by.training.karpilovich.lowcost.command.impl.SignInCommand;
 import by.training.karpilovich.lowcost.command.impl.SignOutCommand;
 import by.training.karpilovich.lowcost.command.impl.SignUpCommand;
 import by.training.karpilovich.lowcost.command.impl.UpdateCityCommand;
-import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToPageCommand;
 import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToAddDateCoefficientPageCommand;
 import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToAddPlaceCoefficientPageCommand;
 import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToCreateFlightPageCommand;
 import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
+import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToPageCommand;
 import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToUpdateCityPageCommand;
 
 public class CommandFactory {
@@ -107,6 +108,9 @@ public class CommandFactory {
 				break;
 			case CHANGE_LANGUAGE:
 				command = new ChangeLanguageCommand();
+				break;
+			case DEPOSIT:
+				command = new DepositCommand();
 				break;
 			default:
 				break;

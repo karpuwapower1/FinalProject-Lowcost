@@ -27,5 +27,4 @@ public class AddCityCommand implements Command {
 		}
 		return getReturnedPageAddress(page, request, response);
 	}
-
 }
