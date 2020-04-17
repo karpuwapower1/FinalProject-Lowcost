@@ -91,7 +91,7 @@
 		<input type="text"
 				class="form-control form-control-lg col-md-4 offset-md-4"
 				name="overweight_price"
-				value=""placeholder="<fmt:message key="price"/>" required
+				value=""placeholder="<fmt:message key="overweight_luggage_price"/>" required
 				pattern="([0-9]{1,}(.[0-9]{0,2}){0,1}" /> 
 			<button type="submit" class="btn btn-light col-md-4 offset-md-4"
 				name="command"

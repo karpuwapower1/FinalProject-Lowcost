@@ -56,8 +56,8 @@
 
 											<form method="post" name="show_all_cities">
 
-												<input type="hidden" name="to_page" value="ALL_CITIES" />
-												<input type="hidden" name="from_page" value="${page}" />
+												<input type="hidden" name="to_page" value="ALL_CITIES" /> <input
+													type="hidden" name="from_page" value="${page}" />
 												<button type="submit"
 													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
 													value="SHOW_ALL_CITIES">
@@ -70,7 +70,31 @@
 													type="hidden" name="from_page" value="${page }" />
 												<button type="submit"
 													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
-													value="REDIRECT_TO_CREATE_FLIGTH_PAGE">Add flight</button>
+													value="REDIRECT_TO_CREATE_FLIGTH_PAGE">
+													<fmt:message key="admin.add_flight" />
+												</button>
+											</form>
+											<form method="post" name="show_all_flight">
+												<input type="hidden" name="to_page" value="all_flight" /> <input
+													type="hidden" name="from_page" value="${page }" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="SHOW_ALL_FLIGHTS">
+													<fmt:message key="admin.show_all_flights" />
+												</button>
+											</form>
+										</c:when>
+
+										<c:otherwise>
+											<form method="post" name="deposit">
+												<input type="hidden" name="to_page" value="deposit" /> <input
+													type="hidden" name="from_page" value="${page }" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="REDIRECT">
+						
+														<fmt:message key="user.deposit" />
+												</button>
 											</form>
 											<form method="post" name="show_all_flight">
 												<input type="hidden" name="to_page" value="all_flight" /> <input
@@ -79,10 +103,6 @@
 													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
 													value="SHOW_ALL_FLIGHTS">Show flights</button>
 											</form>
-										</c:when>
-
-										<c:otherwise>
-
 										</c:otherwise>
 									</c:choose>
 								</fmt:bundle>
@@ -90,6 +110,14 @@
 
 						</div>
 					</c:if>
+					
+					<c:if test="${ROLE == 'USER'}">
+					<fmt:bundle basename="pagecontent">
+					<fmt:message key="header.user.available_resources"/> = <fmt:formatNumber value="${USER.balanceAmount}" type="currency"/>
+					</fmt:bundle>
+					
+					</c:if>
+					
 				</div>
 			</div>
 

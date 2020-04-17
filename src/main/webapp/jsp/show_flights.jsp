@@ -49,12 +49,13 @@
 						<td><c:out
 								value="${flight.from.country}, ${flight.from.name}" /></td>
 						<td><c:out value="${flight.to.country}, ${flight.to.name}" /></td>
-						<td><c:out value="${flight.price}" /></td>
+						<td><fmt:formatNumber value="${flight.price}" type="currency" /></td>
 						<td><c:out value="${flight.planeModel.model}" /></td>
 						<td><c:out
 								value="${flight.availablePlaceQuantity} / ${flight.planeModel.placeQuantity }" />
 						<td><c:out value="${flight.permittedLuggageWeigth}" /></td>
-						<td><c:out value="${flight.priceForEveryKgOverweight}" /></td>
+						<td><fmt:formatNumber value="${flight.priceForEveryKgOverweight}" type="currency" /></td>
+
 						<td>
 							<form name="action" method="post">
 								<input type="hidden" name="city" value="${city.name}"> <input

@@ -39,6 +39,8 @@
 				<fmt:message key="to" />
 				${FLIGHT.to.country}, ${FLIGHT.to.name}
 				<fmt:message key="plane" />
+				<fmt:message key="price"/>
+				<fmt:formatNumber value="${FLIGHT.price}" type="currency"/>
 				${FLIGHT.planeModel.model}
 				<fmt:message key="place_having" />
 				${FLIGHT.planeModel.placeQuantity}
@@ -46,7 +48,7 @@
 				<fmt:message key="luggage" />
 				${FLIGHT.permittedLuggageWeigth}
 				<fmt:message key="overweight_luggage_price" />
-				${FLIGHT.priceForEveryKgOverweight}
+				<fmt:formatNumber value="${FLIGHT.priceForEveryKgOverweight}" type="currency"/>
 			</p>
 		</fmt:bundle>
 
@@ -86,8 +88,8 @@
 						</tr>
 						<c:forEach var="coefficient" items="${DATE_COEFFICIENT}">
 							<tr>
-								<td>${coefficient.from}"/></td>
-								<td>${coefficient.to}"/></td>
+								<td><fmt:formatDate value="${coefficient.from.time}" /></td>
+								<td><fmt:formatDate value="${coefficient.to.time}" /></td>
 								<td>${coefficient.value}</td>
 							</tr>
 						</c:forEach>
