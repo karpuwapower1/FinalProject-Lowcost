@@ -26,7 +26,6 @@
 </header>
 
 <body>
-	<p>${ERROR_MESSAGE}</p>
 	<fmt:bundle basename="pagecontent" prefix="update_city.input.">
 		<form name="input" class="border border-light " method="post">
 			<div class="login-form col-md-4 offset-md-4">
@@ -42,7 +41,7 @@
 			</div>
 		</form>
 	</fmt:bundle>
-
+	<div class="error-code col-md-4 offset-md-4">${ERROR_MESSAGE}</div>
 	<script type="text/javascript" src="${style}/js/jquery-3.3.1.min.js"></script>
 	<script type="text/javascript" src="${style}/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="${style}/js/popper.min.js"></script>

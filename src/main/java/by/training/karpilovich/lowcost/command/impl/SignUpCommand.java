@@ -46,7 +46,7 @@ public class SignUpCommand implements Command {
 	}
 
 	private void setAttribute(HttpSession session, User user) {
-		session.setAttribute(Attribute.ROLE.toString(), user.getRole());
+		session.setAttribute(Attribute.USER_ROLE.toString(), user.getRole());
 		session.setAttribute(Attribute.USER.toString(), user);
 	}
 }

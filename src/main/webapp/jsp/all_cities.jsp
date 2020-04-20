@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="${style}/css/main_page.css" />
 <fmt:setLocale value="${pageContext.response.locale}" scope="session" />
 <fmt:bundle basename="pagecontent" prefix="title.">
-<title><fmt:message key="all_cities" /></title>
+	<title><fmt:message key="all_cities" /></title>
 </fmt:bundle>
 </head>
 
@@ -24,7 +24,6 @@
 </header>
 
 <body>
-	<p>${ERROR_MESSAGE}</p>
 	<fmt:bundle basename="pagecontent" prefix="all_cities.table.">
 		<table class="table table-bordered text-center">
 			<thead>
@@ -40,16 +39,13 @@
 						<td><c:out value="${city.country}" /></td>
 						<td>
 							<form name="action" method="post">
-								<input type="hidden" name="city_id"
-									value="${city.id}">
-								<input type="hidden" name="to_page"
-									value="UPDATE_CITY">
-								<button class="btn btn-primary" type="submit"
-									name="command" value="REDIRECT_TO_UPDATE_CITY_PAGE">
+								<input type="hidden" name="city_id" value="${city.id}">
+								<input type="hidden" name="to_page" value="UPDATE_CITY">
+								<button class="btn btn-primary" type="submit" name="command"
+									value="REDIRECT_TO_UPDATE_CITY_PAGE">
 									<fmt:message key="update_button" />
 								</button>
-								<button class="btn btn-primary" type="submit"
-									name="command"
+								<button class="btn btn-primary" type="submit" name="command"
 									value="DELETE_CITY">
 									<fmt:message key="delete_button" />
 								</button>
@@ -60,7 +56,7 @@
 			</tbody>
 		</table>
 	</fmt:bundle>
-
+	<div class="error-code col-md-4 offset-md-4">${ERROR_MESSAGE}</div>
 	<script type="text/javascript" src="${style}/js/jquery-3.3.1.min.js"></script>
 	<script type="text/javascript" src="${style}/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="${style}/js/popper.min.js"></script>

@@ -36,7 +36,7 @@ public class DeleteUserCommand implements Command {
 			deleteUser(user, repeatPassword);
 			session.invalidate();
 			HttpSession newSession = request.getSession();
-			newSession.setAttribute(Attribute.ROLE.toString(), Role.GUEST);
+			newSession.setAttribute(Attribute.USER_ROLE.toString(), Role.GUEST);
 			page = Page.DEFAULT;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());

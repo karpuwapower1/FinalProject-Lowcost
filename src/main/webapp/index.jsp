@@ -16,14 +16,12 @@
 <link rel="stylesheet" href="${style}/css/main_page.css" />
 <fmt:setLocale value="${pageContext.response.locale}" scope="session" />
 <fmt:bundle basename="pagecontent" prefix="title.">
-<title><fmt:message key="main_page" /></title>
+	<title><fmt:message key="main_page" /></title>
 </fmt:bundle>
 </head>
 
 <header>
-	<c:set var="page"
-		value="DEFAULT"
-		scope="request" />
+	<c:set var="page" value="DEFAULT" scope="request" />
 	<c:import url="/general/header.jsp" />
 </header>
 
@@ -62,6 +60,7 @@
 			</div>
 		</div>
 	</fmt:bundle>
+	<div class="error-code col-md-4 offset-md-4">${ERROR_MESSAGE}</div>
 	<script type="text/javascript" src="${style}/js/jquery-3.3.1.min.js"></script>
 	<script type="text/javascript" src="${style}/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="${style}/js/popper.min.js"></script>

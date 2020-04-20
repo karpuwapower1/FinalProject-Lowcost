@@ -11,16 +11,16 @@
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <c:set var="style" value="${pageContext.request.contextPath}" />
 <link rel="stylesheet" href="${style}/css/bootstrap.min.css" />
-<link rel="stylesheet" href="${style}/css/signin.css" />
+<link rel="stylesheet" href="${style}/css/main_page.css" />
 <fmt:setLocale value="${pageContext.response.locale}" scope="session" />
 
 <fmt:bundle basename="pagecontent" prefix="title.">
-<title><fmt:message key="sign_up" /></title>
+	<title><fmt:message key="sign_up" /></title>
 </fmt:bundle>
 </head>
 
 <header>
-	<c:set var="page" value="SIGN_UP" scope="request"/>
+	<c:set var="page" value="SIGN_UP" scope="request" />
 	<c:import url="/general/header.jsp" />
 </header>
 
@@ -34,37 +34,31 @@
 
 			<div class="login-form col-md-4 offset-md-4">
 
-				<input class="form-control" type="email" 
-					name="email" value=""
+				<input class="form-control" type="email" name="email" value=""
 					placeholder="<fmt:message key="email"/>" required
-					pattern="([a-zA-Z_0-9]{1,}@([a-z]{3,7})\.(ru|com|by|net))" /> 
-				<input class="form-control" type="password" 
-					type="password" name="password" value=""
-					id="password" 
+					pattern="([a-zA-Z_0-9]{1,}@([a-z]{3,7})\.(ru|com|by|net))" /> <input
+					class="form-control" type="password" type="password"
+					name="password" value="" id="password"
 					placeholder="<fmt:message key="password"/>" required
-					pattern="(\w{5,})" /> 
-				<input class="form-control" type="password" 
-					name="repeat_password" value=""
-					id="repeatPassword" 
-					placeholder="<fmt:message key="repeat_password"/>" required 
-					pattern="(\w{5,})" /> 
-				<input class="form-control" type="text"
+					pattern="(\w{5,})" /> <input class="form-control" type="password"
+					name="repeat_password" value="" id="repeatPassword"
+					placeholder="<fmt:message key="repeat_password"/>" required
+					pattern="(\w{5,})" /> <input class="form-control" type="text"
 					name="first_name" value=""
-					 placeholder="<fmt:message key="first_name"/>" required /> 
-				<input class="form-control" type="text" 
-					name="last_name" value=""
-					 placeholder="<fmt:message key="last_name"/>"/>
+					placeholder="<fmt:message key="first_name"/>" required /> <input
+					class="form-control" type="text" name="last_name" value=""
+					placeholder="<fmt:message key="last_name"/>" />
 
 				<p>${errorMessage}</p>
 
 				<button class="btn btn-primary btn-block " type="submit"
-					name="command" 
-					value="SIGN_UP">
-					<fmt:message key="command" /></button>
+					name="command" value="SIGN_UP">
+					<fmt:message key="command" />
+				</button>
 			</div>
 		</fmt:bundle>
 	</form>
-
+	<div class="error-code col-md-4 offset-md-4">${ERROR_MESSAGE}</div>
 	<script type="text/javascript">
 		window.onload = function() {
 			document.getElementById("password").onchange = validatePassword;

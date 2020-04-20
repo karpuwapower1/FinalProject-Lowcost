@@ -15,6 +15,7 @@ import by.training.karpilovich.lowcost.service.CityService;
 import by.training.karpilovich.lowcost.service.FlightCreatorService;
 import by.training.karpilovich.lowcost.service.FlightService;
 import by.training.karpilovich.lowcost.service.PlaneService;
+import by.training.karpilovich.lowcost.service.TicketService;
 import by.training.karpilovich.lowcost.service.UserService;
 import by.training.karpilovich.lowcost.util.LocaleMessageManager;
 
@@ -29,7 +30,7 @@ public interface Command {
 
 	default String getReturnedPageAddress(Page page, HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		if ( page == null) {
+		if (page == null) {
 			return new RedirectToDefaultPageCommand().execute(request, response);
 		}
 		String returnedPage;
@@ -64,6 +65,10 @@ public interface Command {
 	
 	default FlightCreatorService getFlightCreatorService() {
 		return ServiceFactory.getInstance().getFlightCreatorService();
+	}
+	
+	default TicketService getTicketService() {
+		return ServiceFactory.getInstance().getTicketService();
 	}
 	
 //	default CoefficientService getCoefficientService() {

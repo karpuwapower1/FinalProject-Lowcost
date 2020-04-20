@@ -31,4 +31,7 @@ public class JSPParameter {
 	public static final String LUGGAGE = "luggage";
 	public static final String OVERWEIGHT_PRICE = "overweight_price";
 	public static final String AMOUNT = "amount";
+	public static final String FLIGHT_ID = "flight_id";
+	public static final String PASSPORT_NUMBER = "passport_number";
+	public static final String PRIMARY_BOARDING = "primary_boarding";
 }

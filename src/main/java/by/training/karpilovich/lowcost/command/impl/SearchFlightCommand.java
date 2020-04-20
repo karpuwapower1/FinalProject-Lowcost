@@ -27,7 +27,8 @@ public class SearchFlightCommand implements Command {
 		try {
 			Set<Flight> flights = findFlights(request);
 			session.setAttribute(Attribute.FLIGHTS.toString(), flights);
-			page = Page.RESULT;
+			session.setAttribute(Attribute.PASSENGER_QUANTITY.toString(), Integer.parseInt(request.getParameter(JSPParameter.QUANTITY)));
+			page = Page.SHOW_FLIGHTS;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
 		}

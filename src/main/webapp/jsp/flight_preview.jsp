@@ -39,8 +39,8 @@
 				<fmt:message key="to" />
 				${FLIGHT.to.country}, ${FLIGHT.to.name}
 				<fmt:message key="plane" />
-				<fmt:message key="price"/>
-				<fmt:formatNumber value="${FLIGHT.price}" type="currency"/>
+				<fmt:message key="price" />
+				<fmt:formatNumber value="${FLIGHT.price}" />
 				${FLIGHT.planeModel.model}
 				<fmt:message key="place_having" />
 				${FLIGHT.planeModel.placeQuantity}
@@ -48,7 +48,7 @@
 				<fmt:message key="luggage" />
 				${FLIGHT.permittedLuggageWeigth}
 				<fmt:message key="overweight_luggage_price" />
-				<fmt:formatNumber value="${FLIGHT.priceForEveryKgOverweight}" type="currency"/>
+				<fmt:formatNumber value="${FLIGHT.priceForEveryKgOverweight}" />
 			</p>
 		</fmt:bundle>
 
@@ -103,13 +103,13 @@
 					</tbody>
 				</table>
 				<button class="btn btn-primary btn-block" type="submit"
-					name="command"
-					value="ADD_FLIGHT">
+					name="command" value="ADD_FLIGHT">
 					<fmt:message key="add_flight" />
 				</button>
 			</form>
 		</fmt:bundle>
 	</div>
+	<div class="error-code col-md-4 offset-md-4">${ERROR_MESSAGE}</div>
 	<script type="text/javascript" src="${style}/js/jquery-3.3.1.min.js"></script>
 	<script type="text/javascript" src="${style}/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="${style}/js/popper.min.js"></script>

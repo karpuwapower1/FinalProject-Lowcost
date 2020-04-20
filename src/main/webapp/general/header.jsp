@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <%@ page contentType="text/html; charset=UTF-8" language="java"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -29,7 +28,7 @@
 		<div class="collapse navbar-collapse">
 			<div class="navbar-nav mr-auto ">
 				<div class="menu">
-					<c:if test="${ROLE != 'GUEST'}">
+					<c:if test="${USER_ROLE != 'GUEST'}">
 						<div class="nav-item dropdown">
 							<fmt:bundle basename="pagecontent" prefix="header.">
 								<button type="button"
@@ -43,7 +42,7 @@
 								class="dropdown-menu dropdown-menu-right mt-0 mr-0 ml-0 mb-0 pt-0 pb-0 pr-1 pl-0">
 								<fmt:bundle basename="pagecontent" prefix="header.menu.">
 									<c:choose>
-										<c:when test="${ROLE == 'ADMIN'}">
+										<c:when test="${USER_ROLE == 'ADMIN'}">
 											<form method="post" name="add_city">
 												<input type="hidden" name="to_page" value="ADD_CITY" /> <input
 													type="hidden" name="from_page" value="${page}" />
@@ -87,21 +86,22 @@
 
 										<c:otherwise>
 											<form method="post" name="deposit">
-												<input type="hidden" name="to_page" value="deposit" /> <input
+												<input type="hidden" name="to_page" value="DEPOSIT" /> <input
 													type="hidden" name="from_page" value="${page }" />
 												<button type="submit"
 													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
 													value="REDIRECT">
-						
-														<fmt:message key="user.deposit" />
+													<fmt:message key="user.deposit" />
 												</button>
 											</form>
 											<form method="post" name="show_all_flight">
-												<input type="hidden" name="to_page" value="all_flight" /> <input
-													type="hidden" name="from_page" value="${page }" />
+												<input type="hidden" name="to_page" value="show_ticket" />
+												<input type="hidden" name="from_page" value="${page }" />
 												<button type="submit"
 													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
-													value="SHOW_ALL_FLIGHTS">Show flights</button>
+													value="SHOW_ALL_TICKET">
+													<fmt:message key="user.show_all_tickets" />
+												</button>
 											</form>
 										</c:otherwise>
 									</c:choose>
@@ -110,12 +110,14 @@
 
 						</div>
 					</c:if>
-					
-					<c:if test="${ROLE == 'USER'}">
-					<fmt:bundle basename="pagecontent">
-					<fmt:message key="header.user.available_resources"/> = <fmt:formatNumber value="${USER.balanceAmount}" type="currency"/>
-					</fmt:bundle>
-					
+
+					<c:if test="${USER_ROLE == 'USER'}">
+						<div class="nav-item">
+							<fmt:bundle basename="pagecontent">
+								<fmt:message key="header.user.available_resources" /> = <fmt:formatNumber
+									value="${USER.balanceAmount}" />
+							</fmt:bundle>
+						</div>
 					</c:if>
 					
 				</div>
@@ -146,7 +148,7 @@
 					</div>
 
 					<c:if
-						test="${page != 'SIGN_IN' && page != 'SIGN_UP' && ROLE == 'GUEST'}">
+						test="${page != 'SIGN_IN' && page != 'SIGN_UP' && USER_ROLE == 'GUEST'}">
 						<div class="nav-item">
 							<form method="post" name="sign_up">
 								<input type="hidden" name="to_page" value="sign_up" /> <input
@@ -170,7 +172,7 @@
 					</c:if>
 
 					<c:if
-						test="${page != 'SIGN_IN' && page != 'SIGN_UP' && ROLE != 'GUEST'}">
+						test="${page != 'SIGN_IN' && page != 'SIGN_UP' && USER_ROLE != 'GUEST'}">
 						<div class="nav-item">
 							<form name="sign_out" method="post">
 								<button type="submit" class="btn btn-link" name="command"

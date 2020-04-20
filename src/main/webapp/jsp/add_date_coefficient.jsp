@@ -26,16 +26,16 @@
 </header>
 
 <body>
-	${ERROR_MESSAGE}
 	<fmt:bundle basename="pagecontent" prefix="add_coefficient_input.date.">
 		<form name="input" class="border border-light " method="post">
 			<div class="login-form col-md-4 offset-md-4">
 
 				<input type="text" class="form-control" name="bound_from"
-					value="<fmt:formatDate value="${BOUND_FROM.time}"/>" readonly /> <input type="date"
-					class="form-control" name="bound_to" value=""
+					value="<fmt:formatDate value="${BOUND_FROM.time}"/>" readonly /> <input
+					type="date" class="form-control" name="bound_to" value=""
 					placeholder="<fmt:message key="bound_to"/>" required />
-				<fmt:message key="max_bound_value"/> <fmt:formatDate value="${MAX_BOUND_VALUE.time}"/>
+				<fmt:message key="max_bound_value" />
+				<fmt:formatDate value="${MAX_BOUND_VALUE.time}" />
 				<input type="text" class="form-control" name="value" value=""
 					placeholder="<fmt:message key="value"/>" required
 					pattern="([0-9]{1,}(.[0-9]){0,1})" />
@@ -50,7 +50,7 @@
 			</div>
 		</form>
 	</fmt:bundle>
-
+	<div class="error-code col-md-4 offset-md-4">${ERROR_MESSAGE}</div>
 	<script type="text/javascript" src="${style}/js/jquery-3.3.1.min.js"></script>
 	<script type="text/javascript" src="${style}/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="${style}/js/popper.min.js"></script>

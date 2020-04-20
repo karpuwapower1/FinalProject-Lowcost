@@ -14,7 +14,7 @@
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <c:set var="style" value="${pageContext.request.contextPath}" />
 <link rel="stylesheet" href="${style}/css/bootstrap.min.css" />
-<link rel="stylesheet" href="${style}/css/create_flight.css" />
+<link rel="stylesheet" href="${style}/css/main_page.css" />
 <fmt:setLocale value="${pageContext.response.locale}" scope="session" />
 <fmt:setLocale value="${pageContext.response.locale}" scope="session" />
 <fmt:bundle basename="pagecontent" prefix="title.">
@@ -100,6 +100,7 @@
 			</button>
 		</form>
 	</fmt:bundle>
+		<div class="error-code col-md-4 offset-md-4">${ERROR_MESSAGE}</div>
 	<script type="text/javascript" src="${style}/js/jquery-3.3.1.min.js"></script>
 	<script type="text/javascript" src="${style}/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="${style}/js/popper.min.js"></script>

@@ -33,7 +33,7 @@ public class ShowAllFlightsCommand implements Command {
 				LOGGER.debug(flight.toString());
 			}
 			session.setAttribute(Attribute.FLIGHTS.toString(), flights);
-			return Page.RESULT.getAddress();
+			return Page.SHOW_FLIGHTS.getAddress();
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
 			return Page.DEFAULT.getAddress();

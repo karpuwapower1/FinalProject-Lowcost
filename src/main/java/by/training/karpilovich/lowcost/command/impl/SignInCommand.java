@@ -57,7 +57,7 @@ public class SignInCommand implements Command {
 
 	private void setAttribute(HttpServletRequest request, User user) {
 		HttpSession session = request.getSession();
-		session.setAttribute(Attribute.ROLE.toString(), user.getRole());
+		session.setAttribute(Attribute.USER_ROLE.toString(), user.getRole());
 		session.setAttribute(Attribute.USER.toString(), user);
 	}
 
