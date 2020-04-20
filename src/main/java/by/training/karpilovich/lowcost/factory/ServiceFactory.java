@@ -3,11 +3,13 @@ package by.training.karpilovich.lowcost.factory;
 import by.training.karpilovich.lowcost.service.CityService;
 import by.training.karpilovich.lowcost.service.FlightCreatorService;
 import by.training.karpilovich.lowcost.service.FlightService;
+import by.training.karpilovich.lowcost.service.TicketService;
 import by.training.karpilovich.lowcost.service.UserService;
 import by.training.karpilovich.lowcost.service.impl.CityServiceImpl;
 import by.training.karpilovich.lowcost.service.impl.FlightCreatorServiceImpl;
 import by.training.karpilovich.lowcost.service.impl.FlightServiceImpl;
 import by.training.karpilovich.lowcost.service.impl.PlaneServiceImpl;
+import by.training.karpilovich.lowcost.service.impl.TicketServiceImpl;
 import by.training.karpilovich.lowcost.service.impl.UserServiceImpl;
 
 public class ServiceFactory {
@@ -42,9 +44,8 @@ public class ServiceFactory {
 	public FlightCreatorService getFlightCreatorService() {
 		return FlightCreatorServiceImpl.getInstance();
 	}
-	/*
-	 * public CoefficientService getCoefficientService() { return
-	 * CoefficientServiceImpl.getInstance(); }
-	 */
-
+	
+	public TicketService getTicketService() {
+		return TicketServiceImpl.getInstance();
+	}
 }

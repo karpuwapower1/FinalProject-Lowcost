@@ -9,19 +9,23 @@ import by.training.karpilovich.lowcost.command.impl.AddCityCommand;
 import by.training.karpilovich.lowcost.command.impl.AddDateCoefficientCommand;
 import by.training.karpilovich.lowcost.command.impl.AddFlightCommand;
 import by.training.karpilovich.lowcost.command.impl.AddPlaceCoefficientCommand;
+import by.training.karpilovich.lowcost.command.impl.BuyTicketCommand;
 import by.training.karpilovich.lowcost.command.impl.ChangeLanguageCommand;
 import by.training.karpilovich.lowcost.command.impl.CreateFlightCommand;
+import by.training.karpilovich.lowcost.command.impl.CreateTicketCommand;
 import by.training.karpilovich.lowcost.command.impl.DeleteCityCommand;
 import by.training.karpilovich.lowcost.command.impl.DepositCommand;
 import by.training.karpilovich.lowcost.command.impl.SearchFlightCommand;
 import by.training.karpilovich.lowcost.command.impl.ShowAllCitiesCommand;
 import by.training.karpilovich.lowcost.command.impl.ShowAllFlightsCommand;
+import by.training.karpilovich.lowcost.command.impl.ShowAllTicketCommand;
 import by.training.karpilovich.lowcost.command.impl.SignInCommand;
 import by.training.karpilovich.lowcost.command.impl.SignOutCommand;
 import by.training.karpilovich.lowcost.command.impl.SignUpCommand;
 import by.training.karpilovich.lowcost.command.impl.UpdateCityCommand;
 import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToAddDateCoefficientPageCommand;
 import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToAddPlaceCoefficientPageCommand;
+import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToCreateTicketPageCommand;
 import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToCreateFlightPageCommand;
 import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToPageCommand;
@@ -90,6 +94,18 @@ public class CommandFactory {
 				break;
 			case REDIRECT_TO_ADD_PLACE_COEFFICIENT_PAGE:
 				command = new RedirectToAddPlaceCoefficientPageCommand();
+				break;
+			case REDIRECT_TO_CREATE_TICKET_PAGE:
+				command = new RedirectToCreateTicketPageCommand();
+				break;
+			case CREATE_TICKET:
+				command = new CreateTicketCommand();
+				break;
+			case BUY_TICKET:
+				command = new BuyTicketCommand();
+				break;
+			case SHOW_ALL_TICKET:
+				command = new ShowAllTicketCommand();
 				break;
 			case ADD_PLACE_COEFFICIENT:
 				command = new AddPlaceCoefficientCommand();
