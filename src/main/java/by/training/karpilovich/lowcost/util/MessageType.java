@@ -23,7 +23,6 @@ public enum MessageType {
 	NO_SUCH_PLANE_MODEL("message.error.no_plane_model"),
 	PLANE_MODEL_ALREADY_PRESENTS("message.error.plane_model_already_present"),
 	
-	
 	INVALID_CITY_NAME("message.error.invalid_city_name"),
 	INVALID_COUNTRY_NAME("message.error.invalid_contry_name"),
 	CITY_ALREADY_PRESENTS("message.error.city_already_presents"),
@@ -34,10 +33,15 @@ public enum MessageType {
 	INVALID_FLIGHT_NUMBER("message.error.invalid_flight_number"),
 	FLIGHT_NUMBER_AND_DATE_PRESENT_ALREADY("message.error.flight_with_number_and_date_present"),
 	NULL_FLIGHT("message.error.null_flight"),
+	NO_SUCH_FLIGHT("message.error.no_such_flight"),
+	INSUFFICIENT_PLACE_QUANTITY("message.error.insufficient_places"),
+	INVALID_PASSPORT_NUMBER("message.error.invalid_passport_number"),
 	
 	INVALID_COEFFICINET_VALUE("message.error.invalid_coefficient_value"),
 	INVALID_COEFFICINET_BOUND_FROM("message.error.invalid_coefficient_bound_from"),
 	INVALID_COEFFICINET_BOUND_TO("message.error.invalid_coefficient_bound_to"),
+	
+	NO_SUCH_TICKET("message.error.no_such_ticket"),
 	
 	INSUFFICIENT_FUNDS("message.error.insufficient_funds"),
 	INVALID_AMOUNT("message.error.invalid_amount");
