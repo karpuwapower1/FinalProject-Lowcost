@@ -42,7 +42,7 @@ public class SigninFilter implements Filter {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpSession session = httpRequest.getSession();
 		Cookie[] cookies = httpRequest.getCookies();
-		if (session.getAttribute(Attribute.ROLE.toString()) == null) {
+		if (session.getAttribute(Attribute.USER_ROLE.toString()) == null) {
 			LOGGER.debug("Inside if");
 			User user = initializeUser(cookies, session);
 			setSessionAttribute(session, user);
@@ -79,9 +79,9 @@ public class SigninFilter implements Filter {
 	private void setSessionAttribute(HttpSession session, User user) {
 		if (user != null) {
 			session.setAttribute(Attribute.USER.toString(), user);
-			session.setAttribute(Attribute.ROLE.toString(), user.getRole());
+			session.setAttribute(Attribute.USER_ROLE.toString(), user.getRole());
 			return;
 		}
-		session.setAttribute(Attribute.ROLE.toString(), Role.GUEST);
+		session.setAttribute(Attribute.USER_ROLE.toString(), Role.GUEST);
 	}
 }
