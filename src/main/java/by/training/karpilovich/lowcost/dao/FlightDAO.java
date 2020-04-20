@@ -2,6 +2,7 @@ package by.training.karpilovich.lowcost.dao;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -25,5 +26,7 @@ public interface FlightDAO {
 	int countFlightWithNumberAndDate(String number, Calendar date) throws DAOException;
 	
 	List<Flight> getAllFlights() throws DAOException;
+	
+	Optional<Flight> getFlightById(int flightId) throws DAOException;
 
 }

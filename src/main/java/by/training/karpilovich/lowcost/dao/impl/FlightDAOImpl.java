@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -88,11 +89,25 @@ public class FlightDAOImpl implements FlightDAO {
 			+ " JOIN date_coeff AS dc ON flight.id = dc.flight_id AND CURDATE() BETWEEN dc.from and dc.to "
 			+ " JOIN place_coeff AS pc ON flight.id = pc.flight_id AND available_places BETWEEN pc.from and pc.to "
 			+ " WHERE city_from.id=? AND city_to.id=? AND Date(date)=? AND available_places>=?" + " ORDER BY flight.id";
+	
+	private static final String SELECT_FLIGHT_BY_ID = "SELECT "
+			+ " flight.id AS id, number, date, default_price * dc.coeff * pc.coeff AS price, default_luggage_kg, available_places,"
+			+ " primary_boarding_right_price, plane.model, plane.places_quantity, price_for_every_kg_overweight, "
+			+ " city_from.id AS city_from_id, city_from.name  AS city_from_name, city_from.country_name AS country_from, "
+			+ " city_to.id AS city_to_id, city_to.name AS city_to_name, city_to.country_name AS country_to"
+			+ " FROM flight " + " JOIN city AS city_from ON flight.from_id = city_from.id "
+			+ " JOIN city AS city_to ON flight.to_id = city_to.id "
+			+ " JOIN plane ON flight.plane_model = plane.model  "
+			+ " JOIN date_coeff AS dc ON flight.id = dc.flight_id AND CURDATE() BETWEEN dc.from and dc.to "
+			+ " JOIN place_coeff AS pc ON flight.id = pc.flight_id AND available_places BETWEEN pc.from and pc.to "
+			+ " WHERE flight.id=?" + " ORDER BY flight.id";
 
 	private static final int SELECT_FLIGHT_BY_FROM_TO_DATE_QUANTITY_FROM_INDEX = 1;
 	private static final int SELECT_FLIGHT_BY_FROM_TO_DATE_QUANTITY_TO_INDEX = 2;
 	private static final int SELECT_FLIGHT_BY_FROM_TO_DATE_QUANTITY_DATE_INDEX = 3;
 	private static final int SELECT_FLIGHT_BY_FROM_TO_DATE_QUANTITY_QUANTITY_INDEX = 4;
+	
+	private static final int SELECT_FLIGHT_BY_ID_ID_INDEX = 1;
 
 	private static final String RESULT_SELECT_FLIGHT_FLIGHT_ID = "id";
 	private static final String RESULT_SELECT_FLIGHT_FLIGHT_NUMBER = "number";
@@ -217,6 +232,25 @@ public class FlightDAOImpl implements FlightDAO {
 			return flights;
 		} catch (ConnectionPoolException | SQLException e) {
 			LOGGER.error("Error while getting all flights ", e);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
+		}
+	}
+	
+	@Override
+	public Optional<Flight> getFlightById(int flightId) throws DAOException {
+		ConnectionPool pool = ConnectionPool.getInstance();
+		try (Connection connection = pool.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SELECT_FLIGHT_BY_ID);) {
+			statement.setInt(SELECT_FLIGHT_BY_ID_ID_INDEX, flightId);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				Optional<Flight> optional = Optional.empty();
+				if (resultSet.next()) {
+					optional = Optional.of(buildFlight(resultSet));
+				}
+				return optional;
+			}
+		} catch (SQLException | ConnectionPoolException e) {
+			LOGGER.error("Error while getting user by id=" + flightId, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}

@@ -22,5 +22,7 @@ public interface FlightService {
 	int getFlightCountWithNumberAndDate(String number, Calendar date) throws ServiceException;
 	
 	List<Flight> getAllFlights() throws ServiceException;
+	
+	Flight getFlightById(String id) throws ServiceException;
 
 }

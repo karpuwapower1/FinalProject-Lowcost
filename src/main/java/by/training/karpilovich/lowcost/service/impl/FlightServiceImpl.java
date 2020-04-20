@@ -35,7 +35,7 @@ import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 import by.training.karpilovich.lowcost.validator.flight.DateValidator;
 import by.training.karpilovich.lowcost.validator.flight.LuggageValidator;
-import by.training.karpilovich.lowcost.validator.flight.NumberAndDateValidator;
+import by.training.karpilovich.lowcost.validator.flight.NumberAndDateAbsenceValidator;
 import by.training.karpilovich.lowcost.validator.flight.NumberValidator;
 import by.training.karpilovich.lowcost.validator.flight.PassengerQuantityValidator;
 import by.training.karpilovich.lowcost.validator.flight.PriceValidator;
@@ -116,6 +116,21 @@ public class FlightServiceImpl implements FlightService {
 	public List<Flight> getAllFlights() throws ServiceException {
 		try {
 			return getFlightDAO().getAllFlights();
+		} catch (DAOException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+	
+	@Override
+	public Flight getFlightById(String flightId) throws ServiceException {
+		int id = takeIntFromString(flightId);
+		try {
+			Optional<Flight> optional = getFlightDAO().getFlightById(id);
+			if (optional.isPresent()) {
+				return optional.get();
+			}
+			LOGGER.error("Error while getting flight by id. No flight with id=" + id);
+			throw new ServiceException(MessageType.NO_SUCH_FLIGHT.getMessage());
 		} catch (DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -223,7 +238,7 @@ public class FlightServiceImpl implements FlightService {
 		Validator luggageValidator = new LuggageValidator(luggage);
 		Validator dateValidator = new DateValidator(date);
 		Validator numberValidator = new NumberValidator(number);
-		Validator numberAndDateValidator = new NumberAndDateValidator(number, date);
+		Validator numberAndDateValidator = new NumberAndDateAbsenceValidator(number, date);
 		validator.setNext(primaryPriceValidator);
 		primaryPriceValidator.setNext(luggageValidator);
 		luggageValidator.setNext(dateValidator);

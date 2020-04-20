@@ -43,7 +43,7 @@ import by.training.karpilovich.lowcost.validator.coefficient.PlaceCoefficientBou
 import by.training.karpilovich.lowcost.validator.coefficient.PlaceCoefficientBoundToValidator;
 import by.training.karpilovich.lowcost.validator.flight.DateValidator;
 import by.training.karpilovich.lowcost.validator.flight.LuggageValidator;
-import by.training.karpilovich.lowcost.validator.flight.NumberAndDateValidator;
+import by.training.karpilovich.lowcost.validator.flight.NumberAndDateAbsenceValidator;
 import by.training.karpilovich.lowcost.validator.flight.NumberValidator;
 import by.training.karpilovich.lowcost.validator.flight.PriceValidator;
 
@@ -255,7 +255,7 @@ public class FlightCreatorServiceImpl implements FlightCreatorService {
 		Validator luggageValidator = new LuggageValidator(luggage);
 		Validator dateValidator = new DateValidator(date);
 		Validator numberValidator = new NumberValidator(number);
-		Validator numberAndDateValidator = new NumberAndDateValidator(number, date);
+		Validator numberAndDateValidator = new NumberAndDateAbsenceValidator(number, date);
 		Validator overweightPriceValidator = new PriceValidator(overweightPrice);
 		validator.setNext(primaryPriceValidator);
 		primaryPriceValidator.setNext(luggageValidator);
