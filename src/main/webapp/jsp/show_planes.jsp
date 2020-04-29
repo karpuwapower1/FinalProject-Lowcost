@@ -14,40 +14,40 @@
 <link rel="stylesheet" href="${style}/css/main_page.css" />
 <fmt:setLocale value="${pageContext.response.locale}" scope="session" />
 <fmt:bundle basename="pagecontent" prefix="title.">
-	<title><fmt:message key="all_cities" /></title>
+	<title><fmt:message key="show_planes" /></title>
 </fmt:bundle>
 </head>
 
 <header>
-	<c:set var="page" value="ALL_CITIES" scope="request" />
+	<c:set var="page" value="SHOW_PLANES" scope="request" />
 	<c:import url="/general/header.jsp" />
 </header>
 
 <body>
-	<fmt:bundle basename="pagecontent" prefix="all_cities.table.">
+	<fmt:bundle basename="pagecontent" prefix="show_planes.">
 		<table class="table table-bordered text-center">
 			<thead>
 				<tr>
-					<th scope="col"><fmt:message key="city" /></th>
-					<th scope="col"><fmt:message key="country" /></th>
+					<th scope="col"><fmt:message key="plane" /></th>
+					<th scope="col"><fmt:message key="passenger_quantity" /></th>
 					<th scope="col"><fmt:message key="action" /></th>
 			</thead>
 			<tbody>
-				<c:forEach var="city" items="${CITIES}">
+				<c:forEach var="plane" items="${PLANES}">
 					<tr>
-						<td><c:out value="${city.name}" /></td>
-						<td><c:out value="${city.country}" /></td>
+						<td><c:out value="${plane.model}" /></td>
+						<td><c:out value="${plane.placeQuantity}" /></td>
 						<td>
 							<form name="action" method="post">
 							<input type="hidden" name="from_page" value="${page}" /> 
-								<input type="hidden" name="city_id" value="${city.id}">
-								<input type="hidden" name="to_page" value="UPDATE_CITY">
+								<input type="hidden" name="city_id" value="${plane.model}">
+								<input type="hidden" name="to_page" value="UPDATE_PLANE">
 								<button class="btn btn-primary" type="submit" name="command"
-									value="REDIRECT_TO_UPDATE_CITY_PAGE">
+									value="REDIRECT_TO_UPDATE_PLANE_PAGE">
 									<fmt:message key="update_button" />
 								</button>
 								<button class="btn btn-primary" type="submit" name="command"
-									value="DELETE_CITY">
+									value="DELETE_PLANE">
 									<fmt:message key="delete_button" />
 								</button>
 							</form>

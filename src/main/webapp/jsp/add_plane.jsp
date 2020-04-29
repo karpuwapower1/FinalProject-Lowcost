@@ -14,29 +14,29 @@
 <link rel="stylesheet" href="${style}/css/main_page.css" />
 <fmt:setLocale value="${pageContext.response.locale}" scope="session" />
 <fmt:bundle basename="pagecontent" prefix="title.">
-	<title><fmt:message key="add_city" /></title>
+	<title><fmt:message key="add_plane" /></title>
 </fmt:bundle>
 </head>
 
 <header>
-	<c:set var="page" value="ADD_CITY" scope="request" />
+	<c:set var="page" value="ADD_PLANE" scope="request" />
 	<c:import url="/general/header.jsp" />
 </header>
 
 <body>
-	<fmt:bundle basename="pagecontent" prefix="add_city.input.">
+	<fmt:bundle basename="pagecontent" prefix="add_plane.">
 		<form name="input" class="border border-light " accept-charset="UTF-8" method="post">
 		<input type="hidden" name="from_page" value="${page}" />
 			<div class="login-form col-md-4 offset-md-4">
-				<input type="text" class="form-control" name="country" value=""
-					placeholder="<fmt:message key="country"/>" required
-					pattern="([А-Я]{1}[А-Яа-я]{1,})" /> <input type="text"
-					class="form-control" name="city" value=""
-					placeholder="<fmt:message key="city"/>" required
-					pattern="([А-Я]{1}[А-Яа-я]{1,})" />
+				<input type="text" class="form-control" name="model" value=""
+					placeholder="<fmt:message key="model"/>" required
+					pattern="([А-Я]{1}[А-Яа-я0-9-]{1,})" /> <input type="text"
+					class="form-control" name="quantity" value=""
+					placeholder="<fmt:message key="place_quantity"/>" required
+					pattern="([0-9]{1,})" />
 				<button class="btn btn-primary btn-block " type="submit"
-					name="command" value="ADD_CITY">
-					<fmt:message key="add_city" />
+					name="command" value="ADD_PLANE">
+					<fmt:message key="add_plane" />
 				</button>
 			</div>
 		</form>

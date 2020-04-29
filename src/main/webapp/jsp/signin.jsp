@@ -4,7 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
-<html lang='en'>
+<html lang='ru'>
 <head>
 <meta charset="utf-8">
 <meta name="viewport"
@@ -26,6 +26,7 @@
 <body>
 	<fmt:bundle basename="pagecontent" prefix="signin.input.">
 		<form name="input" class="border border-light " method="post">
+		<input type="hidden" name="from_page" value="${page}" /> 
 			<p class="login-header text-center">
 				<fmt:message key="title" />
 			</p>

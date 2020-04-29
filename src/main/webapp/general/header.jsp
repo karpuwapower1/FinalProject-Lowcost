@@ -1,9 +1,21 @@
+<!DOCTYPE html>
 <%@ page contentType="text/html; charset=UTF-8" language="java"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
-<html lang="en">
+<html lang='ru'>
+
+<head>
+<meta charset="UTF-8" http-equiv="Content-Type"
+	content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<c:set var="style" value="${pageContext.request.contextPath}" />
+<link rel="stylesheet" href="${style}/css/bootstrap.min.css" />
+<link rel="stylesheet" href="${style}/css/main_page.css" />
+<fmt:setLocale value="${pageContext.response.locale}" scope="session" />
+</head>
 
 <header>
 	<nav class="navbar navbar-expand-sm navbar-light">
@@ -54,7 +66,6 @@
 											</form>
 
 											<form method="post" name="show_all_cities">
-
 												<input type="hidden" name="to_page" value="ALL_CITIES" /> <input
 													type="hidden" name="from_page" value="${page}" />
 												<button type="submit"
@@ -73,6 +84,7 @@
 													<fmt:message key="admin.add_flight" />
 												</button>
 											</form>
+
 											<form method="post" name="show_all_flight">
 												<input type="hidden" name="to_page" value="all_flight" /> <input
 													type="hidden" name="from_page" value="${page }" />
@@ -80,6 +92,44 @@
 													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
 													value="SHOW_ALL_FLIGHTS">
 													<fmt:message key="admin.show_all_flights" />
+												</button>
+											</form>
+
+											<form method="post" name="show_next_twenty_four_hours_flights">
+											 <input type="hidden" name="from_page" value="${page }" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="SHOW_NEXT_TWENTY_FOUR_HOURS_FLIGHTS">
+													<fmt:message key="admin.show_next_twenty_four_hours_flights" />
+												</button>
+											</form>
+											
+											<form method="post" name="show_flights_between_dates">
+											 <input type="hidden" name="from_page" value="${page }" />
+											 <input type="hidden" name="to_page" value="CHOOSE_DATE_BOUNDS" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="REDIRECT">
+													<fmt:message key="admin.show_flights_between_dates" />
+												</button>
+											</form>
+											
+												<form method="post" name="show_all_planes">
+											 <input type="hidden" name="from_page" value="${page }" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="SHOW_ALL_PLANES">
+													<fmt:message key="admin.show_planes" />
+												</button>
+											</form>
+											
+											<form method="post" name="add_plane">
+											 <input type="hidden" name="from_page" value="${page }" />
+											 <input type="hidden" name="to_page" value="ADD_PLANE" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="REDIRECT">
+													<fmt:message key="admin.add_plane" />
 												</button>
 											</form>
 										</c:when>
@@ -103,6 +153,16 @@
 													<fmt:message key="user.show_all_tickets" />
 												</button>
 											</form>
+											
+											<form method="post" name="delete_user">
+												<input type="hidden" name="to_page" value="DELETE_USER" />
+												<input type="hidden" name="from_page" value="${page }" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="REDIRECT">
+													<fmt:message key="user.delete_user" />
+												</button>
+											</form>
 										</c:otherwise>
 									</c:choose>
 								</fmt:bundle>
@@ -119,9 +179,40 @@
 							</fmt:bundle>
 						</div>
 					</c:if>
-					
+
 				</div>
 			</div>
+
+			<c:if test="${page.equals('SHOW_FLIGHTS') }">
+				<div class="nav-item dropdown">
+					<fmt:bundle basename="pagecontent" prefix="header.">
+						<button type="button"
+							class="nav-link dropdown-toggle btn btn-link btn-lg"
+							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<fmt:message key="sort_flight" />
+						</button>
+					</fmt:bundle>
+					<div
+						class="dropdown-menu dropdown-menu-right mt-0 mr-0 ml-0 mb-0 pt-0 pb-0 pr-1 pl-0">
+						<fmt:bundle basename="pagecontent" prefix="header.sort_flights.">
+							<form method="post" name="sort_flight">
+								<input type="hidden" name="from_page" value="${page}" />
+								<button type="submit" class="dropdown-item pt-0 pb-0 pr-1 pl-0"
+									name="command" value="SORT_FLIGHTS_BY_TICKET_PRICE">
+									<fmt:message key="sort_flights_by_ticket_price" />
+								</button>
+							</form>
+							<form method="post" name="sort_flight">
+								<input type="hidden" name="from_page" value="${page}" />
+								<button type="submit" class="dropdown-item pt-0 pb-0 pr-1 pl-0"
+									name="command" value="SORT_FLIGHTS_BY_DEPARTURE_DATE">
+									<fmt:message key="sort_flights_by_departure_date" />
+								</button>
+							</form>
+						</fmt:bundle>
+					</div>
+				</div>
+			</c:if>
 
 			<fmt:bundle basename="pagecontent" prefix="header.">
 				<div class="navbar-nav ml-auto">

@@ -69,7 +69,8 @@ form {
 
 .table {
 	font-family: 'Sen', sans-serif;
-	font-size : 10px;
+	font-size : 12px;
+	text-align: center;
 }
 
 .error-code {

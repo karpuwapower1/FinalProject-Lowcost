@@ -3,8 +3,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
-<html lang='en'>
+<html lang='ru'>
 
 <head>
 
@@ -30,6 +29,7 @@
 		<div class="container">
 			<div class="grid">
 				<form name="select" method="post">
+				<input type="hidden" name="from_page" value="${page}" /> 
 					<div class="row">
 						<select class="custom-select  custom-select-lg col-md-3"
 							name="country_from" required>
@@ -37,13 +37,15 @@
 							<c:forEach var="city" items="${CITIES }">
 								<option value="${city.id }">${city.country},${ city.name}</option>
 							</c:forEach>
-						</select> <select class="custom-select  custom-select-lg col-md-3"
+						</select>
+						 <select class="custom-select  custom-select-lg col-md-3"
 							name="country_to" required>
 							<option selected><fmt:message key="destinationCountry" /></option>
 							<c:forEach var="city" items="${CITIES }">
 								<option value="${city.id }">${city.country},${ city.name}</option>
 							</c:forEach>
-						</select> <input class="form-control form-control-lg col-md-3"
+						</select>
+						 <input class="form-control form-control-lg col-md-3"
 							placeholder="<fmt:message key="departureDate"/>" required
 							class="textbox-n" type="text" onfocus="(this.type='date')"
 							onblur="(this.type='text')" name="date" value="" /> <input

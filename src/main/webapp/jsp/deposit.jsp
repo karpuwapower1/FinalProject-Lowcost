@@ -7,7 +7,7 @@
 
 
 
-<html lang='en'>
+<html lang='ru'>
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -30,6 +30,7 @@
 <body>
 	<fmt:bundle basename="pagecontent" prefix="deposit.input.">
 		<form name="input" class="border border-light " method="post">
+		<input type="hidden" name="from_page" value="${page}" /> 
 			<div class="login-form col-md-4 offset-md-4">
 				<input type="text" class="form-control"
 					placeholder="<fmt:message key="current_amount"/>, <fmt:formatNumber value="${user.balanceAmount}"/>"

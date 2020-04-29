@@ -4,7 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
-<html lang='en'>
+<html lang='ru'>
 <head>
 <meta charset="utf-8">
 <meta name="viewport"
@@ -20,6 +20,7 @@
 
 <header>
 	<c:set var="page" value="SHOW_TICKET" scope="request" />
+	<c:set var="now" value="${java.util.GregorianCalendar }"/>
 	<c:import url="/general/header.jsp" />
 </header>
 
@@ -37,12 +38,16 @@
 					<th scope="col"><fmt:message key="price" /></th>
 					<th scope="col"><fmt:message key="luggage" /></th>
 					<th scope="col"><fmt:message key="purchase_date" /></th>
+					<c:if test="${USER_ROLE == 'USER' }" >
 					<th scope="col"><fmt:message key="action" /></th>
+					</c:if>
 					<th scope="col"></th>
 			</thead>
 			<tbody>
 				<c:forEach var="ticket" items="${TICKETS}">
 					<tr>
+					<td><c:out
+								value="${ticket.number}" /></td>
 						<td><c:out
 								value="${ticket.flight.from.name}, ${ticket.flight.from.country}" /></td>
 						<td><c:out
@@ -55,11 +60,16 @@
 						<td><fmt:formatNumber value="${ticket.price}" /></td>
 						<td><c:out value="${ticket.luggageQuantity}" />/<fmt:formatNumber
 								value="${ticket.overweightLuggagePrice}" /></td>
+								<td><fmt:formatDate value="${ticket.purchaseDate.time }"/></td>
 						<td><form name="action" method="post">
+						<input type="hidden" name="from_page" value="${page}" /> 
+						<input type="hidden" name="number" value="${ticket.number}"/>
+							<c:if test="${USER_ROLE == 'USER' }" >
 								<button class="btn btn-primary" type="submit" name="command"
-									value="RETURN">
+									value="RETURN_TICKET">
 									<fmt:message key="command" />
 								</button>
+								</c:if>
 							</form></td>
 					</tr>
 				</c:forEach>

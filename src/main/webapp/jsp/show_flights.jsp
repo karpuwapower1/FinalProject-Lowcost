@@ -4,7 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
-<html lang='en'>
+<html lang='ru'>
 <head>
 <meta charset="utf-8">
 <meta name="viewport"
@@ -43,7 +43,7 @@
 			</thead>
 			<tbody>
 				<c:forEach var="flight" items="${FLIGHTS}">
-					
+
 					<tr>
 						<td><c:out value="${flight.number}" /></td>
 						<td><fmt:formatDate value="${flight.date.time}" />
@@ -61,16 +61,20 @@
 
 						<c:if test="${USER_ROLE == 'ADMIN'}">
 							<td>
-								<form name="action" method="post">
-								<input type=hidden name=flight_id value=${flight.id } />
-									<input type="hidden" name="flight_id" value="${flight.id}">
-									<button class="btn btn-primary" type="submit" name="command"
-										value="REDIRECT_TO_UPDATE_FLIGHT_PAGE">
+								<form method="post" name="update_flight">
+									<input type="hidden" name="from_page" value="${page}" /> <input
+										type="hidden" name="flight_id" value="${flight.id }" />
+									<button type="submit" class="btn btn-primary btn-sm"
+										name="command" value="REDIRECT_TO_UPDATE_FLIGHT_PAGE">
 										<fmt:message key="update_button" />
 									</button>
-									<button class="btn btn-primary" type="submit" name="command"
-										value="DELETE_FLIGHT">
+									<button type="submit" class="btn btn-primary btn-sm"
+										name="command" value="DELETE_FLIGHT">
 										<fmt:message key="delete_button" />
+									</button>
+									<button type="submit" class="btn btn-primary btn-sm"
+										name="command" value="SHOW_SOLD_TICKETS">
+										<fmt:message key="sold_ticket" />
 									</button>
 								</form>
 							</td>
@@ -79,7 +83,8 @@
 						<c:if test="${USER_ROLE == 'USER'}">
 							<td>
 								<form name="action" method="post">
-									<input type=hidden name=flight_id value=${flight.id } />
+									<input type="hidden" name="from_page" value="${page}" /> <input
+										type=hidden name=flight_id value=${flight.id } />
 									<button class="btn btn-primary" type="submit" name="command"
 										value="REDIRECT_TO_CREATE_TICKET_PAGE">
 										<fmt:message key="buy_ticket" />

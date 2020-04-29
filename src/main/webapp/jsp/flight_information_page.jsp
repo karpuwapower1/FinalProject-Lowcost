@@ -16,13 +16,13 @@
 <link rel="stylesheet" href="${style}/css/main_page.css" />
 <fmt:setLocale value="${pageContext.response.locale}" scope="session" />
 <fmt:bundle basename="pagecontent" prefix="title.">
-	<title><fmt:message key="flight_preview" /></title>
+	<title><fmt:message key="flight_info" /></title>
 </fmt:bundle>
 </head>
 
 
 <header>
-	<c:set var="page" value="FLIGHT_PREVIEW" scope="request" />
+	<c:set var="page" value="FLIGHT_INFO" scope="request" />
 	<c:import url="/general/header.jsp" />
 </header>
 
@@ -76,17 +76,6 @@
 							</tr>
 						</c:forEach>
 						<tr>
-							<td colspan="3">
-								<div class="login-form col-md-4 offset-md-4">
-									<button class="btn btn-primary btn-block"
-										type="submit" name="command"
-										value="REDIRECT_TO_ADD_PLACE_COEFFICIENT_PAGE">
-										<fmt:message key="add_place_coefficient" />
-									</button>
-								</div>
-							</td>
-						</tr>
-						<tr>
 							<td colspan="3"><fmt:message
 									key="add_date_coefficient.title" /></td>
 						</tr>
@@ -97,29 +86,18 @@
 								<td>${coefficient.value}</td>
 							</tr>
 						</c:forEach>
-						<tr>
-							<td colspan="3">
-								<div class="login-form col-md-4 offset-md-4">
-									<button class="btn btn-primary btn-block" type="submit"
-										name="command" value="REDIRECT_TO_ADD_DATE_COEFFICIENT_PAGE">
-										<fmt:message key="add_date_coefficient" />
-									</button>
-								</div>
-							</td>
-						</tr>
 					</tbody>
 				</table>
-				<div class="login-form col-md-4 offset-md-4">
-					<button class="btn btn-primary btn-block" type="submit"
-						name="command" value="ADD_FLIGHT">
-						<fmt:message key="add_flight" />
-					</button>
-
-					<button class="btn btn-primary btn-block" type="submit"
-						name="command" value="CANCEL_FLIGHT_ADDING">
-						<fmt:message key="cancel" />
-					</button>
-				</div>
+				
+				
+				<button class="btn btn-primary" type="submit" name="command"
+										value="DELETE_FLIGHT">
+										<fmt:message key="delete_button" />
+									</button>
+									<button class="btn btn-primary" type="submit" name="command"
+										value="SHOW_SOLD_TICKETS">
+										<fmt:message key="sold_ticket" />
+									</button>
 			</form>
 		</fmt:bundle>
 	</div>
