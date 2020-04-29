@@ -16,7 +16,7 @@ public interface FlightService {
 
 	void addFlight(Flight flight) throws ServiceException;
 
-	void removeFlight(String flightId) throws ServiceException;
+	void removeFlightAndReturnAllPurchasedTickets(String flightId) throws ServiceException;
 
 	void updateFlight(String flightId, String number, City from, City to, String date, String defaultPrice,
 			String primaryBoardingPrice, Plane plane, String permittedLuggage, String priceForKgOverweight)

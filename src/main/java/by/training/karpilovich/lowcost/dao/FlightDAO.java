@@ -14,7 +14,7 @@ public interface FlightDAO {
 
 	void update(Flight flight) throws DAOException;
 
-	void remove(Flight flight) throws DAOException;
+	void removeFlightAndReturnAllPurchasedTickets(Flight flight) throws DAOException;
 
 	List<Flight> getFlightsByFromToDateAndPassengerQuantity(City from, City to, Calendar date,
 			int quantity) throws DAOException;

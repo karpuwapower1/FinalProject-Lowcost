@@ -168,7 +168,7 @@ public class FlightDAOImpl implements FlightDAO {
 	}
 
 	@Override
-	public void remove(Flight flight) throws DAOException {
+	public void removeFlightAndReturnAllPurchasedTickets(Flight flight) throws DAOException {
 		try (Connection connection = pool.getConnection();
 				CallableStatement statement = connection.prepareCall(REMOVE_FLIGHT_CALL_QUERY);) {
 			statement.setInt(REMOVE_FLIGHT_CALL_QUERY_ID_PARAMETER, flight.getId());

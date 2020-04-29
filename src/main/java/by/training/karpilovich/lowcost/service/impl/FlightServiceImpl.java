@@ -106,10 +106,10 @@ public class FlightServiceImpl implements FlightService {
 	}
 
 	@Override
-	public void removeFlight(String flightId) throws ServiceException {
+	public void removeFlightAndReturnAllPurchasedTickets(String flightId) throws ServiceException {
 		Flight flight = getFlightById(flightId);
 		try {
-			flightDAO.remove(flight);
+			flightDAO.removeFlightAndReturnAllPurchasedTickets(flight);
 		} catch (DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}

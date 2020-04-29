@@ -18,7 +18,7 @@ public class DeleteFlightCommand implements Command {
 			throws ServletException, IOException {
 		String flightId = request.getParameter(JSPParameter.FLIGHT_ID);
 		try {
-			getFlightService().removeFlight(flightId);
+			getFlightService().removeFlightAndReturnAllPurchasedTickets(flightId);
 			return new ShowAllFlightsCommand().execute(request, response);
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
