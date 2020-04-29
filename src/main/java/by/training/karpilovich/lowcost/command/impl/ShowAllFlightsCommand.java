@@ -8,9 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.Page;
@@ -20,8 +17,6 @@ import by.training.karpilovich.lowcost.service.FlightService;
 
 public class ShowAllFlightsCommand implements Command {
 	
-	private static final Logger LOGGER = LogManager.getLogger(ShowAllFlightsCommand.class);
-
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -29,11 +24,8 @@ public class ShowAllFlightsCommand implements Command {
 		HttpSession session = request.getSession();
 		try {
 			List<Flight> flights = flightService.getAllFlights();
-			for (Flight flight : flights) {
-				LOGGER.debug(flight.toString());
-			}
 			session.setAttribute(Attribute.FLIGHTS.toString(), flights);
-			return Page.RESULT.getAddress();
+			return Page.SHOW_FLIGHTS.getAddress();
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
 			return Page.DEFAULT.getAddress();

@@ -13,5 +13,4 @@ public enum Role {
 	public int getId() {
 		return id;
 	}
-
 }

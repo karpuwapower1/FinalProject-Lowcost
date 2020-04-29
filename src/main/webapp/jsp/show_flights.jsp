@@ -4,7 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
-<html lang='en'>
+<html lang='ru'>
 <head>
 <meta charset="utf-8">
 <meta name="viewport"
@@ -19,12 +19,11 @@
 </head>
 
 <header>
-	<c:set var="page" value="ALL_CITIES" scope="request" />
+	<c:set var="page" value="SHOW_FLIGHTS" scope="request" />
 	<c:import url="/general/header.jsp" />
 </header>
 
 <body>
-	<p>${ERROR_MESSAGE}</p>
 	<fmt:bundle basename="pagecontent" prefix="all_flights.table.">
 		<table class="table table-bordered text-center">
 			<thead>
@@ -38,45 +37,67 @@
 					<th scope="col"><fmt:message key="places" /></th>
 					<th scope="col"><fmt:message key="luggage" /></th>
 					<th scope="col"><fmt:message key="overweight_price" /></th>
-					<th scope="col"><fmt:message key="action" /></th>
+					<c:if test="${USER_ROLE == 'USER' || USER_ROLE == 'ADMIN' }">
+						<th scope="col"><fmt:message key="action" /></th>
+					</c:if>
 			</thead>
 			<tbody>
 				<c:forEach var="flight" items="${FLIGHTS}">
-					<input type=hidden name=flight_id value=${flight.id } />
+
 					<tr>
 						<td><c:out value="${flight.number}" /></td>
 						<td><fmt:formatDate value="${flight.date.time}" />
 						<td><c:out
 								value="${flight.from.country}, ${flight.from.name}" /></td>
 						<td><c:out value="${flight.to.country}, ${flight.to.name}" /></td>
-						<td><c:out value="${flight.price}" /></td>
+						<td><fmt:formatNumber value="${flight.price}" /></td>
 						<td><c:out value="${flight.planeModel.model}" /></td>
 						<td><c:out
 								value="${flight.availablePlaceQuantity} / ${flight.planeModel.placeQuantity }" />
 						<td><c:out value="${flight.permittedLuggageWeigth}" /></td>
-						<td><c:out value="${flight.priceForEveryKgOverweight}" /></td>
-						<td>
-							<form name="action" method="post">
-								<input type="hidden" name="city" value="${city.name}"> <input
-									type="hidden" name="country" value="${city.country}"> <input
-									type="hidden" name="city_id" value="${city.id}"> <input
-									type="hidden" name="to_page" value="update_city">
-								<button class="btn btn-primary" type="submit" name="command"
-									value="REDIRECT_TO_UPDATE_FLIGHT_PAGE">
-									<fmt:message key="update_button" />
-								</button>
-								<button class="btn btn-primary" type="submit" name="command"
-									value="DELETE_FLIGHT">
-									<fmt:message key="delete_button" />
-								</button>
-							</form>
-						</td>
+						<td><fmt:formatNumber
+								value="${flight.priceForEveryKgOverweight}" /></td>
+
+
+						<c:if test="${USER_ROLE == 'ADMIN'}">
+							<td>
+								<form method="post" name="update_flight">
+									<input type="hidden" name="from_page" value="${page}" /> <input
+										type="hidden" name="flight_id" value="${flight.id }" />
+									<button type="submit" class="btn btn-primary btn-sm"
+										name="command" value="REDIRECT_TO_UPDATE_FLIGHT_PAGE">
+										<fmt:message key="update_button" />
+									</button>
+									<button type="submit" class="btn btn-primary btn-sm"
+										name="command" value="DELETE_FLIGHT">
+										<fmt:message key="delete_button" />
+									</button>
+									<button type="submit" class="btn btn-primary btn-sm"
+										name="command" value="SHOW_SOLD_TICKETS">
+										<fmt:message key="sold_ticket" />
+									</button>
+								</form>
+							</td>
+						</c:if>
+
+						<c:if test="${USER_ROLE == 'USER'}">
+							<td>
+								<form name="action" method="post">
+									<input type="hidden" name="from_page" value="${page}" /> <input
+										type=hidden name=flight_id value=${flight.id } />
+									<button class="btn btn-primary" type="submit" name="command"
+										value="REDIRECT_TO_CREATE_TICKET_PAGE">
+										<fmt:message key="buy_ticket" />
+									</button>
+								</form>
+							</td>
+						</c:if>
 					</tr>
 				</c:forEach>
 			</tbody>
 		</table>
 	</fmt:bundle>
-
+	<div class="error-code col-md-4 offset-md-4">${ERROR_MESSAGE}</div>
 	<script type="text/javascript" src="${style}/js/jquery-3.3.1.min.js"></script>
 	<script type="text/javascript" src="${style}/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="${style}/js/popper.min.js"></script>

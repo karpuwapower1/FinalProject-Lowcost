@@ -1,5 +1,6 @@
 package by.training.karpilovich.lowcost.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,8 +15,10 @@ import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.service.UserService;
+import by.training.karpilovich.lowcost.service.util.ServiceUtil;
 import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
+import by.training.karpilovich.lowcost.validator.user.AmountValidator;
 import by.training.karpilovich.lowcost.validator.user.EmailPresenceValidator;
 import by.training.karpilovich.lowcost.validator.user.EmailValidator;
 import by.training.karpilovich.lowcost.validator.user.NameValidator;
@@ -27,16 +30,17 @@ public class UserServiceImpl implements UserService {
 	private static final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
 
 	private UserDAO userDAO = DAOFactory.getInstance().getUserDAO();
+	private ServiceUtil serviceUtil = new ServiceUtil();
 
 	private UserServiceImpl() {
 	}
 
-	private static final class InitializatorServiceInstanceHolder {
+	private static final class UserServiceInstanceHolder {
 		private static final UserServiceImpl INSTANCE = new UserServiceImpl();
 	}
 
 	public static UserService getInstance() {
-		return InitializatorServiceInstanceHolder.INSTANCE;
+		return UserServiceInstanceHolder.INSTANCE;
 	}
 
 	@Override
@@ -61,7 +65,7 @@ public class UserServiceImpl implements UserService {
 		Validator validator = getUserValidator(email, password, repeatPassword, firstName);
 		try {
 			validator.validate();
-			User user = buildUser(email, password, firstName, lastName);
+			User user = buildUser(email, password, firstName, lastName, BigDecimal.ZERO);
 			userDAO.add(user);
 			return user;
 		} catch (ValidatorException | DAOException e) {
@@ -70,7 +74,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void delete(User user, String repeatedPassword) throws ServiceException {
+	public void deleteUser(User user, String repeatedPassword) throws ServiceException {
+		checkUserOnNull(user);
 		Validator passwordValidator = new PasswordMatchValidator(user.getPassword(), repeatedPassword);
 		try {
 			passwordValidator.validate();
@@ -91,6 +96,28 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
+	public User deposit(User user, String amount) throws ServiceException {
+		checkUserOnNull(user);
+		BigDecimal additionalAmount = serviceUtil.takeBigDecimalFromString(amount);
+		Validator validator = new AmountValidator(additionalAmount);
+		try {
+			validator.validate();
+			BigDecimal newBalance = user.getBalanceAmount().add(additionalAmount);
+			User update = buildUser(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName(), newBalance);
+			userDAO.update(update);
+			return update;
+		} catch (ValidatorException | DAOException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+	
+	private void checkUserOnNull(User user) throws ServiceException {
+		if (user == null) {
+			throw new ServiceException(MessageType.USER_IS_NULL.getMessage());
+		}
+	}
+	
 	private Validator getUserValidator(String email, String password, String repeatPassword, String firstName) {
 		Validator validator = new EmailValidator(email);
 		Validator emailPresenceValidator = new EmailPresenceValidator(email);
@@ -111,14 +138,14 @@ public class UserServiceImpl implements UserService {
 		return validator;
 	}
 
-	private User buildUser(String email, String password, String firstName, String lastName) {
+	private User buildUser(String email, String password, String firstName, String lastName, BigDecimal amount) {
 		UserBuilder builder = new UserBuilder();
 		builder.setUserEmail(email);
 		builder.setUserPassword(password);
 		builder.setUserFirstName(firstName);
 		builder.setUserLastName(lastName);
 		builder.setUserRole(Role.USER);
+		builder.setBalanceAmount(amount);
 		return builder.getUser();
 	}
-
 }

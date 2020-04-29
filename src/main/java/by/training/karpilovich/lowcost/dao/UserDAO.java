@@ -7,14 +7,13 @@ import by.training.karpilovich.lowcost.exception.DAOException;
 
 public interface UserDAO {
 
-	int add(User user) throws DAOException;
+	void add(User user) throws DAOException;
 
-	int update(User user) throws DAOException;
+	void update(User user) throws DAOException;
 
-	int delete(User user) throws DAOException;
+	void delete(User user) throws DAOException;
 
 	Optional<User> selectUserByEmaiAndPassword(String email, String password) throws DAOException;
 
 	int countUserWithEmail(String email) throws DAOException;
-
 }

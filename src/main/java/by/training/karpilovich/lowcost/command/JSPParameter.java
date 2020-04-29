@@ -15,6 +15,7 @@ public class JSPParameter {
 	public static final String NUMBER = "number";
 	public static final String PRICE = "price";
 	public static final String PLANE = "plane";
+	public static final String PLANE_MODEL = "model";
 	public static final String EMAIL = "email";
 	public static final String PASSWORD = "password";
 	public static final String REPEAT_PASSWORD = "repeat_password";
@@ -30,4 +31,8 @@ public class JSPParameter {
 	public static final String VALUE = "value";
 	public static final String LUGGAGE = "luggage";
 	public static final String OVERWEIGHT_PRICE = "overweight_price";
+	public static final String AMOUNT = "amount";
+	public static final String FLIGHT_ID = "flight_id";
+	public static final String PASSPORT_NUMBER = "passport_number";
+	public static final String PRIMARY_BOARDING = "primary_boarding";
 }

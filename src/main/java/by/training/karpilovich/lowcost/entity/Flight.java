@@ -20,9 +20,6 @@ public class Flight implements Serializable {
 	private BigDecimal primaryBoardingPrice;
 	private BigDecimal priceForEveryKgOverweight;
 
-	public Flight() {
-	}
-
 	public int getId() {
 		return id;
 	}

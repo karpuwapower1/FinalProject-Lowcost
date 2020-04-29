@@ -22,7 +22,7 @@ public class SignOutCommand implements Command {
 		HttpSession session = request.getSession();
 		session.invalidate();
 		HttpSession newSession = request.getSession();
-		newSession.setAttribute(Attribute.ROLE.toString(), Role.GUEST);
+		newSession.setAttribute(Attribute.USER_ROLE.toString(), Role.GUEST);
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			removeCookie(cookies, CookieName.EMAIL.toString(), response);

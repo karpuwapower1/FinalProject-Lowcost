@@ -25,8 +25,8 @@ public class CityPresenceValidator extends Validator {
 	@Override
 	public void validate() throws ValidatorException {
 		Set<City> cities = takeCitiesFromRepository();
-		if (cities.size() != 0) {
-			throw new ValidatorException(MessageType.CITY_ALREADY_PRESENTS.getMessage());
+		if (cities.isEmpty()) {
+			throw new ValidatorException(MessageType.NO_SUCH_CITY.getMessage());
 		}
 		continueValidate();
 	}
@@ -42,5 +42,4 @@ public class CityPresenceValidator extends Validator {
 			throw new ValidatorException(e.getMessage(), e);
 		}
 	}
-
 }

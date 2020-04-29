@@ -21,5 +21,4 @@ public class PlaneBuilder {
 	public Plane getPlane() {
 		return plane;
 	}
-
 }

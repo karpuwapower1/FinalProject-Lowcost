@@ -5,7 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
-<html lang='en'>
+<html lang='ru'>
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -26,9 +26,9 @@
 </header>
 
 <body>
-	<p>${ERROR_MESSAGE}</p>
 	<fmt:bundle basename="pagecontent" prefix="update_city.input.">
 		<form name="input" class="border border-light " method="post">
+		<input type="hidden" name="from_page" value="${page}" /> 
 			<div class="login-form col-md-4 offset-md-4">
 				<input type="hidden" name="city_id" value="${CITY.id}"> <input
 					type="text" class="form-control" name="country"
@@ -42,7 +42,7 @@
 			</div>
 		</form>
 	</fmt:bundle>
-
+	<div class="error-code col-md-4 offset-md-4">${ERROR_MESSAGE}</div>
 	<script type="text/javascript" src="${style}/js/jquery-3.3.1.min.js"></script>
 	<script type="text/javascript" src="${style}/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="${style}/js/popper.min.js"></script>

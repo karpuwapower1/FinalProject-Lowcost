@@ -13,9 +13,6 @@ public class DateCoefficient implements Serializable {
 	private int flightId;
 	private BigDecimal value;
 
-	public DateCoefficient() {
-	}
-
 	public Calendar getFrom() {
 		return from;
 	}

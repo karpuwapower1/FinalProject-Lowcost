@@ -10,10 +10,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebInitParam;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @WebFilter(urlPatterns = { "/*" }, initParams = { @WebInitParam(name = "encoding", value = "UTF-8") })
 public class EncodingFilter implements Filter {
-
+	
 	private String encoding;
 
 	@Override
@@ -24,8 +26,10 @@ public class EncodingFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		request.setCharacterEncoding(encoding);
-		response.setCharacterEncoding(encoding);
-		chain.doFilter(request, response);
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		HttpServletResponse httpResponse = (HttpServletResponse) response;
+		httpRequest.setCharacterEncoding(encoding);
+		httpResponse.setCharacterEncoding(encoding);
+		chain.doFilter(httpRequest, httpResponse);
 	}
 }

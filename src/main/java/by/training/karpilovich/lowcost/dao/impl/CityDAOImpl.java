@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,8 +50,9 @@ public class CityDAOImpl implements CityDAO {
 
 	private static final Logger LOGGER = LogManager.getLogger(CityDAOImpl.class);
 
-	private CityDAOImpl() {
+	private ConnectionPool pool = ConnectionPool.getInstance();
 
+	private CityDAOImpl() {
 	}
 
 	private static final class CityDAOImplInstanceHolder {
@@ -63,30 +65,35 @@ public class CityDAOImpl implements CityDAO {
 
 	@Override
 	public void addCity(City city) throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
-		try (Connection connection = pool.getConnection();
-				PreparedStatement addStatement = connection.prepareStatement(ADD_QUERY);
-				PreparedStatement selectIdStatement = connection.prepareStatement(SELECT_LAST_INSERTED_INDEX);) {
-			prepareAddStatement(addStatement, city);
-			addStatement.executeUpdate();
-			try (ResultSet resultSet = selectIdStatement.executeQuery()) {
-				if (!resultSet.next()) {
-					throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+		Connection connection = null;
+		try {
+			connection = pool.getConnection();
+			connection.setAutoCommit(false);
+			try (PreparedStatement addStatement = connection.prepareStatement(ADD_QUERY);
+					Statement selectIdStatement = connection.createStatement();) {
+				prepareAddStatement(addStatement, city);
+				addStatement.executeUpdate();
+				try (ResultSet resultSet = selectIdStatement.executeQuery(SELECT_LAST_INSERTED_INDEX)) {
+					if (!resultSet.next()) {
+						throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+					}
+					city.setId(resultSet.getInt(RESULT_SELECT_LAST_INSERTED_INDEX));
 				}
-				city.setId(resultSet.getInt(RESULT_SELECT_LAST_INSERTED_INDEX));
 			}
 		} catch (SQLException | ConnectionPoolException e) {
+			rollback(connection);
 			LOGGER.error("Error while adding a city " + city, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
+		} finally {
+			closeConnection(connection);
 		}
 	}
 
 	@Override
 	public void updateCity(City city) throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);) {
-			prepareUpdateStatement(statement, city); 
+			prepareUpdateStatement(statement, city);
 			statement.executeUpdate();
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("Error while updating a city " + city, e);
@@ -96,12 +103,10 @@ public class CityDAOImpl implements CityDAO {
 
 	@Override
 	public void deleteCity(City city) throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);) {
-			prepareDeleteStatement(statement, city.getId());
+			prepareDeleteStatement(statement, city);
 			statement.executeUpdate();
-			
 		} catch (SQLIntegrityConstraintViolationException e) {
 			throw new DAOException(MessageType.CITY_CAN_NOT_BE_DELETED.getMessage(), e);
 		} catch (SQLException | ConnectionPoolException e) {
@@ -112,7 +117,6 @@ public class CityDAOImpl implements CityDAO {
 
 	@Override
 	public Set<City> getAllCities() throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(SELECT_ALL_CITIES_QUERY);
 				ResultSet resultSet = statement.executeQuery()) {
@@ -123,7 +127,7 @@ public class CityDAOImpl implements CityDAO {
 			return cities;
 		} catch (ConnectionPoolException | SQLException e) {
 			LOGGER.error("Error while getting all cities");
-			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
 
@@ -138,8 +142,8 @@ public class CityDAOImpl implements CityDAO {
 		statement.setInt(UPDATE_QUERY_COUNTRY_ID_INDEX, city.getId());
 	}
 
-	private void prepareDeleteStatement(PreparedStatement statement, int id) throws SQLException {
-		statement.setInt(DELETE_QUERY_ID_INDEX, id);
+	private void prepareDeleteStatement(PreparedStatement statement, City city) throws SQLException {
+		statement.setInt(DELETE_QUERY_ID_INDEX, city.getId());
 	}
 
 	private City buildCity(ResultSet resultSet) throws SQLException {
@@ -148,5 +152,26 @@ public class CityDAOImpl implements CityDAO {
 		builder.setCityName(resultSet.getString(RESULT_SELECT_ALL_CITIES_QUERY_NAME_INDEX));
 		builder.setCityCountry(resultSet.getString(RESULT_SELECT_ALL_CITIES_QUERY_COUNTRY_NAME_INDEX));
 		return builder.getCity();
+	}
+	
+	private void rollback(Connection connection) {
+		if (connection != null) {
+			try {
+				connection.rollback();
+			} catch (SQLException e) {
+				LOGGER.error("Error when rollback ", e);
+			}
+		}
+	}
+	
+	private void closeConnection(Connection connection) {
+		if (connection != null) {
+			try {
+				connection.setAutoCommit(true);
+				connection.close();
+			} catch (SQLException e) {
+				LOGGER.error("Error while closing connection ", e);
+			}
+		}
 	}
 }

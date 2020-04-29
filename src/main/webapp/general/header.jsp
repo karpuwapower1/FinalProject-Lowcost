@@ -4,22 +4,26 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
-<html lang="en">
+<html lang='ru'>
+
+<head>
+<meta charset="UTF-8" http-equiv="Content-Type"
+	content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<c:set var="style" value="${pageContext.request.contextPath}" />
+<link rel="stylesheet" href="${style}/css/bootstrap.min.css" />
+<link rel="stylesheet" href="${style}/css/main_page.css" />
+<fmt:setLocale value="${pageContext.response.locale}" scope="session" />
+</head>
 
 <header>
 	<nav class="navbar navbar-expand-sm navbar-light">
 		<div class="navbar-brand">
 			<form method="post" name="default">
-<<<<<<< HEAD
-				<input type="hidden" name="<%=JspParameter.TO_PAGE%>"
-					value="<%=Page.DEFAULT%>">
-				<button type="submit" class="btn btn-link "
-					name="<%=JspParameter.COMMAND%>" value="<%=CommandType.REDIRECT%>">
-=======
 				<input type="hidden" name="to_page" value="DEFAULT">
 				<button type="submit" class="btn btn-link " name="command"
 					value="REDIRECT">
->>>>>>> dev
 					<h4>
 						LOWCOST<br>AIRLINES
 					</h4>
@@ -36,7 +40,7 @@
 		<div class="collapse navbar-collapse">
 			<div class="navbar-nav mr-auto ">
 				<div class="menu">
-					<c:if test="${ROLE != 'GUEST'}">
+					<c:if test="${USER_ROLE != 'GUEST'}">
 						<div class="nav-item dropdown">
 							<fmt:bundle basename="pagecontent" prefix="header.">
 								<button type="button"
@@ -50,44 +54,27 @@
 								class="dropdown-menu dropdown-menu-right mt-0 mr-0 ml-0 mb-0 pt-0 pb-0 pr-1 pl-0">
 								<fmt:bundle basename="pagecontent" prefix="header.menu.">
 									<c:choose>
-										<c:when test="${ROLE == 'ADMIN'}">
+										<c:when test="${USER_ROLE == 'ADMIN'}">
 											<form method="post" name="add_city">
-<<<<<<< HEAD
-												<input type="hidden" name="<%=JspParameter.TO_PAGE%>"
-													value="<%=Page.ADD_CITY%>" /> <input type="hidden"
-													name="<%=JspParameter.FROM_PAGE%>" value="${page}" />
-												<button type="submit"
-													class="dropdown-item pt-0 pb-0 pr-1 pl-0"
-													name="<%=JspParameter.COMMAND%>"
-													value="<%=CommandType.REDIRECT%>">
-=======
+
 												<input type="hidden" name="to_page" value="ADD_CITY" /> <input
 													type="hidden" name="from_page" value="${page}" />
 												<button type="submit"
 													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
 													value="REDIRECT">
->>>>>>> dev
+
 													<fmt:message key="admin.add_city" />
 												</button>
 											</form>
 
 											<form method="post" name="show_all_cities">
 
-<<<<<<< HEAD
-												<input type="hidden" name="<%=JspParameter.TO_PAGE%>"
-													value="<%=Page.ALL_CITIES%>" /> <input type="hidden"
-													name="<%=JspParameter.FROM_PAGE%>" value="${page}" />
-												<button type="submit"
-													class="dropdown-item pt-0 pb-0 pr-1 pl-0"
-													name="<%=JspParameter.COMMAND%>"
-													value="<%=CommandType.SHOW_ALL_CITIES%>">
-=======
-												<input type="hidden" name="to_page" value="ALL_CITIES" />
-												<input type="hidden" name="from_page" value="${page}" />
+												<input type="hidden" name="to_page" value="ALL_CITIES" /> <input
+													type="hidden" name="from_page" value="${page}" />
 												<button type="submit"
 													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
 													value="SHOW_ALL_CITIES">
->>>>>>> dev
+
 													<fmt:message key="admin.show_all_cities" />
 												</button>
 											</form>
@@ -97,19 +84,91 @@
 													type="hidden" name="from_page" value="${page }" />
 												<button type="submit"
 													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
-													value="REDIRECT_TO_CREATE_FLIGTH_PAGE">Add flight</button>
+													value="REDIRECT_TO_CREATE_FLIGTH_PAGE">
+													<fmt:message key="admin.add_flight" />
+												</button>
 											</form>
+
 											<form method="post" name="show_all_flight">
 												<input type="hidden" name="to_page" value="all_flight" /> <input
 													type="hidden" name="from_page" value="${page }" />
 												<button type="submit"
 													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
-													value="SHOW_ALL_FLIGHTS">Show flights</button>
+													value="SHOW_ALL_FLIGHTS">
+													<fmt:message key="admin.show_all_flights" />
+												</button>
+											</form>
+
+											<form method="post"
+												name="show_next_twenty_four_hours_flights">
+												<input type="hidden" name="from_page" value="${page }" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="SHOW_NEXT_TWENTY_FOUR_HOURS_FLIGHTS">
+													<fmt:message
+														key="admin.show_next_twenty_four_hours_flights" />
+												</button>
+											</form>
+
+											<form method="post" name="show_flights_between_dates">
+												<input type="hidden" name="from_page" value="${page }" /> <input
+													type="hidden" name="to_page" value="CHOOSE_DATE_BOUNDS" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="REDIRECT">
+													<fmt:message key="admin.show_flights_between_dates" />
+												</button>
+											</form>
+
+											<form method="post" name="show_all_planes">
+												<input type="hidden" name="from_page" value="${page }" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="SHOW_ALL_PLANES">
+													<fmt:message key="admin.show_planes" />
+												</button>
+											</form>
+
+											<form method="post" name="add_plane">
+												<input type="hidden" name="from_page" value="${page }" /> <input
+													type="hidden" name="to_page" value="ADD_PLANE" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="REDIRECT">
+													<fmt:message key="admin.add_plane" />
+												</button>
 											</form>
 										</c:when>
 
 										<c:otherwise>
+											<form method="post" name="deposit">
+												<input type="hidden" name="to_page" value="DEPOSIT" /> <input
+													type="hidden" name="from_page" value="${page }" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="REDIRECT">
+													<fmt:message key="user.deposit" />
+												</button>
+											</form>
+											<form method="post" name="show_all_flight">
+												<input type="hidden" name="to_page" value="show_ticket" />
+												<input type="hidden" name="from_page" value="${page }" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="SHOW_ALL_TICKET">
+													<fmt:message key="user.show_all_tickets" />
+												</button>
+											</form>
 
+											<form method="post" name="delete_user">
+												<input type="hidden" name="to_page" value="DELETE_USER" />
+												<input type="hidden" name="from_page" value="${page }" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="REDIRECT">
+													<fmt:message key="user.delete_user" />
+												</button>
+											</form>
 										</c:otherwise>
 									</c:choose>
 								</fmt:bundle>
@@ -117,8 +176,49 @@
 
 						</div>
 					</c:if>
+
+					<c:if test="${USER_ROLE == 'USER'}">
+						<div class="nav-item">
+							<fmt:bundle basename="pagecontent">
+								<fmt:message key="header.user.available_resources" /> = <fmt:formatNumber
+									value="${USER.balanceAmount}" />
+							</fmt:bundle>
+						</div>
+					</c:if>
+
 				</div>
 			</div>
+
+			<c:if test="${page.equals('SHOW_FLIGHTS') }">
+				<div class="nav-item dropdown">
+					<fmt:bundle basename="pagecontent" prefix="header.">
+						<button type="button"
+							class="nav-link dropdown-toggle btn btn-link btn-lg"
+							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<fmt:message key="sort_flight" />
+						</button>
+					</fmt:bundle>
+					<div
+						class="dropdown-menu dropdown-menu-right mt-0 mr-0 ml-0 mb-0 pt-0 pb-0 pr-1 pl-0">
+						<fmt:bundle basename="pagecontent" prefix="header.sort_flights.">
+							<form method="post" name="sort_flight">
+								<input type="hidden" name="from_page" value="${page}" />
+								<button type="submit" class="dropdown-item pt-0 pb-0 pr-1 pl-0"
+									name="command" value="SORT_FLIGHTS_BY_TICKET_PRICE">
+									<fmt:message key="sort_flights_by_ticket_price" />
+								</button>
+							</form>
+							<form method="post" name="sort_flight">
+								<input type="hidden" name="from_page" value="${page}" />
+								<button type="submit" class="dropdown-item pt-0 pb-0 pr-1 pl-0"
+									name="command" value="SORT_FLIGHTS_BY_DEPARTURE_DATE">
+									<fmt:message key="sort_flights_by_departure_date" />
+								</button>
+							</form>
+						</fmt:bundle>
+					</div>
+				</div>
+			</c:if>
 
 			<fmt:bundle basename="pagecontent" prefix="header.">
 				<div class="navbar-nav ml-auto">
@@ -130,18 +230,6 @@
 						</button>
 						<div class="dropdown-menu">
 							<form method="post" name="language">
-<<<<<<< HEAD
-								<input type="hidden" name="<%=JspParameter.COMMAND%>"
-									value="<%=CommandType.CHANGE_LANGUAGE%>"> <input
-									type="hidden" name="<%=JspParameter.FROM_PAGE%>"
-									value="${page}" />
-								<button type="submit" class="btn btn-link"
-									name="<%=JspParameter.LANGUAGE%>" value="<%=LocaleType.RU%>">
-									<fmt:message key="language.ru" />
-								</button>
-								<button type="submit" class="btn btn-link"
-									name="<%=JspParameter.LANGUAGE%>" value="<%=LocaleType.EN%>">
-=======
 								<input type="hidden" name="command" value="CHANGE_LANGUAGE">
 								<input type="hidden" name="from_page" value="${page}" />
 								<button type="submit" class="btn btn-link" name="language"
@@ -150,7 +238,6 @@
 								</button>
 								<button type="submit" class="btn btn-link" name="language"
 									value="EN">
->>>>>>> dev
 									<fmt:message key="language.en" />
 								</button>
 							</form>
@@ -158,41 +245,24 @@
 					</div>
 
 					<c:if
-						test="${page != 'SIGN_IN' && page != 'SIGN_UP' && ROLE == 'GUEST'}">
+						test="${page != 'SIGN_IN' && page != 'SIGN_UP' && USER_ROLE == 'GUEST'}">
 						<div class="nav-item">
 							<form method="post" name="sign_up">
-<<<<<<< HEAD
-								<input type="hidden" name="<%=JspParameter.TO_PAGE%>"
-									value="sign_up" /> <input type="hidden"
-									name="<%=JspParameter.FROM_PAGE%>" value="${page}" />
-								<button type="submit" class="btn btn-link"
-									name="<%=JspParameter.COMMAND%>"
-									value="<%=CommandType.REDIRECT%>">
-=======
+
 								<input type="hidden" name="to_page" value="sign_up" /> <input
 									type="hidden" name="from_page" value="${page}" />
 								<button type="submit" class="btn btn-link" name="command"
 									value="REDIRECT">
->>>>>>> dev
 									<fmt:message key="signup" />
 								</button>
 							</form>
 						</div>
 						<div class="nav-item">
 							<form method="post" name="sign_in">
-<<<<<<< HEAD
-								<input type="hidden" name="<%=JspParameter.TO_PAGE%>"
-									value="sign_in" /> <input type="hidden"
-									name="<%=JspParameter.FROM_PAGE%>" value="${page}" />
-								<button type="submit" class="btn btn-link"
-									name="<%=JspParameter.COMMAND%>"
-									value="<%=CommandType.REDIRECT%>">
-=======
 								<input type="hidden" name="to_page" value="sign_in" /> <input
 									type="hidden" name="from_page" value="${page}" />
 								<button type="submit" class="btn btn-link" name="command"
 									value="REDIRECT">
->>>>>>> dev
 									<fmt:message key="signin" />
 								</button>
 							</form>
@@ -200,17 +270,11 @@
 					</c:if>
 
 					<c:if
-						test="${page != 'SIGN_IN' && page != 'SIGN_UP' && ROLE != 'GUEST'}">
+						test="${page != 'SIGN_IN' && page != 'SIGN_UP' && USER_ROLE != 'GUEST'}">
 						<div class="nav-item">
 							<form name="sign_out" method="post">
-<<<<<<< HEAD
-								<button type="submit" class="btn btn-link"
-									name="<%=JspParameter.COMMAND%>"
-									value="<%=CommandType.SIGN_OUT%>">
-=======
 								<button type="submit" class="btn btn-link" name="command"
 									value="SIGN_OUT">
->>>>>>> dev
 									<fmt:message key="signout" />
 								</button>
 							</form>
@@ -221,6 +285,5 @@
 			</fmt:bundle>
 		</div>
 	</nav>
-
 </header>
 </html>

@@ -7,17 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.command.Page;
 
 public class RedirectToPageCommand implements Command {
-
-	private static final Logger LOGGER = LogManager.getLogger(RedirectToPageCommand.class);
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
@@ -26,7 +21,7 @@ public class RedirectToPageCommand implements Command {
 		String pageFrom = request.getParameter(JSPParameter.FROM_PAGE);
 		setAttribute(request, pageTo, pageFrom);
 		if (pageTo == null || pageTo.isEmpty() || Page.valueOf(pageTo.toUpperCase()) == Page.DEFAULT) {
-			return new RedirectToDefaultPageCommand().execute(request, response);
+			return Page.DEFAULT.getAddress();
 		}
 		return Page.valueOf(pageTo.toUpperCase()).getAddress();
 	}

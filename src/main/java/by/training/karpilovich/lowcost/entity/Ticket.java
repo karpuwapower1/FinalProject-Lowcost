@@ -7,63 +7,25 @@ import java.util.Calendar;
 public class Ticket implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-	private String number;
-	private String flightNumber;
-	private Calendar departureDate;
+
+	private String email;
+	private long number;
+	private Flight flight;
 	private Calendar purchaseDate;
 	private BigDecimal price;
 	private String passengerFirstName;
 	private String passengerLastName;
 	private String passengerPassportNumber;
 	private int luggageQuantity;
-	private boolean paied;
-	private boolean available;
+	private BigDecimal overweightLuggagePrice;
 	private boolean primaryBoargingRight;
 
-	public Ticket() {
-	}
-
-	public Ticket(String number, String flightNumber, Calendar departureDate, Calendar purchaseDate, BigDecimal price,
-			String passengerFirstName, String passengerLastName, String passengerPassportNumber, int luggageQuantity,
-			boolean paied, boolean available, boolean primaryBoargingRight) {
-		super();
-		this.number = number;
-		this.flightNumber = flightNumber;
-		this.departureDate = departureDate;
-		this.purchaseDate = purchaseDate;
-		this.price = price;
-		this.passengerFirstName = passengerFirstName;
-		this.passengerLastName = passengerLastName;
-		this.passengerPassportNumber = passengerPassportNumber;
-		this.luggageQuantity = luggageQuantity;
-		this.paied = paied;
-		this.available = available;
-		this.primaryBoargingRight = primaryBoargingRight;
-	}
-
-	public String getNumber() {
+	public long getNumber() {
 		return number;
 	}
 
-	public void setNumber(String number) {
+	public void setNumber(long number) {
 		this.number = number;
-	}
-
-	public String getFlightNumber() {
-		return flightNumber;
-	}
-
-	public void setFlightNumber(String flightNumber) {
-		this.flightNumber = flightNumber;
-	}
-
-	public Calendar getDepartureDate() {
-		return departureDate;
-	}
-
-	public void setDepartureDate(Calendar departureDate) {
-		this.departureDate = departureDate;
 	}
 
 	public Calendar getPurchaseDate() {
@@ -114,22 +76,6 @@ public class Ticket implements Serializable {
 		this.luggageQuantity = luggageQuantity;
 	}
 
-	public boolean isPaied() {
-		return paied;
-	}
-
-	public void setPaied(boolean paied) {
-		this.paied = paied;
-	}
-
-	public boolean isAvailable() {
-		return available;
-	}
-
-	public void setAvailable(boolean available) {
-		this.available = available;
-	}
-
 	public boolean isPrimaryBoargingRight() {
 		return primaryBoargingRight;
 	}
@@ -138,16 +84,39 @@ public class Ticket implements Serializable {
 		this.primaryBoargingRight = primaryBoargingRight;
 	}
 
+	public BigDecimal getOverweightLuggagePrice() {
+		return overweightLuggagePrice;
+	}
+
+	public void setOverweightLuggagePrice(BigDecimal overweightLuggagePrice) {
+		this.overweightLuggagePrice = overweightLuggagePrice;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public Flight getFlight() {
+		return flight;
+	}
+
+	public void setFlight(Flight flight) {
+		this.flight = flight;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (available ? 1231 : 1237);
-		result = prime * result + ((departureDate == null) ? 0 : departureDate.hashCode());
-		result = prime * result + ((flightNumber == null) ? 0 : flightNumber.hashCode());
+		result = prime * result + ((flight == null) ? 0 : flight.hashCode());
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + luggageQuantity;
-		result = prime * result + ((number == null) ? 0 : number.hashCode());
-		result = prime * result + (paied ? 1231 : 1237);
+		result = prime * result + (int) number;
+		result = prime * result + ((overweightLuggagePrice == null) ? 0 : overweightLuggagePrice.hashCode());
 		result = prime * result + ((passengerFirstName == null) ? 0 : passengerFirstName.hashCode());
 		result = prime * result + ((passengerLastName == null) ? 0 : passengerLastName.hashCode());
 		result = prime * result + ((passengerPassportNumber == null) ? 0 : passengerPassportNumber.hashCode());
@@ -161,29 +130,29 @@ public class Ticket implements Serializable {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null || getClass() != obj.getClass())
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
 			return false;
 		Ticket other = (Ticket) obj;
-		if (available != other.available)
-			return false;
-		if (departureDate == null) {
-			if (other.departureDate != null)
+		if (flight == null) {
+			if (other.flight != null)
 				return false;
-		} else if (!departureDate.equals(other.departureDate))
+		} else if (!flight.equals(other.flight))
 			return false;
-		if (flightNumber == null) {
-			if (other.flightNumber != null)
+		if (email == null) {
+			if (other.email != null)
 				return false;
-		} else if (!flightNumber.equals(other.flightNumber))
+		} else if (!email.equals(other.email))
 			return false;
 		if (luggageQuantity != other.luggageQuantity)
 			return false;
-		if (number == null) {
-			if (other.number != null)
-				return false;
-		} else if (!number.equals(other.number))
+		if (number != other.number)
 			return false;
-		if (paied != other.paied)
+		if (overweightLuggagePrice == null) {
+			if (other.overweightLuggagePrice != null)
+				return false;
+		} else if (!overweightLuggagePrice.equals(other.overweightLuggagePrice))
 			return false;
 		if (passengerFirstName == null) {
 			if (other.passengerFirstName != null)
@@ -217,11 +186,10 @@ public class Ticket implements Serializable {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " [number=" + number + ", flightNumber=" + flightNumber + ", departureDate="
-				+ departureDate + ", purchaseDate=" + purchaseDate + ", price=" + price + ", passengerFirstName="
-				+ passengerFirstName + ", passengerLastName=" + passengerLastName + ", passengerPassportNumber="
-				+ passengerPassportNumber + ", luggageQuantity=" + luggageQuantity + ", paied=" + paied + ", available="
-				+ available + ", primaryBoargingRight=" + primaryBoargingRight + "]";
+		return getClass().getSimpleName() + " [email=" + email + ", number=" + number + ", flight=" + flight
+				+ ", purchaseDate=" + purchaseDate + ", price=" + price + ", passengerFirstName=" + passengerFirstName
+				+ ", passengerLastName=" + passengerLastName + ", passengerPassportNumber=" + passengerPassportNumber
+				+ ", luggageQuantity=" + luggageQuantity + ", overweightLuggagePrice=" + overweightLuggagePrice
+				+ ", primaryBoargingRight=" + primaryBoargingRight + "]";
 	}
-
 }

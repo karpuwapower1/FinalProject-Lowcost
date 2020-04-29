@@ -18,20 +18,22 @@ import by.training.karpilovich.lowcost.factory.RepositoryFactory;
 import by.training.karpilovich.lowcost.factory.SpecificationFactory;
 import by.training.karpilovich.lowcost.repository.CityRepository;
 import by.training.karpilovich.lowcost.service.CityService;
+import by.training.karpilovich.lowcost.service.util.ServiceUtil;
 import by.training.karpilovich.lowcost.specification.Specification;
 import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
+import by.training.karpilovich.lowcost.validator.city.CityAbsenceValidator;
 import by.training.karpilovich.lowcost.validator.city.CityNameValidator;
-import by.training.karpilovich.lowcost.validator.city.CityPresenceValidator;
 import by.training.karpilovich.lowcost.validator.city.CountryNameValidator;
 
 public class CityServiceImpl implements CityService {
 
 	private static final Logger LOGGER = LogManager.getLogger(CityServiceImpl.class);
 
-	private final CityDAO cityDAO = DAOFactory.getInstance().getCityDAO();
-	private final CityRepository cityRepository = RepositoryFactory.getInstance().getCityRepository();
-	private final SpecificationFactory specificationFactory = SpecificationFactory.getInstance();
+	private CityDAO cityDAO = DAOFactory.getInstance().getCityDAO();
+	private CityRepository cityRepository = RepositoryFactory.getInstance().getCityRepository();
+	private SpecificationFactory specificationFactory = SpecificationFactory.getInstance();
+	private ServiceUtil serviceUtil = new ServiceUtil();
 
 	private CityServiceImpl() {
 	}
@@ -63,7 +65,7 @@ public class CityServiceImpl implements CityService {
 		try {
 			validator.validate();
 			City city = buildCity(name, country);
-			city.setId(getIntFromString(id));
+			city.setId(serviceUtil.takeIntFromString(id));
 			cityDAO.updateCity(city);
 			cityRepository.update(city);
 		} catch (ValidatorException | DAOException | RepositoryException e) {
@@ -73,7 +75,7 @@ public class CityServiceImpl implements CityService {
 
 	@Override
 	public void deleteCity(String cityId) throws ServiceException {
-		int id = getIntFromString(cityId);
+		int id =serviceUtil.takeIntFromString(cityId);
 		City city = getCityById(id);
 		try {
 			cityDAO.deleteCity(city);
@@ -95,7 +97,7 @@ public class CityServiceImpl implements CityService {
 
 	@Override
 	public City getCityById(String cityId) throws ServiceException {
-		int id = getIntFromString(cityId);
+		int id = serviceUtil.takeIntFromString(cityId);
 		return getCityById(id);
 	}
 
@@ -134,18 +136,9 @@ public class CityServiceImpl implements CityService {
 	private Validator getCityValidator(String name, String countryName) {
 		Validator nameValidator = new CityNameValidator(name);
 		Validator countryNameValidator = new CountryNameValidator(countryName);
-		Validator cityPresenceValidator = new CityPresenceValidator(name, countryName);
+		Validator cityPresenceValidator = new CityAbsenceValidator(name, countryName);
 		nameValidator.setNext(countryNameValidator);
 		countryNameValidator.setNext(cityPresenceValidator);
 		return nameValidator;
 	}
-
-	private int getIntFromString(String value) throws ServiceException {
-		try {
-			return Integer.parseInt(value);
-		} catch (NumberFormatException e) {
-			throw new ServiceException(MessageType.INVALID_NUMBER_FORMAT.getMessage());
-		}
-	}
-
 }

@@ -11,17 +11,19 @@ import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.service.PlaneService;
+import by.training.karpilovich.lowcost.service.util.ServiceUtil;
 import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 import by.training.karpilovich.lowcost.validator.plane.ModelAbsenceValidator;
-import by.training.karpilovich.lowcost.validator.plane.ModelPresenceValidator;
 import by.training.karpilovich.lowcost.validator.plane.ModelValidator;
 import by.training.karpilovich.lowcost.validator.plane.PlaceQuantityValidator;
 
 public class PlaneServiceImpl implements PlaneService {
 
-	private PlaneServiceImpl() {
+	private PlaneDAO planeDAO = DAOFactory.getInstance().getPlaneDAO();
+	private ServiceUtil serviceUtil = new ServiceUtil();
 
+	private PlaneServiceImpl() {
 	}
 
 	private static final class PlaneServiceImplInstanceHolder {
@@ -34,16 +36,12 @@ public class PlaneServiceImpl implements PlaneService {
 
 	@Override
 	public void add(String model, String quantity) throws ServiceException {
-		Validator modelValidator = new ModelValidator(model);
-		Validator modelAbsenceValidator = new ModelAbsenceValidator(model);
-		int placeQuantity = parseStringToInt(quantity);
-		Validator placeQuantityVaildator = new PlaceQuantityValidator(placeQuantity);
-		modelValidator.setNext(modelAbsenceValidator);
-		modelAbsenceValidator.setNext(placeQuantityVaildator);
-		PlaneDAO planeDAO = getPlaneDAO();
+		int placeQuantity = serviceUtil.takeIntFromString(quantity);
+		Plane plane = buildPlane(model, placeQuantity);
+		Validator validator = createPlaneValidator(plane);
 		try {
-			modelValidator.validate();
-			planeDAO.addPlane(buildPlane(model, placeQuantity));
+			validator.validate();
+			planeDAO.addPlane(plane);
 		} catch (ValidatorException | DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -51,14 +49,13 @@ public class PlaneServiceImpl implements PlaneService {
 
 	@Override
 	public void update(String model, String quantity) throws ServiceException {
-		int placeQuantity = parseStringToInt(quantity);
-		Validator placeQuantityVaildator = new PlaceQuantityValidator(placeQuantity);
-		PlaneDAO planeDAO = getPlaneDAO();
+		int placeQuantity = serviceUtil.takeIntFromString(quantity);
+		Plane old = getPlaneByModel(model);
+		Plane update = buildPlane(model, placeQuantity);
+		Validator validator = createUpdatePlaneValidator(old, update);
 		try {
-			placeQuantityVaildator.validate();
-			Plane updated = getPlaneByModel(model);
-			Plane updating = buildPlane(model, placeQuantity);
-			planeDAO.updatePlane(updating, updated);
+			validator.validate();
+			planeDAO.updatePlane(old, update);
 		} catch (ValidatorException | DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -66,7 +63,6 @@ public class PlaneServiceImpl implements PlaneService {
 
 	@Override
 	public void delete(String model) throws ServiceException {
-		PlaneDAO planeDAO = getPlaneDAO();
 		try {
 			Plane deleted = getPlaneByModel(model);
 			planeDAO.deletePlane(deleted);
@@ -77,7 +73,6 @@ public class PlaneServiceImpl implements PlaneService {
 
 	@Override
 	public List<Plane> getAllPlanes() throws ServiceException {
-		PlaneDAO planeDAO = getPlaneDAO();
 		try {
 			return planeDAO.getAllPlanes();
 		} catch (DAOException e) {
@@ -88,11 +83,8 @@ public class PlaneServiceImpl implements PlaneService {
 	@Override
 	public Plane getPlaneByModel(String model) throws ServiceException {
 		Validator modelValidator = new ModelValidator(model);
-		Validator modelPresenceValidator = new ModelPresenceValidator(model);
-		modelValidator.setNext(modelPresenceValidator);
 		try {
 			modelValidator.validate();
-			PlaneDAO planeDAO = getPlaneDAO();
 			Optional<Plane> optional = planeDAO.getPlaneByModelName(model);
 			if (optional.isPresent()) {
 				return optional.get();
@@ -110,16 +102,22 @@ public class PlaneServiceImpl implements PlaneService {
 		return builder.getPlane();
 	}
 
-	private int parseStringToInt(String value) throws ServiceException {
-		try {
-			return Integer.parseInt(value);
-		} catch (NumberFormatException e) {
-			throw new ServiceException(MessageType.INVALID_NUMBER_FORMAT.getMessage());
-		}
+	private Validator createPlaneValidator(Plane plane) {
+		Validator validator = new ModelValidator(plane.getModel());
+		Validator modelAbsenceValidator = new ModelAbsenceValidator(plane.getModel());
+		Validator placeQuantityVaildator = new PlaceQuantityValidator(plane.getPlaceQuantity());
+		validator.setNext(modelAbsenceValidator);
+		modelAbsenceValidator.setNext(placeQuantityVaildator);
+		return validator;
 	}
 
-	private PlaneDAO getPlaneDAO() {
-		DAOFactory factory = DAOFactory.getInstance();
-		return factory.getPlaneDAO();
+	private Validator createUpdatePlaneValidator(Plane old, Plane update) {
+		Validator validator = new PlaceQuantityValidator(update.getPlaceQuantity());
+		Validator modelValidator = new ModelValidator(update.getModel());
+		validator.setNext(modelValidator);
+		if (!old.getModel().equals(update.getModel())) {
+			modelValidator.setNext(new ModelAbsenceValidator(update.getModel()));
+		}
+		return validator;
 	}
 }

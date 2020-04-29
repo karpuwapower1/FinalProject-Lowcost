@@ -9,8 +9,9 @@ public interface UserService {
 
 	User signUp(String email, String password, String repeatedPassword, String firstName, String lastName) throws ServiceException;
 
-	void delete(User user, String repeatedPassword) throws ServiceException;
+	void deleteUser(User user, String repeatedPassword) throws ServiceException;
 	
 	int countUserWithEmail(String email) throws ServiceException;
-
+	
+	User deposit(User user, String amount) throws ServiceException;
 }

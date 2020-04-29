@@ -12,10 +12,6 @@ public class PlaceCoefficient implements Serializable {
 	private int flightId;
 	private BigDecimal value;
 
-	public PlaceCoefficient() {
-
-	}
-
 	public int getFrom() {
 		return from;
 	}
