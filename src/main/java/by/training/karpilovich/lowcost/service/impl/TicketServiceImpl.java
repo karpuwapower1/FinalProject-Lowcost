@@ -18,19 +18,21 @@ import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.service.TicketService;
+import by.training.karpilovich.lowcost.service.util.ServiceUtil;
 import by.training.karpilovich.lowcost.util.FlightByIdComparator;
 import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 import by.training.karpilovich.lowcost.validator.flight.PriceValidator;
+import by.training.karpilovich.lowcost.validator.ticket.BuyerDataValidator;
 import by.training.karpilovich.lowcost.validator.ticket.FlightNumberAndDateValidator;
 import by.training.karpilovich.lowcost.validator.ticket.LuggagePriceValidator;
 import by.training.karpilovich.lowcost.validator.ticket.TicketOnNullValidator;
-import by.training.karpilovich.lowcost.validator.ticket.UserDataValidator;
 
 public class TicketServiceImpl implements TicketService {
 
 	private FlightCache cache = new FlightCache();
 	private TicketDAO ticketDAO = DAOFactory.getInstance().getTicketDAO();
+	private ServiceUtil serviceUtil = new ServiceUtil();
 
 	private TicketServiceImpl() {
 	}
@@ -54,9 +56,9 @@ public class TicketServiceImpl implements TicketService {
 			String luggageQuantity, String primaryBoardingRight) throws ServiceException {
 		checkUserOnNull(user);
 		checkFlightOnNull(flight);
-		int luggage = takeIntFromString(luggageQuantity);
-		boolean boarding = getBooleanFromString(primaryBoardingRight);
-		Validator validator = new UserDataValidator(user.getEmail(), firstName, lastName, passportNumber, luggage);
+		int luggage = serviceUtil.takeIntFromString(luggageQuantity);
+		boolean boarding = serviceUtil.takeBooleanFromString(primaryBoardingRight);
+		Validator validator = new BuyerDataValidator(user.getEmail(), firstName, lastName, passportNumber, luggage);
 		try {
 			validator.validate();
 			return buildTicket(user, flight, firstName, lastName, passportNumber, luggage, boarding);
@@ -94,23 +96,73 @@ public class TicketServiceImpl implements TicketService {
 			}
 		}
 	}
-	
+
 	@Override
-	public List<Ticket> getAllTickets(User user) throws ServiceException {
-		if (user == null) {
-			throw new ServiceException(MessageType.USER_IS_NULL.getMessage());
-		}
+	public List<Ticket> getAllUserTickets(User user) throws ServiceException {
+		checkUserOnNull(user);
 		try {
 			return ticketDAO.getTicketByEmail(user.getEmail());
 		} catch (DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
-	
+
+	public void returnTicket(User user, String ticketNumber) throws ServiceException {
+		checkUserOnNull(user);
+		try {
+			Ticket ticket = getTicketByNumber(ticketNumber);
+			if (ticketDAO.deleteTicket(ticket)) {
+				return;
+			}
+			throw new ServiceException(MessageType.NO_SUCH_TICKET.getMessage());
+		} catch (DAOException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<Ticket> getAllTicketsToFlight(Flight flight) throws ServiceException {
+		if (flight == null) {
+			throw new ServiceException(MessageType.NULL_FLIGHT.getMessage());
+		}
+		try {
+			return ticketDAO.getTicketsByFlightId(flight.getId());
+		} catch (DAOException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+
 	@Override
 	public void unbookTicketToFlight(Flight flight, int passengerQuantity) throws ServiceException {
 		checkFlightOnNull(flight);
 		unlockPlaces(flight, passengerQuantity);
+	}
+	
+	@Override
+	public Ticket getTicketByNumber(String ticketNumber) throws ServiceException {
+		long number = serviceUtil.takeLongFromString(ticketNumber);
+		try {
+			Optional<Ticket> ticket = ticketDAO.getTicketByNumber(number);
+			if (ticket.isPresent()) {
+				return ticket.get();
+			}
+			throw new ServiceException(MessageType.NO_SUCH_TICKET.getMessage());
+		} catch (DAOException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+	
+	@Override
+	public BigDecimal countTicketPrice(List<Ticket> tickets) throws ServiceException {
+		if (tickets == null || tickets.isEmpty()) {
+			throw new ServiceException(MessageType.NO_SUCH_TICKET.getMessage());
+		}
+		BigDecimal price = BigDecimal.ZERO;
+		for (Ticket ticket : tickets) {
+			price = price.add(ticket.getOverweightLuggagePrice());
+			price = price.add(ticket.getPrice());
+		}
+		return price;
 	}
 
 	private void lockPlaces(AtomicInteger placesUnderConsideration, int requiredPlaces, int availablePlaces)
@@ -141,7 +193,7 @@ public class TicketServiceImpl implements TicketService {
 
 	private Validator createTicketValidator(Ticket ticket) {
 		Validator validator = new TicketOnNullValidator(ticket);
-		Validator userDateValidator = new UserDataValidator(ticket.getEmail(), ticket.getPassengerFirstName(),
+		Validator userDateValidator = new BuyerDataValidator(ticket.getEmail(), ticket.getPassengerFirstName(),
 				ticket.getPassengerLastName(), ticket.getPassengerPassportNumber(), ticket.getLuggageQuantity());
 		Validator flightValidator = new FlightNumberAndDateValidator(ticket.getFlight());
 		Validator priceValidator = new PriceValidator(ticket.getPrice());
@@ -175,18 +227,6 @@ public class TicketServiceImpl implements TicketService {
 		builder.setPrice(price);
 		builder.setPrimaryBoardingRight(primaryBoardingRight);
 		return builder.getTicket();
-	}
-
-	private int takeIntFromString(String value) throws ServiceException {
-		try {
-			return Integer.parseInt(value);
-		} catch (NumberFormatException e) {
-			throw new ServiceException(MessageType.INVALID_NUMBER_FORMAT.getMessage());
-		}
-	}
-
-	private boolean getBooleanFromString(String value) {
-		return value != null;
 	}
 
 	private class FlightCache {
