@@ -12,21 +12,23 @@ import javax.servlet.http.HttpSession;
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.Page;
-import by.training.karpilovich.lowcost.command.util.CoefficientCreatorHelper;
+import by.training.karpilovich.lowcost.command.util.AttributeReceiverUtil;
 import by.training.karpilovich.lowcost.entity.DateCoefficient;
 import by.training.karpilovich.lowcost.entity.Flight;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 
-public class RedirectToAddDateCoefficientPageCommand extends CoefficientCreatorHelper implements Command {
+public class RedirectToAddDateCoefficientPageCommand implements Command {
+	
+	private final AttributeReceiverUtil util = new AttributeReceiverUtil();
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		Flight flight = (Flight) session.getAttribute(Attribute.FLIGHT.toString());
-		SortedSet<DateCoefficient> coefficinents = getDateCoefficientFromSession(session);
+		SortedSet<DateCoefficient> coefficinents = util.takeDateCoefficientFromSession(session);
 		try {
-			Calendar boundFrom = getFlightCreatorService().getNextBoundFromValueDateCoefficient(coefficinents);
+			Calendar boundFrom = getDateCoefficientService().getNextBoundFromValueDateCoefficient(coefficinents);
 			request.setAttribute(Attribute.MAX_BOUND_VALUE.toString(), flight.getDate());
 			request.setAttribute(Attribute.BOUND_FROM.toString(), boundFrom);
 			return Page.ADD_DATE_COEFFICIENT.getAddress();
