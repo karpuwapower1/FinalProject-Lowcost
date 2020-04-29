@@ -21,14 +21,18 @@ public class RedirectToCreateFlightPageCommand implements Command {
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
+			setAttributes(request);
+			return Page.CREATE_FLIGHT.getAddress();
+		} catch (ServiceException e) {
+			setErrorMessage(request, response.getLocale(), e.getMessage());
+			return Page.DEFAULT.getAddress();
+		}
+	}
+
+	private void setAttributes(HttpServletRequest request) throws ServiceException {
 		SortedSet<City> cities = getCityService().getAllCities();
 		List<Plane> planes = getPlaneService().getAllPlanes();
 		request.setAttribute(Attribute.CITIES.toString(), cities);
 		request.setAttribute(Attribute.PLANES.toString(), planes);
-		return Page.CREATE_FLIGHT.getAddress();
-		} catch (ServiceException e) {
-			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return new RedirectToDefaultPageCommand().execute(request, response);
-		}
 	}
 }

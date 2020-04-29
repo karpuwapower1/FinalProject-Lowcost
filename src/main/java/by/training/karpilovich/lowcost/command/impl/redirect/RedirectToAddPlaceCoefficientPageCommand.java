@@ -20,17 +20,20 @@ public class RedirectToAddPlaceCoefficientPageCommand implements Command {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) {
+		try {
+			setAttributes(request);
+		} catch (ServiceException e) {
+			setErrorMessage(request, response.getLocale(), e.getMessage());
+		}
+		return Page.ADD_PLACE_COEFFICIENT.getAddress();
+	}
+
+	private void setAttributes(HttpServletRequest request) throws ServiceException {
 		HttpSession session = request.getSession();
 		Flight flight = (Flight) session.getAttribute(Attribute.FLIGHT.toString());
 		SortedSet<PlaceCoefficient> coefficients = util.takePlaceCoefficientFromSession(session);
-		try {
-			int boundFrom = getPlaceCoefficientService().getNextBoundFromValuePlaceCoefficient(coefficients);
-			request.setAttribute(Attribute.BOUND_FROM.toString(), boundFrom);
-			request.setAttribute(Attribute.MAX_BOUND_VALUE.toString(), flight.getAvailablePlaceQuantity());
-			return Page.ADD_PLACE_COEFFICIENT.getAddress();
-		} catch (ServiceException e) {
-			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.CREATE_FLIGHT.getAddress();
-		}
+		int boundFrom = getPlaceCoefficientService().getNextBoundFromValuePlaceCoefficient(coefficients);
+		request.setAttribute(Attribute.BOUND_FROM.toString(), boundFrom);
+		request.setAttribute(Attribute.MAX_BOUND_VALUE.toString(), flight.getAvailablePlaceQuantity());
 	}
 }

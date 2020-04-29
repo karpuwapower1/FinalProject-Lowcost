@@ -40,7 +40,7 @@ public class ChangeLanguageCommand implements Command {
 	}
 
 	private void setCookie(HttpServletResponse response, Locale locale) {
-		Cookie cookie = new Cookie(CookieName.LOCALE.toString(), locale.getCountry());
+		Cookie cookie = new Cookie(CookieName.LOCALE.toString(), locale.getLanguage());
 		response.addCookie(cookie);
 	}
 }
