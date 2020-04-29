@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -31,37 +30,30 @@ public class SigninFilter implements Filter {
 	private static final Logger LOGGER = LogManager.getLogger(SigninFilter.class);
 
 	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
-		LOGGER.debug("filter inited");
-	}
-
-	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		LOGGER.debug("inside filter");
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpSession session = httpRequest.getSession();
 		Cookie[] cookies = httpRequest.getCookies();
 		if (session.getAttribute(Attribute.USER_ROLE.toString()) == null) {
-			LOGGER.debug("Inside if");
-			User user = initializeUser(cookies, session);
+			User user = initializeUser(cookies);
 			setSessionAttribute(session, user);
 		}
 		chain.doFilter(httpRequest, response);
 	}
 
-	private User initializeUser(Cookie[] cookies, HttpSession session) {
+	private User initializeUser(Cookie[] cookies) {
 		User user = null;
-		Optional<String> email;
-		Optional<String> password;
-		if (cookies != null && (email = getCookieValue(cookies, CookieName.EMAIL.toString())).isPresent()
-				&& (password = getCookieValue(cookies, CookieName.PASSWORD.toString())).isPresent()) {
-			ServiceFactory factory = ServiceFactory.getInstance();
-			UserService userService = factory.getUserService();
-			try {
-				user = userService.signIn(email.get(), password.get());
-			} catch (ServiceException e) {
-				LOGGER.warn(e);
+		if (cookies != null) {
+			Optional<String> email = getCookieValue(cookies, CookieName.EMAIL.toString());
+			Optional<String> password = getCookieValue(cookies, CookieName.PASSWORD.toString());
+			if (email.isPresent() && password.isPresent()) {
+				UserService userService = ServiceFactory.getInstance().getUserService();
+				try {
+					user = userService.signIn(email.get(), password.get());
+				} catch (ServiceException e) {
+					LOGGER.warn(e);
+				}
 			}
 		}
 		return user;

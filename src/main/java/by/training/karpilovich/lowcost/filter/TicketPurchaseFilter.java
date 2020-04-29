@@ -21,18 +21,18 @@ import org.apache.logging.log4j.Logger;
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.CommandType;
 import by.training.karpilovich.lowcost.command.JSPParameter;
-import by.training.karpilovich.lowcost.command.Page;
+import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.entity.Flight;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.factory.ServiceFactory;
 import by.training.karpilovich.lowcost.service.TicketService;
 
 @WebFilter(urlPatterns = { "/*" })
-public class BuyingTicketFilter implements Filter {
+public class TicketPurchaseFilter implements Filter {
 
 	private static final int COUNT_DOWN_LATCH_COUNT = 1;
 
-	private static final Logger LOGGER = LogManager.getLogger(BuyingTicketFilter.class);
+	private static final Logger LOGGER = LogManager.getLogger(TicketPurchaseFilter.class);
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -41,19 +41,18 @@ public class BuyingTicketFilter implements Filter {
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		String command = request.getParameter(JSPParameter.COMMAND);
 		HttpSession session = httpRequest.getSession();
-		AtomicBoolean flag = takeFlagFromSession(session);
+
 		if (command != null && !command.isEmpty()) {
 			CommandType commandType = CommandType.valueOf(request.getParameter(JSPParameter.COMMAND).toUpperCase());
 			if (commandType == CommandType.BUY_TICKET || commandType == CommandType.CREATE_TICKET
 					|| commandType == CommandType.REDIRECT_TO_CREATE_TICKET_PAGE) {
+				AtomicBoolean flag = takeFlagFromSession(session);
 				if (flag.get()) {
-					CountDownLatch countDownLatch = new CountDownLatch(COUNT_DOWN_LATCH_COUNT);
-					session.setAttribute(Attribute.COUNT_DOWN_LATCH.toString(), countDownLatch);
-					new Thread(new BuyTicketInterruptThread(session)).start();
+					createPurchaseTimeChecker(session);
 				} else {
 					unbookFlightPlaces(session);
 					removeSessionAttributes(session);
-					request.getRequestDispatcher(Page.DEFAULT.getAddress()).forward(httpRequest, httpResponse);
+					request.getRequestDispatcher(new RedirectToDefaultPageCommand().execute(httpRequest, httpResponse)).forward(httpRequest, httpResponse);
 					return;
 				}
 			}
@@ -79,6 +78,12 @@ public class BuyingTicketFilter implements Filter {
 		} catch (ServiceException e) {
 			LOGGER.error("Error while unbboking places. Flight =" + flight + " quantity=" + quantity, e);
 		}
+	}
+	
+	private void createPurchaseTimeChecker(HttpSession session) {
+		CountDownLatch countDownLatch = new CountDownLatch(COUNT_DOWN_LATCH_COUNT);
+		session.setAttribute(Attribute.COUNT_DOWN_LATCH.toString(), countDownLatch);
+		new Thread(new BuyTicketInterruptThread(session)).start();
 	}
 
 	private void removeSessionAttributes(HttpSession session) {
