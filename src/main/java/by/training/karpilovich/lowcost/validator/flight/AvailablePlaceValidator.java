@@ -1,24 +1,21 @@
 package by.training.karpilovich.lowcost.validator.flight;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 
-public class DateValidator extends Validator {
+public class AvailablePlaceValidator extends Validator {
 
-	private Calendar date;
+	private int places;
 
-	public DateValidator(Calendar date) {
-		this.date = date;
+	public AvailablePlaceValidator(int places) {
+		this.places = places;
 	}
 
 	@Override
 	public void validate() throws ValidatorException {
-		if (date == null || date.compareTo(new GregorianCalendar()) < 0) {
-			throw new ValidatorException(MessageType.INVALID_DATE.getMessage());
+		if (places <= 0) {
+			throw new ValidatorException(MessageType.INSUFFICIENT_PLACE_QUANTITY.getMessage());
 		}
 		continueValidate();
 	}
