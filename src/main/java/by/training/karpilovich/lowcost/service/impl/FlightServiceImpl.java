@@ -1,48 +1,46 @@
 package by.training.karpilovich.lowcost.service.impl;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import by.training.karpilovich.lowcost.builder.DateCoefficientBuilder;
-import by.training.karpilovich.lowcost.builder.PlaceCoefficientBuilder;
+import by.training.karpilovich.lowcost.builder.FlightBuilder;
 import by.training.karpilovich.lowcost.dao.FlightDAO;
 import by.training.karpilovich.lowcost.entity.City;
-import by.training.karpilovich.lowcost.entity.DateCoefficient;
 import by.training.karpilovich.lowcost.entity.Flight;
-import by.training.karpilovich.lowcost.entity.PlaceCoefficient;
+import by.training.karpilovich.lowcost.entity.Plane;
 import by.training.karpilovich.lowcost.exception.DAOException;
-import by.training.karpilovich.lowcost.exception.RepositoryException;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.factory.DAOFactory;
-import by.training.karpilovich.lowcost.factory.RepositoryFactory;
-import by.training.karpilovich.lowcost.factory.SpecificationFactory;
-import by.training.karpilovich.lowcost.repository.CityRepository;
 import by.training.karpilovich.lowcost.service.FlightService;
-import by.training.karpilovich.lowcost.service.util.ServiceConstant;
-import by.training.karpilovich.lowcost.specification.Specification;
-import by.training.karpilovich.lowcost.util.DateParser;
+import by.training.karpilovich.lowcost.service.util.ServiceUtil;
+import by.training.karpilovich.lowcost.util.FlightByTicketPriceComparator;
+import by.training.karpilovich.lowcost.util.FligthByDepartureDateComparator;
 import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
+import by.training.karpilovich.lowcost.validator.city.CityPresenceValidator;
+import by.training.karpilovich.lowcost.validator.flight.AvailablePlaceValidator;
 import by.training.karpilovich.lowcost.validator.flight.DateValidator;
 import by.training.karpilovich.lowcost.validator.flight.LuggageValidator;
 import by.training.karpilovich.lowcost.validator.flight.NumberAndDateAbsenceValidator;
 import by.training.karpilovich.lowcost.validator.flight.NumberValidator;
 import by.training.karpilovich.lowcost.validator.flight.PassengerQuantityValidator;
 import by.training.karpilovich.lowcost.validator.flight.PriceValidator;
+import by.training.karpilovich.lowcost.validator.plane.ModelPresenceValidator;
 
 public class FlightServiceImpl implements FlightService {
 
 	private static final Logger LOGGER = LogManager.getLogger(FlightServiceImpl.class);
+
+	private FlightDAO flightDAO = DAOFactory.getInstance().getFlightDAO();
+	private ServiceUtil serviceUtil = new ServiceUtil();
 
 	private FlightServiceImpl() {
 	}
@@ -56,42 +54,80 @@ public class FlightServiceImpl implements FlightService {
 	}
 
 	@Override
-	public void addFlight(Flight flight, SortedSet<PlaceCoefficient> placeCoefficents,
-			SortedSet<DateCoefficient> dateCoefficients) throws ServiceException {
+	public Flight createFlight(String number, City from, City to, String date, String defaultPrice,
+			String primaryBoardingPrice, Plane plane, String permittedLuggage, String priceForKgOverweight)
+			throws ServiceException {
+		if (from == null || to == null) {
+			throw new ServiceException(MessageType.NO_SUCH_CITY.getMessage());
+		}
+		if (plane == null) {
+			throw new ServiceException(MessageType.NO_SUCH_PLANE_MODEL.getMessage());
+		}
+		Flight flight = createFlightFromParameters(number, from, to, date, defaultPrice, primaryBoardingPrice, plane,
+				permittedLuggage, priceForKgOverweight);
+		Validator validator = createFlightValidator(flight);
+		try {
+			validator.validate();
+			return flight;
+		} catch (ValidatorException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public void addFlight(Flight flight) throws ServiceException {
 		if (flight == null) {
 			throw new ServiceException(MessageType.NULL_FLIGHT.getMessage());
 		}
-		Validator validator = createFlightValidator(flight.getPrice(), flight.getPrimaryBoardingPrice(),
-				flight.getPermittedLuggageWeigth(), flight.getDate(), flight.getNumber());
+		Validator validator = createFlightValidator(flight);
 		try {
 			validator.validate();
-			checkAndFillDateCoefficients(flight, dateCoefficients);
-			checkAndFillPlaceCoefficients(flight, placeCoefficents);
-			getFlightDAO().add(flight, dateCoefficients, placeCoefficents);
+			flightDAO.add(flight);
 		} catch (DAOException | ValidatorException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public void removeFlight(String number, String date) throws ServiceException {
-		throw new UnsupportedOperationException();
-
+	public void updateFlight(String flightId, String number, City from, City to, String date, String defaultPrice,
+			String primaryBoardingPrice, Plane plane, String permittedLuggage, String priceForKgOverweight)
+			throws ServiceException {
+		Flight flight = getFlightById(flightId);
+		Flight update = createFlightFromParameters(number, from, to, date, defaultPrice, primaryBoardingPrice, plane,
+				permittedLuggage, priceForKgOverweight);
+		Validator validator = createUpdateFlightValidator(update, flight);
+		try {
+			validator.validate();
+			update.setId(flight.getId());
+			flightDAO.update(update);
+		} catch (ValidatorException | DAOException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
 	}
 
 	@Override
-	public Set<Flight> getFlight(String fromId, String toId, String date, String passengerQuantity)
-			throws ServiceException {
-		City cityFrom = takeCityById(fromId);
-		City cityTo = takeCityById(toId);
-		Calendar departureDate = takeDateFromString(date);
-		int quantity = takeIntFromString(passengerQuantity);
+	public void removeFlight(String flightId) throws ServiceException {
+		Flight flight = getFlightById(flightId);
+		try {
+			flightDAO.remove(flight);
+		} catch (DAOException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<Flight> getFlight(City from, City to, String date, String passengerQuantity) throws ServiceException {
+		if (from == null || to == null) {
+			throw new ServiceException(MessageType.NO_SUCH_CITY.getMessage());
+		}
+		Calendar departureDate = serviceUtil.takeDateFromString(date);
+		int quantity = serviceUtil.takeIntFromString(passengerQuantity);
 		Validator dateValidator = new DateValidator(departureDate);
 		Validator passengerQuantityValidator = new PassengerQuantityValidator(quantity);
 		dateValidator.setNext(passengerQuantityValidator);
 		try {
 			dateValidator.validate();
-			return getFlightDAO().getFlightsByFromToDateAndPassengerQuantity(cityFrom, cityTo, departureDate, quantity);
+			return flightDAO.getFlightsByFromToDateAndPassengerQuantity(from, to, departureDate, quantity);
 		} catch (ValidatorException | DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -99,13 +135,12 @@ public class FlightServiceImpl implements FlightService {
 
 	@Override
 	public int getFlightCountWithNumberAndDate(String number, Calendar date) throws ServiceException {
-		Validator numberValidator = new NumberValidator(number);
+		Validator validator = new NumberValidator(number);
 		Validator dateValidator = new DateValidator(date);
-		numberValidator.setNext(dateValidator);
-		FlightDAO flightDao = getFlightDAO();
+		validator.setNext(dateValidator);
 		try {
-			numberValidator.validate();
-			return flightDao.countFlightWithNumberAndDate(number, date);
+			validator.validate();
+			return flightDAO.countFlightWithNumberAndDate(number, date);
 		} catch (DAOException | ValidatorException e) {
 			LOGGER.debug(e);
 			throw new ServiceException(e.getMessage(), e);
@@ -115,17 +150,17 @@ public class FlightServiceImpl implements FlightService {
 	@Override
 	public List<Flight> getAllFlights() throws ServiceException {
 		try {
-			return getFlightDAO().getAllFlights();
+			return flightDAO.getAllFlights();
 		} catch (DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
-	
+
 	@Override
 	public Flight getFlightById(String flightId) throws ServiceException {
-		int id = takeIntFromString(flightId);
+		int id = serviceUtil.takeIntFromString(flightId);
 		try {
-			Optional<Flight> optional = getFlightDAO().getFlightById(id);
+			Optional<Flight> optional = flightDAO.getFlightById(id);
 			if (optional.isPresent()) {
 				return optional.get();
 			}
@@ -136,114 +171,119 @@ public class FlightServiceImpl implements FlightService {
 		}
 	}
 
-	private FlightDAO getFlightDAO() {
-		return DAOFactory.getInstance().getFlightDAO();
-	}
-
-	private City takeCityById(String id) throws ServiceException {
-		RepositoryFactory factory = RepositoryFactory.getInstance();
-		CityRepository repository = factory.getCityRepository();
-		Specification specification = SpecificationFactory.getInstance()
-				.getQuerySpecificationById(takeIntFromString(id));
-		try {
-			City city = repository.getCities(specification).first();
-			if (city != null) {
-				return city;
-			}
-		} catch (RepositoryException e) {
-			throw new ServiceException(e.getMessage(), e);
+	@Override
+	public void sortFlightByTicketPrice(List<Flight> flights) throws ServiceException {
+		if (flights == null) {
+			throw new ServiceException(MessageType.NULL_FLIGHT.getMessage());
 		}
-		throw new ServiceException(MessageType.INVALID_CITY.getMessage());
+		Collections.sort(flights, new FlightByTicketPriceComparator());
 	}
 
-	private Calendar takeDateFromString(String date) throws ServiceException {
-		try {
-			return DateParser.parse(date);
-		} catch (ParseException e) {
-			LOGGER.error("Exception while parcing a date " + date, e);
-			throw new ServiceException(MessageType.INVALID_DATE.getMessage(), e);
+	@Override
+	public void sortFlightByDepartureDate(List<Flight> flights) throws ServiceException {
+		if (flights == null) {
+			throw new ServiceException(MessageType.NULL_FLIGHT.getMessage());
 		}
+		Collections.sort(flights, new FligthByDepartureDateComparator());
 	}
 
-	private int takeIntFromString(String value) throws ServiceException {
-		try {
-			return Integer.parseInt(value);
-		} catch (NumberFormatException e) {
-			LOGGER.error("Error while formatting string to int " + value);
-			throw new ServiceException(MessageType.INTERNAL_ERROR.getMessage());
+	@Override
+	public List<Flight> getFlightsBetweenDates(String dateFrom, String dateTo) throws ServiceException {
+		Calendar from = serviceUtil.takeDateFromString(dateFrom);
+		Calendar to = serviceUtil.takeDateFromString(dateTo);
+		if (from.compareTo(to) > 0) {
+			throw new ServiceException(MessageType.INVALID_DATES.getMessage());
 		}
+		return getFlightsBetweenDates(from, to);
 	}
 
-	private void checkAndFillDateCoefficients(Flight flight, SortedSet<DateCoefficient> coefficients) {
-		Optional<Calendar> optional = checkIfDateCoefficientFilled(flight, coefficients);
-		if (optional.isPresent()) {
-			coefficients.add(createDateCoefficient(flight.getId(), optional.get(), flight.getDate(), BigDecimal.ONE));
-		}
+	@Override
+	public List<Flight> getNextTwentyForHoursFlights() throws ServiceException {
+		final int additionalHoursQuantity = 24;
+		Calendar from = new GregorianCalendar();
+		Calendar to = new GregorianCalendar();
+		to.add(Calendar.HOUR, additionalHoursQuantity);
+		return getFlightsBetweenDates(from, to);
 	}
 
-	private Optional<Calendar> checkIfDateCoefficientFilled(Flight flight, SortedSet<DateCoefficient> coefficients) {
-		Optional<Calendar> optional = Optional.empty();
-		if (coefficients.isEmpty()) {
-			optional = Optional.of(new GregorianCalendar());
-		}
-		if (!coefficients.last().getTo().equals(flight.getDate())) {
-			Calendar date = coefficients.last().getTo();
-			date.add(Calendar.DATE, ServiceConstant.INCREASE_ONE_DAY_VALUE);
-			optional = Optional.of(date);
-		}
-		return optional;
+	private Flight createFlightFromParameters(String number, City from, City to, String date, String defaultPrice,
+			String primaryBoardingPrice, Plane plane, String permittedLuggage, String priceForKgOverweight)
+			throws ServiceException {
+		BigDecimal price = serviceUtil.takeBigDecimalFromString(defaultPrice);
+		BigDecimal primaryPrice = serviceUtil.takeBigDecimalFromString(primaryBoardingPrice);
+		BigDecimal overweightPrice = serviceUtil.takeBigDecimalFromString(priceForKgOverweight);
+		int luggage = serviceUtil.takeIntFromString(permittedLuggage);
+		Calendar departureDate = serviceUtil.takeDateFromString(date);
+		return buildFlight(number, from, to, departureDate, price, primaryPrice, plane, plane.getPlaceQuantity(),
+				luggage, overweightPrice);
 	}
 
-	private void checkAndFillPlaceCoefficients(Flight flight, SortedSet<PlaceCoefficient> coefficients) {
-		Optional<Integer> optional = checkIfPlaceCoefficientFilled(flight, coefficients);
-		if (optional.isPresent()) {
-			coefficients.add(createPlaceCoefficient(flight.getId(), optional.get(), flight.getAvailablePlaceQuantity(),
-					BigDecimal.ONE));
-		}
-	}
-
-	private Optional<Integer> checkIfPlaceCoefficientFilled(Flight flight, SortedSet<PlaceCoefficient> coefficients) {
-		Optional<Integer> optional = Optional.empty();
-		if (coefficients.isEmpty()) {
-			optional = Optional.of(ServiceConstant.MIN_PLACE_COEFFICIENT_VALUE);
-		}
-		if (coefficients.last().getTo() != flight.getAvailablePlaceQuantity()) {
-			optional = Optional.of(coefficients.last().getTo() + ServiceConstant.INCREASE_PLACE_COEFFICIENT_VALUE);
-		}
-		return optional;
-	}
-
-	private DateCoefficient createDateCoefficient(int id, Calendar from, Calendar to, BigDecimal value) {
-		DateCoefficientBuilder builder = new DateCoefficientBuilder();
-		builder.setFlightId(id);
-		builder.setFrom(from);
-		builder.setTo(to);
-		builder.setValue(value);
-		return builder.getCoefficient();
-	}
-
-	private PlaceCoefficient createPlaceCoefficient(int id, int from, int to, BigDecimal value) {
-		PlaceCoefficientBuilder builder = new PlaceCoefficientBuilder();
-		builder.setFlightId(id);
-		builder.setFrom(from);
-		builder.setTo(to);
-		builder.setValue(value);
-		return builder.getCoefficient();
-	}
-
-	private Validator createFlightValidator(BigDecimal price, BigDecimal primaryPrice, int luggage, Calendar date,
-			String number) {
-		Validator validator = new PriceValidator(price);
-		Validator primaryPriceValidator = new PriceValidator(primaryPrice);
-		Validator luggageValidator = new LuggageValidator(luggage);
-		Validator dateValidator = new DateValidator(date);
-		Validator numberValidator = new NumberValidator(number);
-		Validator numberAndDateValidator = new NumberAndDateAbsenceValidator(number, date);
+	private Validator createFlightValidator(Flight flight) {
+		Validator validator = new PriceValidator(flight.getPrice());
+		Validator primaryPriceValidator = new PriceValidator(flight.getPrimaryBoardingPrice());
+		Validator luggageValidator = new LuggageValidator(flight.getPermittedLuggageWeigth());
+		Validator dateValidator = new DateValidator(flight.getDate());
+		Validator numberValidator = new NumberValidator(flight.getNumber());
+		Validator numberAndDateValidator = new NumberAndDateAbsenceValidator(flight.getNumber(), flight.getDate());
+		Validator overweightPriceValidator = new PriceValidator(flight.getPriceForEveryKgOverweight());
+		Validator cityFromValidator = new CityPresenceValidator(flight.getFrom().getName(),
+				flight.getFrom().getCountry());
+		Validator cityToValidator = new CityPresenceValidator(flight.getTo().getName(), flight.getTo().getCountry());
+		Validator planeModelPresenceValidator = new ModelPresenceValidator(flight.getPlaneModel().getModel());
+		Validator availablePlacesValidator = new AvailablePlaceValidator(flight.getAvailablePlaceQuantity());
 		validator.setNext(primaryPriceValidator);
 		primaryPriceValidator.setNext(luggageValidator);
 		luggageValidator.setNext(dateValidator);
 		dateValidator.setNext(numberValidator);
 		numberValidator.setNext(numberAndDateValidator);
+		numberAndDateValidator.setNext(overweightPriceValidator);
+		overweightPriceValidator.setNext(cityFromValidator);
+		cityFromValidator.setNext(cityToValidator);
+		cityToValidator.setNext(planeModelPresenceValidator);
+		planeModelPresenceValidator.setNext(availablePlacesValidator);
 		return validator;
+	}
+
+	private Validator createUpdateFlightValidator(Flight old, Flight update) {
+		Validator validator = new PriceValidator(update.getPrice());
+		Validator primaryPriceValidator = new PriceValidator(update.getPrimaryBoardingPrice());
+		Validator luggageValidator = new LuggageValidator(update.getPermittedLuggageWeigth());
+		Validator dateValidator = new DateValidator(update.getDate());
+		Validator numberValidator = new NumberValidator(update.getNumber());
+		Validator overweightPriceValidator = new PriceValidator(update.getPriceForEveryKgOverweight());
+		validator.setNext(primaryPriceValidator);
+		primaryPriceValidator.setNext(luggageValidator);
+		luggageValidator.setNext(dateValidator);
+		dateValidator.setNext(numberValidator);
+		numberValidator.setNext(overweightPriceValidator);
+		if (!update.getNumber().equals(old.getNumber()) || update.getDate().compareTo(old.getDate()) != 0) {
+			overweightPriceValidator.setNext(new NumberAndDateAbsenceValidator(update.getNumber(), update.getDate()));
+		}
+		return validator;
+	}
+
+	private Flight buildFlight(String number, City from, City to, Calendar date, BigDecimal price,
+			BigDecimal primaryBoardingPrice, Plane model, int availablePlace, int permittedLuggage,
+			BigDecimal overweightPrice) {
+		FlightBuilder builder = new FlightBuilder();
+		builder.setFrom(from);
+		builder.setTo(to);
+		builder.setFlightNumber(number);
+		builder.setPrice(price);
+		builder.setPermittedLuggageWeight(permittedLuggage);
+		builder.setAvailablePlaceQuantity(availablePlace);
+		builder.setPlaneModel(model);
+		builder.setDate(date);
+		builder.setPrimaryBoardingPrice(primaryBoardingPrice);
+		builder.setOverweightLuggagePrice(overweightPrice);
+		return builder.getFlight();
+	}
+	
+	private List<Flight> getFlightsBetweenDates(Calendar from, Calendar to) throws ServiceException {
+		try {
+			return flightDAO.getFlightsBetweenDates(from, to);
+		} catch (DAOException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
 	}
 }
