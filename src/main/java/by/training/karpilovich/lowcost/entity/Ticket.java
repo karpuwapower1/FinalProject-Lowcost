@@ -20,9 +20,6 @@ public class Ticket implements Serializable {
 	private BigDecimal overweightLuggagePrice;
 	private boolean primaryBoargingRight;
 
-	public Ticket() {
-	}
-
 	public long getNumber() {
 		return number;
 	}

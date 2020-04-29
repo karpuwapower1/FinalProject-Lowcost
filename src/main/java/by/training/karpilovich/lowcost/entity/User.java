@@ -14,9 +14,6 @@ public class User implements Serializable {
 	private Role role;
 	private BigDecimal balanceAmount;
 
-	public User() {
-	}
-
 	public String getEmail() {
 		return email;
 	}

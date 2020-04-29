@@ -12,12 +12,12 @@ import by.training.karpilovich.lowcost.specification.Specification;
 import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 
-public class CityAbsenceValidator extends Validator {
+public class CityPresenceValidator extends Validator {
 
 	private String name;
 	private String countryName;
 
-	public CityAbsenceValidator(String name, String countryName) {
+	public CityPresenceValidator(String name, String countryName) {
 		this.name = name;
 		this.countryName = countryName;
 	}
@@ -25,8 +25,8 @@ public class CityAbsenceValidator extends Validator {
 	@Override
 	public void validate() throws ValidatorException {
 		Set<City> cities = takeCitiesFromRepository();
-		if (!cities.isEmpty()) {
-			throw new ValidatorException(MessageType.CITY_ALREADY_PRESENTS.getMessage());
+		if (cities.isEmpty()) {
+			throw new ValidatorException(MessageType.NO_SUCH_CITY.getMessage());
 		}
 		continueValidate();
 	}

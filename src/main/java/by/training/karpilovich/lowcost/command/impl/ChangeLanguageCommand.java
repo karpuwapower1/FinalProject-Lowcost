@@ -7,36 +7,40 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.CookieName;
 import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.command.LocaleType;
 import by.training.karpilovich.lowcost.command.Page;
-import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
 
 public class ChangeLanguageCommand implements Command {
-	
-	private static final Logger LOGGER = LogManager.getLogger(ChangeLanguageCommand.class);
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String language = request.getParameter(JSPParameter.LANGUAGE);
-		LOGGER.debug(language);
-		LocaleType localeType = LocaleType.valueOf(language);
-		setCookie(response, localeType);
-		response.setLocale(new Locale(localeType.getLanguage(), localeType.getCountry()));
-		LOGGER.debug(response.getLocale().getLanguage() + " " + response.getLocale().getCountry());
-		Page page = Page.valueOf(request.getParameter(JSPParameter.FROM_PAGE));
-		return page == Page.DEFAULT ? new RedirectToDefaultPageCommand().execute(request, response) : page.getAddress();
+		Locale locale = getLocaleFromRequest(request);
+		setCookie(response, locale);
+		setLocale(request, response, locale);
+		return Page.valueOf(request.getParameter(JSPParameter.FROM_PAGE)).getAddress();
 	}
 
-	private void setCookie(HttpServletResponse response, LocaleType type) {
-		Cookie cookie = new Cookie(CookieName.LOCALE.toString(), type.toString());
+	private Locale getLocaleFromRequest(HttpServletRequest request) {
+		String language = request.getParameter(JSPParameter.LANGUAGE);
+		LocaleType localeType = LocaleType.valueOf(language);
+		return new Locale(localeType.getLanguage(), localeType.getCountry());
+	}
+
+	private void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
+		HttpSession session = request.getSession();
+		response.setLocale(locale);
+		session.setAttribute(Attribute.LOCALE.toString(), locale);
+	}
+
+	private void setCookie(HttpServletResponse response, Locale locale) {
+		Cookie cookie = new Cookie(CookieName.LOCALE.toString(), locale.getCountry());
 		response.addCookie(cookie);
 	}
 }

@@ -15,6 +15,7 @@ public class JSPParameter {
 	public static final String NUMBER = "number";
 	public static final String PRICE = "price";
 	public static final String PLANE = "plane";
+	public static final String PLANE_MODEL = "model";
 	public static final String EMAIL = "email";
 	public static final String PASSWORD = "password";
 	public static final String REPEAT_PASSWORD = "repeat_password";

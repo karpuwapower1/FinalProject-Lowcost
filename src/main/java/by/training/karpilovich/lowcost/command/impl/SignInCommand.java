@@ -24,20 +24,17 @@ public class SignInCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		Page page = null;
-		HttpSession session = request.getSession();
 		String email = request.getParameter(JSPParameter.EMAIL);
 		String password = request.getParameter(JSPParameter.PASSWORD);
 		try {
 			User user = initializeUser(email, password);
 			setAttribute(request, user);
 			keepInMind(request, response, email, password);
-			page = (Page) session.getAttribute(Attribute.PAGE_FROM.toString());
+			return ((Page) request.getSession().getAttribute(Attribute.PAGE_FROM.toString())).getAddress();
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			page = Page.SIGN_IN;
-		}
-		return getReturnedPageAddress(page, request, response);
+			return Page.SIGN_IN.getAddress();
+		}	
 	}
 
 	private void keepInMind(HttpServletRequest request, HttpServletResponse response, String email, String password) {
@@ -65,5 +62,4 @@ public class SignInCommand implements Command {
 		UserService userService = getUserService();
 		return userService.signIn(email, password);
 	}
-
 }

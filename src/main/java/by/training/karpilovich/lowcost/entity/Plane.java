@@ -9,14 +9,6 @@ public class Plane implements Serializable {
 	private String model;
 	private int placeQuantity;
 
-	public Plane() {
-	}
-
-	public Plane(String model, int placeQuantity) {
-		this.model = model;
-		this.placeQuantity = placeQuantity;
-	}
-
 	public String getModel() {
 		return model;
 	}

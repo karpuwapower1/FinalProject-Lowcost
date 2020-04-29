@@ -1,6 +1,5 @@
 package by.training.karpilovich.lowcost.dao;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 import by.training.karpilovich.lowcost.entity.User;
@@ -13,8 +12,6 @@ public interface UserDAO {
 	void update(User user) throws DAOException;
 
 	void delete(User user) throws DAOException;
-	
-	void updateUserBalance(User user, BigDecimal balance) throws DAOException;
 
 	Optional<User> selectUserByEmaiAndPassword(String email, String password) throws DAOException;
 

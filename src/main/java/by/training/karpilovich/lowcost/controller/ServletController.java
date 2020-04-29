@@ -34,7 +34,7 @@ public class ServletController extends HttpServlet {
 			pool.init();
 			repository.init();
 		} catch (ConnectionPoolException | RepositoryException e) {
-			throw new ServletException(e);
+			LOGGER.error("Error while initializing servlet ", e);
 		}
 		super.init();
 	}
@@ -66,7 +66,7 @@ public class ServletController extends HttpServlet {
 		try {
 			pool.destroy();
 		} catch (ConnectionPoolException e) {
-			throw new RuntimeException();
+			LOGGER.error("Error while destroeing servlet ", e);
 		}
 		super.destroy();
 	}

@@ -6,7 +6,7 @@ import by.training.karpilovich.lowcost.validator.flight.LuggageValidator;
 import by.training.karpilovich.lowcost.validator.user.EmailValidator;
 import by.training.karpilovich.lowcost.validator.user.NameValidator;
 
-public class UserDataValidator extends Validator {
+public class BuyerDataValidator extends Validator {
 	
 	private String email;
 	private String firstName;
@@ -14,7 +14,7 @@ public class UserDataValidator extends Validator {
 	private String passportNumber;
 	int luggageQuantity;
 	
-	public UserDataValidator(String email, String firstName, String lastName, String passportNumber, int luggageQuantity) {
+	public BuyerDataValidator(String email, String firstName, String lastName, String passportNumber, int luggageQuantity) {
 		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;

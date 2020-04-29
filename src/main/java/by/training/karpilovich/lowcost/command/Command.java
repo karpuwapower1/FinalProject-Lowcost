@@ -7,13 +7,13 @@ import java.util.Optional;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import by.training.karpilovich.lowcost.command.impl.ShowAllCitiesCommand;
-import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.factory.ServiceFactory;
 import by.training.karpilovich.lowcost.service.CityService;
-import by.training.karpilovich.lowcost.service.FlightCreatorService;
+import by.training.karpilovich.lowcost.service.DateCoefficientService;
 import by.training.karpilovich.lowcost.service.FlightService;
+import by.training.karpilovich.lowcost.service.PlaceCoefficientService;
 import by.training.karpilovich.lowcost.service.PlaneService;
 import by.training.karpilovich.lowcost.service.TicketService;
 import by.training.karpilovich.lowcost.service.UserService;
@@ -24,27 +24,9 @@ public interface Command {
 	default void setErrorMessage(HttpServletRequest request, Locale locale, String key) {
 		Optional<String> message = LocaleMessageManager.getMessage(key, locale);
 		if (message.isPresent()) {
-			request.setAttribute(Attribute.ERROR_MESSAGE.toString(), message.get());
+			HttpSession session = request.getSession();
+			session.setAttribute(Attribute.ERROR_MESSAGE.toString(), message.get());
 		}
-	}
-
-	default String getReturnedPageAddress(Page page, HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		if (page == null) {
-			return new RedirectToDefaultPageCommand().execute(request, response);
-		}
-		String returnedPage;
-		switch (page) {
-		case DEFAULT:
-			returnedPage = new RedirectToDefaultPageCommand().execute(request, response);
-			break;
-		case ALL_CITIES:
-			returnedPage = new ShowAllCitiesCommand().execute(request, response);
-			break;
-		default:
-			returnedPage = page.getAddress();
-		}
-		return returnedPage;
 	}
 
 	default UserService getUserService() {
@@ -58,22 +40,22 @@ public interface Command {
 	default CityService getCityService() {
 		return ServiceFactory.getInstance().getCityService();
 	}
-	
+
 	default PlaneService getPlaneService() {
 		return ServiceFactory.getInstance().getPlaneService();
 	}
-	
-	default FlightCreatorService getFlightCreatorService() {
-		return ServiceFactory.getInstance().getFlightCreatorService();
-	}
-	
+
 	default TicketService getTicketService() {
 		return ServiceFactory.getInstance().getTicketService();
 	}
-	
-//	default CoefficientService getCoefficientService() {
-//		return ServiceFactory.getInstance().getCoefficientService();
-//	}
+
+	default PlaceCoefficientService getPlaceCoefficientService() {
+		return ServiceFactory.getInstance().getPlaceCoefficientService();
+	}
+
+	default DateCoefficientService getDateCoefficientService() {
+		return ServiceFactory.getInstance().getDateCoefficientService();
+	}
 
 	String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
 }

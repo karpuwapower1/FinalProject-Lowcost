@@ -27,6 +27,7 @@ public enum MessageType {
 	INVALID_COUNTRY_NAME("message.error.invalid_contry_name"),
 	CITY_ALREADY_PRESENTS("message.error.city_already_presents"),
 	CITY_CAN_NOT_BE_DELETED("message.error.city_can_not_be_deleted"),
+	NO_SUCH_CITY("message.error.no_such_city"),
 	
 	INVALID_NUMBER_FORMAT("message.error.invalid_number_format"),
 	
@@ -42,6 +43,10 @@ public enum MessageType {
 	INVALID_COEFFICINET_BOUND_TO("message.error.invalid_coefficient_bound_to"),
 	
 	NO_SUCH_TICKET("message.error.no_such_ticket"),
+	USER_AND_TICKET_DONT_MATCH("message.error.user_and_ticket_dont_match"),
+	
+	INVALID_COEFFICIENT("message.error.invalid_coefficient"),
+	INVALID_DATES("message.error.date_not_legal"),
 	
 	INSUFFICIENT_FUNDS("message.error.insufficient_funds"),
 	INVALID_AMOUNT("message.error.invalid_amount");

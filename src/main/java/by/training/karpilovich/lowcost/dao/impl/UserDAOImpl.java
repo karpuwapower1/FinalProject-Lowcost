@@ -1,6 +1,5 @@
 package by.training.karpilovich.lowcost.dao.impl;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -43,16 +42,9 @@ public class UserDAOImpl implements UserDAO {
 	private static final int UPDATE_QUERY_ROLE_INDEX = 4;
 	private static final int UPDATE_QUERY_BALANCE_AMOUNT_INDEX = 5;
 	private static final int UPDATE_QUERY_CONDITION_EMAIL_INDEX = 6;
-	
-	private static final String UPDATE_BALANCE_QUERY = "UPDATE airport_user "
-			+ " SET balance_amount=? " + " WHERE email=? ";
-
-	private static final int UPDATE_BALANCE_QUERY_BALANCE_AMOUNT_INDEX = 1;
-	private static final int UPDATE_BALANCE_QUERY_CONDITION_EMAIL_INDEX = 2;
 
 	private static final String SELECT_BY_EMAIL_AND_PASSWORD_QUERY = "SELECT email, user_password, first_name, last_name, "
-			+ " user_role.name AS role_name, balance_amount "
-			+ " FROM airport_user "
+			+ " user_role.name AS role_name, balance_amount " + " FROM airport_user "
 			+ " JOIN user_role on airport_user.user_role_id=user_role.id WHERE email=? AND user_password=?";
 
 	private static final int EMAIL_SELECT_BY_EMAIL_AND_PASSWORD_QUERY_INDEX = 1;
@@ -73,6 +65,8 @@ public class UserDAOImpl implements UserDAO {
 
 	private static final Logger LOGGER = LogManager.getLogger(UserDAOImpl.class);
 
+	private ConnectionPool pool = ConnectionPool.getInstance();
+
 	private UserDAOImpl() {
 	}
 
@@ -86,7 +80,6 @@ public class UserDAOImpl implements UserDAO {
 
 	@Override
 	public void add(User user) throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(ADD_QUERY);) {
 			prepareAddStatement(statement, user);
@@ -99,7 +92,6 @@ public class UserDAOImpl implements UserDAO {
 
 	@Override
 	public void update(User user) throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);) {
 			prepareUpdateStatement(statement, user);
@@ -112,7 +104,6 @@ public class UserDAOImpl implements UserDAO {
 
 	@Override
 	public void delete(User user) throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);) {
 			prepareDeleteStatement(statement, user);
@@ -125,7 +116,6 @@ public class UserDAOImpl implements UserDAO {
 
 	@Override
 	public Optional<User> selectUserByEmaiAndPassword(String email, String password) throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(SELECT_BY_EMAIL_AND_PASSWORD_QUERY);) {
 			prepareSelectByEmailAndPasswordStatement(statement, email, password);
@@ -144,7 +134,6 @@ public class UserDAOImpl implements UserDAO {
 
 	@Override
 	public int countUserWithEmail(String email) throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(COUNT_EMAIL_QUERY);) {
 			prepareCountEmailStatementStatement(statement, email);
@@ -159,22 +148,6 @@ public class UserDAOImpl implements UserDAO {
 			LOGGER.error("error while counting email=" + email, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
-	}
-	
-	
-
-	@Override
-	public void updateUserBalance(User user, BigDecimal balance) throws DAOException {
-		ConnectionPool pool= ConnectionPool.getInstance();
-		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = connection.prepareStatement(UPDATE_BALANCE_QUERY);) {
-			prepareUpdateBalanceQuery(statement, user, balance);
-			statement.executeUpdate();
-		} catch (ConnectionPoolException | SQLException e) {
-			LOGGER.error("Error while updating user's balance. User= " + user + " balance=" + balance, e);
-			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
-		}
-		
 	}
 
 	private void prepareAddStatement(PreparedStatement statement, User user) throws SQLException {
@@ -207,16 +180,10 @@ public class UserDAOImpl implements UserDAO {
 	private void prepareCountEmailStatementStatement(PreparedStatement statement, String email) throws SQLException {
 		statement.setString(COUNT_EMAIL_QUERY_EMAIL_INDEX, email);
 	}
-	
-	private void prepareUpdateBalanceQuery(PreparedStatement statement, User user, BigDecimal amount) throws SQLException {
-		statement.setString(UPDATE_BALANCE_QUERY_CONDITION_EMAIL_INDEX, user.getEmail());
-		statement.setBigDecimal(UPDATE_BALANCE_QUERY_BALANCE_AMOUNT_INDEX, amount);
-	}
 
 	private User buildUser(ResultSet resultSet) throws SQLException {
 		UserBuilder builder = new UserBuilder();
-		builder.setUserRole(
-				Role.valueOf(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_ROLE).toUpperCase()));
+		builder.setUserRole(Role.valueOf(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_ROLE).toUpperCase()));
 		builder.setUserEmail(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_EMAIL));
 		builder.setUserPassword(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_PASSWORD));
 		builder.setUserFirstName(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_FIRST_NAME));

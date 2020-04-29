@@ -1,7 +1,7 @@
 package by.training.karpilovich.lowcost.command.impl;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +12,7 @@ import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.command.Page;
-import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
+import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.entity.Flight;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.service.FlightService;
@@ -25,22 +25,25 @@ public class SearchFlightCommand implements Command {
 		HttpSession session = request.getSession();
 		Page page = null;
 		try {
-			Set<Flight> flights = findFlights(request);
-			session.setAttribute(Attribute.FLIGHTS.toString(), flights);
+			List<Flight> flights = findFlights(request);
+			request.setAttribute(Attribute.FLIGHTS.toString(), flights);
 			session.setAttribute(Attribute.PASSENGER_QUANTITY.toString(), Integer.parseInt(request.getParameter(JSPParameter.QUANTITY)));
 			page = Page.SHOW_FLIGHTS;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
+			page = Page.DEFAULT;
 		}
-		return page == null ? new RedirectToDefaultPageCommand().execute(request, response) : page.getAddress();
+		return page.getAddress();
 	}
 
-	private Set<Flight> findFlights(HttpServletRequest request) throws ServiceException {
-		String countryFrom = request.getParameter(JSPParameter.COUNTRY_FROM);
-		String countryTo = request.getParameter(JSPParameter.COUNTRY_TO);
+	private List<Flight> findFlights(HttpServletRequest request) throws ServiceException {
+		String cityFrom = request.getParameter(JSPParameter.COUNTRY_FROM);
+		String cityTo = request.getParameter(JSPParameter.COUNTRY_TO);
 		String date = request.getParameter(JSPParameter.DATE);
 		String quantity = request.getParameter(JSPParameter.QUANTITY);
+		City from = getCityService().getCityById(cityFrom);
+		City to = getCityService().getCityById(cityTo);
 		FlightService flightService = getFlightService();
-		return flightService.getFlight(countryFrom, countryTo, date, quantity);
+		return flightService.getFlight(from, to, date, quantity);
 	}
 }

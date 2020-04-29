@@ -3,51 +3,47 @@ package by.training.karpilovich.lowcost.command.impl;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
+import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.entity.Role;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ServiceException;
-import by.training.karpilovich.lowcost.service.UserService;
 
 public class DeleteUserCommand implements Command {
-	
-	private static final String REPEAT_PASSWORD_PARAMETER_NAME = "repeatPassword";
-
-	private static final Logger LOGGER = LogManager.getLogger(DeleteUserCommand.class);
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		String repeatPassword = request.getParameter(REPEAT_PASSWORD_PARAMETER_NAME);
+		String repeatPassword = request.getParameter(JSPParameter.REPEAT_PASSWORD);
 		User user = (User) session.getAttribute(Attribute.USER.toString());
-		Page page = null;
 		try {
-			deleteUser(user, repeatPassword);
+			getUserService().deleteUser(user, repeatPassword);
+			removeCookies(request.getCookies(), response);
 			session.invalidate();
 			HttpSession newSession = request.getSession();
 			newSession.setAttribute(Attribute.USER_ROLE.toString(), Role.GUEST);
-			page = Page.DEFAULT;
+			return new RedirectToDefaultPageCommand().execute(request, response);
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			page = (Page) session.getAttribute(Attribute.PAGE_FROM.toString());
-			LOGGER.warn(e);
+			return Page.DELETE_USER.getAddress();
 		}
-		return page == null ? new RedirectToDefaultPageCommand().execute(request, response) : page.getAddress();
 	}
 
-	private void deleteUser(User user, String repeatPassword) throws ServiceException {
-		UserService userService = getUserService();
-		userService.delete(user, repeatPassword);
+	private void removeCookies(Cookie[] cookies, HttpServletResponse response) {
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				cookie.setMaxAge(0);
+				response.addCookie(cookie);
+			}
+		}
 	}
 }

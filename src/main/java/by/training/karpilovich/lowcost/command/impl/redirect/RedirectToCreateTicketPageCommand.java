@@ -7,9 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.JSPParameter;
@@ -20,18 +17,16 @@ import by.training.karpilovich.lowcost.exception.ServiceException;
 
 public class RedirectToCreateTicketPageCommand implements Command {
 
-	private static final Logger LOGGER = LogManager.getLogger(RedirectToCreateTicketPageCommand.class);
-
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
+		session.removeAttribute(Attribute.TICKETS.toString());
 		if (session.getAttribute(Attribute.USER.toString()) == null) {
 			return Page.SIGN_IN.getAddress();
 		}
 		int quantity = (Integer) session.getAttribute(Attribute.PASSENGER_QUANTITY.toString());
 		String id = request.getParameter(JSPParameter.FLIGHT_ID);
-		
 		try {
 			Flight flight = getFlightService().getFlightById(id);
 			getTicketService().bookTicketToFlight(flight, quantity);

@@ -25,5 +25,4 @@ public class CityBuilder {
 	public void setCityCountry(String country) {
 		city.setCountry(country);
 	}
-
 }

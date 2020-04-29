@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import by.training.karpilovich.lowcost.builder.PlaneBuilder;
 import by.training.karpilovich.lowcost.connection.ConnectionPool;
 import by.training.karpilovich.lowcost.dao.PlaneDAO;
@@ -36,19 +39,19 @@ public class PlaneDAOImpl implements PlaneDAO {
 
 	private static final String SELECT_ALL_PLANES_QUERY = "SELECT model, places_quantity " + " FROM plane ";
 
-	private static final int RESULT_SELECT_ALL_PLANES_QUERY_MODEL_INDEX = 1;
-	private static final int RESULT_SELECT_ALL_PLANES_QUERY_PLACE_QUANTITY_INDEX = 2;
-
 	private static final String SELECT_PLANE_BY_MODEL_QUERY = "SELECT model, places_quantity " + " FROM plane "
 			+ " WHERE model=?";
 
 	private static final int SELECT_PLANE_BY_MODEL_QUERY_MODEL_INDEX = 1;
 
-	private static final int RESULT_SELECT_PLANE_BY_MODEL_QUERY_MODEL_INDEX = 1;
-	private static final int RESULT_SELECT_PLANE_BY_MODEL_PLACE_QUERY_QUANTITY_INDEX = 2;
+	private static final String RESULT_SELECT_PLANE_BY_MODEL_MODEL = "model";
+	private static final String RESULT_SELECT_PLANE_BY_MODEL_PLACE_QUANTITY = "places_quantity";
+	
+	private static final Logger LOGGER = LogManager.getLogger(PlaneDAOImpl.class);
+	
+	private ConnectionPool pool = ConnectionPool.getInstance();
 
 	private PlaneDAOImpl() {
-
 	}
 
 	private static final class PlaneDAOImplInstanceHolder {
@@ -61,71 +64,71 @@ public class PlaneDAOImpl implements PlaneDAO {
 
 	@Override
 	public void addPlane(Plane plane) throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(ADD_PLANE_QUERY);) {
 			prepareAddStatement(statement, plane);
 			statement.executeUpdate();
 		} catch (ConnectionPoolException | SQLException e) {
-			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+			LOGGER.error("Error while adding a plane=" + plane, e);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
 
 	@Override
 	public void updatePlane(Plane plane, Plane update) throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(UPDATE_PLANE_QUERY);) {
 			prepareUpdateStatement(statement, plane, update);
 			statement.executeUpdate();
 		} catch (ConnectionPoolException | SQLException e) {
-			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+			LOGGER.error("Error while updating plane " + update, e);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
 
 	@Override
 	public void deletePlane(Plane plane) throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(DELETE_PLANE_QUERY);) {
 			prepareDeleteStatement(statement, plane);
 			statement.executeUpdate();
 		} catch (ConnectionPoolException | SQLException e) {
-			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+			LOGGER.error("Error while deleting a plane=" + plane, e);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
 
 	@Override
 	public List<Plane> getAllPlanes() throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(SELECT_ALL_PLANES_QUERY);
 				ResultSet resultSet = statement.executeQuery();) {
 			List<Plane> planes = new ArrayList<>();
 			while (resultSet.next()) {
-				planes.add(buildPlaneFromSelectAllPlanesResultSet(resultSet));
+				planes.add(buildPlane(resultSet));
 			}
 			return planes;
 		} catch (ConnectionPoolException | SQLException e) {
-			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+			LOGGER.error("Error while getting all planes", e);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
 
 	@Override
 	public Optional<Plane> getPlaneByModelName(String model) throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(SELECT_PLANE_BY_MODEL_QUERY);) {
 			prepareSelectPlaneByModelStatement(statement, model);
 			try (ResultSet resultSet = statement.executeQuery();) {
 				Optional<Plane> plane = Optional.empty();
 				if (resultSet.next()) {
-					plane = Optional.of(buildPlaneFromSelectPlanByModelResultSet(resultSet));
+					plane = Optional.of(buildPlane(resultSet));
 				}
 				return plane;
 			}
 		} catch (ConnectionPoolException | SQLException e) {
-			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
+			LOGGER.error("Error while getting plane by molel=" + model, e);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
 
@@ -148,22 +151,10 @@ public class PlaneDAOImpl implements PlaneDAO {
 		statement.setString(SELECT_PLANE_BY_MODEL_QUERY_MODEL_INDEX, model);
 	}
 
-	private Plane buildPlaneFromSelectAllPlanesResultSet(ResultSet resultSet) throws SQLException {
-		String model = resultSet.getString(RESULT_SELECT_ALL_PLANES_QUERY_MODEL_INDEX);
-		int placeQuantity = resultSet.getInt(RESULT_SELECT_ALL_PLANES_QUERY_PLACE_QUANTITY_INDEX);
-		return buildPlane(model, placeQuantity);
-	}
-
-	private Plane buildPlaneFromSelectPlanByModelResultSet(ResultSet resultSet) throws SQLException {
-		String model = resultSet.getString(RESULT_SELECT_PLANE_BY_MODEL_QUERY_MODEL_INDEX);
-		int placeQuantity = resultSet.getInt(RESULT_SELECT_PLANE_BY_MODEL_PLACE_QUERY_QUANTITY_INDEX);
-		return buildPlane(model, placeQuantity);
-	}
-
-	private Plane buildPlane(String model, int placeQuantity) {
+	private Plane buildPlane(ResultSet resultSet) throws SQLException {
 		PlaneBuilder builder = new PlaneBuilder();
-		builder.setPlaneModel(model);
-		builder.setPlanePlaceQuantity(placeQuantity);
+		builder.setPlaneModel(resultSet.getString(RESULT_SELECT_PLANE_BY_MODEL_MODEL));
+		builder.setPlanePlaceQuantity(resultSet.getInt(RESULT_SELECT_PLANE_BY_MODEL_PLACE_QUANTITY));
 		return builder.getPlane();
 	}
 }

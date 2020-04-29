@@ -11,7 +11,6 @@ import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.command.Page;
-import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.service.UserService;
@@ -22,17 +21,14 @@ public class SignUpCommand implements Command {
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		Page page = null;
 		try {
 			User user = signupUser(request);
 			setAttribute(session, user);
-			page = (Page) session.getAttribute(Attribute.PAGE_FROM.toString());
+			return ((Page) session.getAttribute(Attribute.PAGE_FROM.toString())).getAddress();
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			page = Page.SIGN_UP;
+			return Page.SIGN_UP.getAddress();
 		}
-		return page == null || page == Page.DEFAULT ? new RedirectToDefaultPageCommand().execute(request, response)
-				: page.getAddress();
 	}
 
 	private User signupUser(HttpServletRequest request) throws ServiceException {

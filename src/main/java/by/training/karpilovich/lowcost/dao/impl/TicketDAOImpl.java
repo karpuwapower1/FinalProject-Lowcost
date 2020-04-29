@@ -1,16 +1,20 @@
 package by.training.karpilovich.lowcost.dao.impl;
 
 import java.math.BigDecimal;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,63 +33,71 @@ import by.training.karpilovich.lowcost.util.MessageType;
 
 public class TicketDAOImpl implements TicketDAO {
 
-	private static final String ADD_TICKET_QUERY = "INSERT INTO "
-			+ " ticket(`user_email`, `purchase_date`, `price`, `passenger_first_name`, "
-			+ " `passenger_last_name`, `passport_number`, `luggage_quantity`, `luggage_price`, `primary_boarding_right`, "
-			+ " `flight_id`) " + "  VALUES (?, CURRENT_TIMESTAMP(), ?, ?, ?, ?, ?, ?, ?, ?); ";
+	private static final String ADD_TICKET_CALL_QUERY = "{call add_ticket ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }";
 
-	private static final int ADD_TICKET_QUERY_EMAIL_INDEX = 1;
-	private static final int ADD_TICKET_QUERY_PRICE_INDEX = 2;
-	private static final int ADD_TICKET_QUERY_FIRST_NAME_INDEX = 3;
-	private static final int ADD_TICKET_QUERY_LAST_NAME_INDEX = 4;
-	private static final int ADD_TICKET_QUERY_PASSPORT_NUMBER_INDEX = 5;
-	private static final int ADD_TICKET_QUERY_LUGGAGE_QUANTITY_INDEX = 6;
-	private static final int ADD_TICKET_QUERY_LUGGAGE_PRICE_INDEX = 7;
-	private static final int ADD_TICKET_QUERY_PRIMARY_BOARDING_INDEX = 8;
-	private static final int ADD_TICKET_QUERY_FLIGHT_ID_INDEX = 9;
-
-	private static final String UPDATE_FLIGHT_PASSENGER_QUANTITY = "UPDATE flight "
-			+ " SET available_places=available_places - 1 " + " WHERE id=?";
-
-	private static final int UPDATE_FLIGHT_ID_INDEX = 1;
-
-	private static final String UPDATE_USER_BALANCE = "UPDATE airport_user "
-			+ " SET balance_amount = balance_amount - ? " + " WHERE email=? ";
-
-	private static final int UPDATE_USER_BALANCE_BALANCE_INDEX = 1;
-	private static final int UPDATE_USER_BALANCE_EMAIL_INDEX = 2;
-
-	private static final String UPDATE_AIRPORT_BALANCE = "UPDATE airport_balance " + " SET balance = balance + ? ";
-
-	private static final int UPDATE_AIRPORT_BALANCE_BALANCE_INDEX = 1;
-
-	private static final String INSERT_TRANSACTION = "INSERT INTO "
-			+ " transactions(from_id, date, ticket_number, amount) " + " VALUES(?,?,?,?)";
-
-	private static final int INSERT_TRANSACTION_FROM_INDEX = 1;
-	private static final int INSERT_TRANSACTION_DATE_INDEX = 2;
-	private static final int INSERT_TRANSACTION_TISKET_INDEX = 3;
-	private static final int INSERT_TRANSACTION_AMOUNT_INDEX = 4;
-
-	private static final String SELECT_TICKET_NUMBER_AND_PURCHASE_DATE_BY_FLIGHT_ID = " SELECT "
-			+ " LAST_INSERT_ID() AS ticket_number, purchase_date " + " FROM ticket "
-			+ " WHERE ticket_number=LAST_INSERT_ID()";
-
-	private static final String RESUL_SELECT_TICKET_NUMBER_AND_PURCHASE_DATE_BY_FLIGHT_ID_TICKET_NUMBER = "ticket_number";
-	private static final String RESUL_SELECT_TICKET_NUMBER_AND_PURCHASE_DATE_BY_FLIGHT_DATE = "purchase_date";
+	private static final String ADD_TICKET_USER_EMAIL_PARAMETER = "user_email";
+	private static final String ADD_TICKET_PRICE_PARAMETER = "price";
+	private static final String ADD_TICKET_PASSENGER_FIRST_NAME_PARAMETER = "passenger_first_name";
+	private static final String ADD_TICKET_PASSENGER_LAST_NAME_PARAMETER = "passenger_last_name";
+	private static final String ADD_TICKET_PASSPORT_NUMBER_PARAMETER = "passport_number";
+	private static final String ADD_TICKET_LUGGAGE_QUANTITY_PARAMETER = "luggage_quantity";
+	private static final String ADD_TICKET_LUGGAGE_PRICE_PARAMETER = "luggage_price";
+	private static final String ADD_TICKET_BOARDING_RIGHT_PARAMETER = "primary_boarding_right";
+	private static final String ADD_TICKET_FLIGHT_ID_PARAMETER = "flight_id";
+	private static final String ADD_TICKET_TICKET_PRICE_PARAMETER = "ticket_price";
+	private static final String ADD_TICKET_TICKET_NUMBER_PARAMETER = "ticket_number";
+	private static final String ADD_TICKET_PURCHASE_DATE_PARAMETER = "ticket_purchase_date";
+	
+	private static final String DELETE_TICKET_CALL_QUERY = "{call remove_ticket (?, ?, ?, ?)  }";
+	
+	private static final String DELETE_TICKET_TICKET_NUMBER_PARAMETER = "deleted_ticket_number";
+	private static final String DELETE_TICKET_USER_EMAIL_PARAMETER = "user_email";
+	private static final String DELETE_TICKET_FLIGHT_ID_PARAMETER = "flight_id";
+	private static final String DELETE_TICKET_IS_DELETED_PARAMETER = "is_deleted";
 
 	private static final String SELECT_TICKET_BY_EMAIL_QUERY = " SELECT "
 			+ "			  ticket_number, price, purchase_date, passenger_first_name, passenger_last_name, passport_number, "
-			+ "			  luggage_quantity, luggage_price, primary_boarding_right, purchase_date, "
+			+ "			  luggage_quantity, luggage_price, primary_boarding_right, purchase_date, user_email, "
 			+ "			  flight.id AS flight_id, flight.number AS flight_number, flight.date AS departure_date, "
 			+ "			  city_from.id AS from_id, city_from.name AS from_name, city_from.country_name AS from_country,"
 			+ "			  city_to.id AS to_id, city_to.name AS to_name, city_to.country_name AS to_country "
-			+ "			  FROM ticket " + "			  JOIN flight ON ticket.flight_id = flight.id "
+			+ "			  FROM ticket " 
+			+ "			  JOIN flight ON ticket.flight_id = flight.id "
 			+ "			  JOIN city AS city_from ON flight.from_id = city_from.id "
-			+ "			  JOIN city AS city_to ON flight.to_id = city_to.id " + "			  WHERE user_email = ?";
+			+ "			  JOIN city AS city_to ON flight.to_id = city_to.id " 
+			+ "			  WHERE user_email = ?";
 
 	private static final int SELECT_TICKET_BY_EMAIL_QUERY_EMAIL_INDEX = 1;
 
+	private static final String SELECT_TICKET_BY_FLIGHT_ID_QUERY = " SELECT "
+			+ "			  ticket_number, price, purchase_date, passenger_first_name, passenger_last_name, passport_number, "
+			+ "			  luggage_quantity, luggage_price, primary_boarding_right, purchase_date, user_email, "
+			+ "			  flight.id AS flight_id, flight.number AS flight_number, flight.date AS departure_date, "
+			+ "			  city_from.id AS from_id, city_from.name AS from_name, city_from.country_name AS from_country,"
+			+ "			  city_to.id AS to_id, city_to.name AS to_name, city_to.country_name AS to_country "
+			+ "			  FROM ticket " 
+			+ "			  JOIN flight ON ticket.flight_id = flight.id "
+			+ "			  JOIN city AS city_from ON flight.from_id = city_from.id "
+			+ "			  JOIN city AS city_to ON flight.to_id = city_to.id " 
+			+ "			  WHERE flight_id = ?";
+
+	private static final int SELECT_TICKET_BY_FLIGHT_ID_QUERY_ID_INDEX = 1;
+	
+	private static final String SELECT_TICKET_BY_NUMBER_QUERY = " SELECT "
+			+ "			  ticket_number, price, purchase_date, passenger_first_name, passenger_last_name, passport_number, "
+			+ "			  luggage_quantity, luggage_price, primary_boarding_right, purchase_date, user_email, "
+			+ "			  flight.id AS flight_id, flight.number AS flight_number, flight.date AS departure_date, "
+			+ "			  city_from.id AS from_id, city_from.name AS from_name, city_from.country_name AS from_country,"
+			+ "			  city_to.id AS to_id, city_to.name AS to_name, city_to.country_name AS to_country "
+			+ "			  FROM ticket " 
+			+ "			  JOIN flight ON ticket.flight_id = flight.id "
+			+ "			  JOIN city AS city_from ON flight.from_id = city_from.id "
+			+ "			  JOIN city AS city_to ON flight.to_id = city_to.id " 
+			+ "			  WHERE ticket_number = ?";
+
+	private static final int SELECT_TICKET_BY_NUMBER_QUERY_NUMBER_INDEX = 1;
+
+	private static final String SELECT_TICKET_TICKET_USER_EMAIL_ROW = "user_email";
 	private static final String SELECT_TICKET_TICKET_NUMBER_ROW = "ticket_number";
 	private static final String SELECT_TICKET_PRICE_ROW = "price";
 	private static final String SELECT_TICKET_PASSENGER_FIRST_NAME_ROW = "passenger_first_name";
@@ -106,6 +118,8 @@ public class TicketDAOImpl implements TicketDAO {
 	private static final String SELECT_TICKET_CITY_TO_COUNTRY_ROW = "to_country";
 
 	private static final Logger LOGGER = LogManager.getLogger(TicketDAOImpl.class);
+	
+	private ConnectionPool pool = ConnectionPool.getInstance();
 
 	private TicketDAOImpl() {
 	}
@@ -119,50 +133,47 @@ public class TicketDAOImpl implements TicketDAO {
 	}
 
 	@Override
-	public List<Ticket> add(Map<Ticket, BigDecimal> ticketsAndPricesMap) throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
-		Connection connection = null;
-		List<Ticket> tickets = new ArrayList<>();
-		try {
-			connection = pool.getConnection();
-			connection.setAutoCommit(false);
-			for (Ticket ticket : ticketsAndPricesMap.keySet()) {
-				addTicket(ticket, connection);
-				transfer(ticket, connection);
-				tickets.add(ticket);
-				updateFlightPlacesQuantity(ticket.getFlight().getId(), connection);
+	public List<Ticket> add(Map<Ticket, BigDecimal> ticketsAndPrices) throws DAOException {
+		List<Ticket> tickets = new ArrayList<>(ticketsAndPrices.size());
+		try (Connection connection = pool.getConnection();
+				CallableStatement statement = connection.prepareCall(ADD_TICKET_CALL_QUERY);) {
+			for (Entry<Ticket, BigDecimal> ticketAndPricesEntry : ticketsAndPrices.entrySet()) {
+				prepareAddStatement(statement, ticketAndPricesEntry.getKey(), ticketAndPricesEntry.getValue());
+				statement.execute();
+				ticketAndPricesEntry.getKey().setNumber(statement.getLong(ADD_TICKET_TICKET_NUMBER_PARAMETER));
+				ticketAndPricesEntry.getKey().setPurchaseDate(
+						takeCalendarFromTimestamp(statement.getTimestamp(ADD_TICKET_PURCHASE_DATE_PARAMETER)));
+				tickets.add(ticketAndPricesEntry.getKey());
 			}
 			return tickets;
 		} catch (SQLException | ConnectionPoolException e) {
-			LOGGER.error("Error while adding a tickets " + tickets, e);
-			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
-		} finally {
-			if (connection != null) {
-				try {
-					connection.setAutoCommit(true);
-					connection.close();
-				} catch (SQLException e) {
-					LOGGER.error("Error while closing a connection", e);
-				}
-			}
+			LOGGER.error("Error while adding a ticket ", e);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
 
 	@Override
-	public void deleteTicket(Ticket ticket) throws DAOException {
-		throw new UnsupportedOperationException();
+	public boolean deleteTicket(Ticket ticket) throws DAOException {
+		try (Connection connection = pool.getConnection();
+				CallableStatement statement = connection.prepareCall(DELETE_TICKET_CALL_QUERY);) {
+			prepareDeleteStatement(statement, ticket);
+			statement.execute();
+			return statement.getBoolean(DELETE_TICKET_IS_DELETED_PARAMETER);
+		} catch (SQLException | ConnectionPoolException e) {
+			LOGGER.error("Error while deleting the ticket " + ticket, e);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
+		}
 	}
 
 	@Override
 	public List<Ticket> getTicketByEmail(String email) throws DAOException {
-		ConnectionPool pool = ConnectionPool.getInstance();
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(SELECT_TICKET_BY_EMAIL_QUERY);) {
 			statement.setString(SELECT_TICKET_BY_EMAIL_QUERY_EMAIL_INDEX, email);
 			try (ResultSet resultSet = statement.executeQuery()) {
 				List<Ticket> tickets = new ArrayList<>();
 				while (resultSet.next()) {
-					tickets.add(buildTicket(resultSet, email));
+					tickets.add(buildTicket(resultSet));
 				}
 				return tickets;
 			}
@@ -173,82 +184,66 @@ public class TicketDAOImpl implements TicketDAO {
 	}
 
 	@Override
-	public List<Ticket> getTicketToFlight(Flight flight) throws DAOException {
-		throw new UnsupportedOperationException();
-	}
-
-	private void addTicket(Ticket ticket, Connection connection) throws SQLException {
-		try (PreparedStatement addTicketStatement = connection.prepareStatement(ADD_TICKET_QUERY);
-				PreparedStatement selectDateAndTicketNumber = connection
-						.prepareStatement(SELECT_TICKET_NUMBER_AND_PURCHASE_DATE_BY_FLIGHT_ID);) {
-			prepareAddTicketStatement(addTicketStatement, ticket);
-			addTicketStatement.executeUpdate();
-			try (ResultSet resultSet = selectDateAndTicketNumber.executeQuery()) {
-				resultSet.next();
-				ticket.setPurchaseDate(takeCalendarFromTimestamp(
-						resultSet.getTimestamp(RESUL_SELECT_TICKET_NUMBER_AND_PURCHASE_DATE_BY_FLIGHT_DATE)));
-				ticket.setNumber(
-						resultSet.getLong(RESUL_SELECT_TICKET_NUMBER_AND_PURCHASE_DATE_BY_FLIGHT_ID_TICKET_NUMBER));
+	public List<Ticket> getTicketsByFlightId(int id) throws DAOException {
+		try (Connection connection = pool.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SELECT_TICKET_BY_FLIGHT_ID_QUERY);) {
+			statement.setInt(SELECT_TICKET_BY_FLIGHT_ID_QUERY_ID_INDEX, id);
+			List<Ticket> tickets = new ArrayList<>();
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					tickets.add(buildTicket(resultSet));
+				}
 			}
+			return tickets;
+		} catch (SQLException | ConnectionPoolException e) {
+			LOGGER.error("Error while getting tickets by flight id=" + id, e);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
+		}
+	}
+	
+	@Override
+	public Optional<Ticket> getTicketByNumber(long ticketNumber) throws DAOException {
+		try (Connection connection = pool.getConnection(); 
+				PreparedStatement statement = connection.prepareStatement(SELECT_TICKET_BY_NUMBER_QUERY);) {
+			statement.setLong(SELECT_TICKET_BY_NUMBER_QUERY_NUMBER_INDEX, ticketNumber);
+			Optional<Ticket> ticket = Optional.empty();
+			try  (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					ticket = Optional.of(buildTicket(resultSet));
+				}
+			}
+			return ticket;
+		} catch (SQLException | ConnectionPoolException e) {
+			LOGGER.error("Error while getting ticket by number " + ticketNumber, e);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
 
-	private void transfer(Ticket ticket, Connection connection) throws SQLException {
-		try (PreparedStatement updateUserBalance = connection.prepareStatement(UPDATE_USER_BALANCE);
-				PreparedStatement updateAirlinesBalance = connection.prepareStatement(UPDATE_AIRPORT_BALANCE);
-				PreparedStatement addTransaction = connection.prepareStatement(INSERT_TRANSACTION)) {
-			BigDecimal price = ticket.getPrice().add(ticket.getOverweightLuggagePrice());
-			prepareUpdateUserBalanceStatement(updateUserBalance, ticket.getEmail(), price);
-			prepareUpdateAirlinesBalanceStatement(updateAirlinesBalance, price);
-			prepareAddTransactionStatement(addTransaction, ticket, price);
-			updateUserBalance.executeUpdate();
-			updateAirlinesBalance.executeUpdate();
-			addTransaction.executeUpdate();
-		}
+	private void prepareAddStatement(CallableStatement statement, Ticket ticket, BigDecimal price) throws SQLException {
+		statement.setString(ADD_TICKET_USER_EMAIL_PARAMETER, ticket.getEmail());
+		statement.setBigDecimal(ADD_TICKET_PRICE_PARAMETER, ticket.getPrice());
+		statement.setString(ADD_TICKET_PASSENGER_FIRST_NAME_PARAMETER, ticket.getPassengerFirstName());
+		statement.setString(ADD_TICKET_PASSENGER_LAST_NAME_PARAMETER, ticket.getPassengerLastName());
+		statement.setString(ADD_TICKET_PASSPORT_NUMBER_PARAMETER, ticket.getPassengerPassportNumber());
+		statement.setInt(ADD_TICKET_LUGGAGE_QUANTITY_PARAMETER, ticket.getLuggageQuantity());
+		statement.setBigDecimal(ADD_TICKET_LUGGAGE_PRICE_PARAMETER, ticket.getOverweightLuggagePrice());
+		statement.setBoolean(ADD_TICKET_BOARDING_RIGHT_PARAMETER, ticket.isPrimaryBoargingRight());
+		statement.setInt(ADD_TICKET_FLIGHT_ID_PARAMETER, ticket.getFlight().getId());
+		statement.setBigDecimal(ADD_TICKET_TICKET_PRICE_PARAMETER, price);
+		statement.registerOutParameter(ADD_TICKET_PURCHASE_DATE_PARAMETER, Types.TIMESTAMP);
+		statement.registerOutParameter(ADD_TICKET_TICKET_NUMBER_PARAMETER, Types.BIGINT);
+	}
+	
+	private void prepareDeleteStatement(CallableStatement statement, Ticket ticket) throws SQLException {
+		statement.setLong(DELETE_TICKET_TICKET_NUMBER_PARAMETER, ticket.getNumber());
+		statement.setString(DELETE_TICKET_USER_EMAIL_PARAMETER, ticket.getEmail());
+		statement.setInt(DELETE_TICKET_FLIGHT_ID_PARAMETER, ticket.getFlight().getId());
+		statement.registerOutParameter(DELETE_TICKET_IS_DELETED_PARAMETER, Types.BOOLEAN);
 	}
 
-	private void updateFlightPlacesQuantity(int id, Connection connection) throws SQLException {
-		try (PreparedStatement statement = connection.prepareStatement(UPDATE_FLIGHT_PASSENGER_QUANTITY)) {
-			statement.setInt(UPDATE_FLIGHT_ID_INDEX, id);
-			statement.executeUpdate();
-		}
-	}
-
-	private void prepareAddTicketStatement(PreparedStatement statement, Ticket ticket) throws SQLException {
-		statement.setString(ADD_TICKET_QUERY_EMAIL_INDEX, ticket.getEmail());
-		statement.setBigDecimal(ADD_TICKET_QUERY_PRICE_INDEX, ticket.getPrice());
-		statement.setString(ADD_TICKET_QUERY_FIRST_NAME_INDEX, ticket.getPassengerFirstName());
-		statement.setString(ADD_TICKET_QUERY_LAST_NAME_INDEX, ticket.getPassengerLastName());
-		statement.setString(ADD_TICKET_QUERY_PASSPORT_NUMBER_INDEX, ticket.getPassengerPassportNumber());
-		statement.setInt(ADD_TICKET_QUERY_LUGGAGE_QUANTITY_INDEX, ticket.getLuggageQuantity());
-		statement.setBigDecimal(ADD_TICKET_QUERY_LUGGAGE_PRICE_INDEX, ticket.getOverweightLuggagePrice());
-		statement.setBoolean(ADD_TICKET_QUERY_PRIMARY_BOARDING_INDEX, ticket.isPrimaryBoargingRight());
-		statement.setInt(ADD_TICKET_QUERY_FLIGHT_ID_INDEX, ticket.getFlight().getId());
-	}
-
-	private void prepareUpdateUserBalanceStatement(PreparedStatement statemetn, String email, BigDecimal price)
-			throws SQLException {
-		statemetn.setString(UPDATE_USER_BALANCE_EMAIL_INDEX, email);
-		statemetn.setBigDecimal(UPDATE_USER_BALANCE_BALANCE_INDEX, price);
-	}
-
-	private void prepareUpdateAirlinesBalanceStatement(PreparedStatement statement, BigDecimal price)
-			throws SQLException {
-		statement.setBigDecimal(UPDATE_AIRPORT_BALANCE_BALANCE_INDEX, price);
-	}
-
-	private void prepareAddTransactionStatement(PreparedStatement statement, Ticket ticket, BigDecimal price)
-			throws SQLException {
-		statement.setString(INSERT_TRANSACTION_FROM_INDEX, ticket.getEmail());
-		statement.setTimestamp(INSERT_TRANSACTION_DATE_INDEX,
-				new Timestamp(ticket.getPurchaseDate().getTimeInMillis()));
-		statement.setBigDecimal(INSERT_TRANSACTION_AMOUNT_INDEX, price);
-		statement.setLong(INSERT_TRANSACTION_TISKET_INDEX, ticket.getNumber());
-	}
-
-	private Ticket buildTicket(ResultSet resultSet, String email) throws SQLException {
+	private Ticket buildTicket(ResultSet resultSet) throws SQLException {
 		TicketBuilder builder = new TicketBuilder();
-		builder.setEmail(email);
+		builder.setEmail(resultSet.getString(SELECT_TICKET_TICKET_USER_EMAIL_ROW));
 		builder.setNumber(resultSet.getLong(SELECT_TICKET_TICKET_NUMBER_ROW));
 		builder.setPrice(resultSet.getBigDecimal(SELECT_TICKET_PRICE_ROW));
 		builder.setPurshaseDate(takeCalendarFromTimestamp(resultSet.getTimestamp(SELECT_TICKET_PURCHASE_DATE_ROW)));
