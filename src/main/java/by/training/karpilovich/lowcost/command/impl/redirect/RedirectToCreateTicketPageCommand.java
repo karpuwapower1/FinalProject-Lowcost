@@ -11,7 +11,7 @@ import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.command.Page;
-import by.training.karpilovich.lowcost.command.impl.ShowAllFlightsCommand;
+import by.training.karpilovich.lowcost.command.impl.admin.flight.ShowAllFlightsCommand;
 import by.training.karpilovich.lowcost.entity.Flight;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 
