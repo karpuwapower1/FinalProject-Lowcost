@@ -18,30 +18,11 @@
 	<title><fmt:message key="error_page" /></title>
 </fmt:bundle>
 </head>
-
-
-
-<header>
-	<nav class="navbar navbar-expand-sm navbar-light">
-		<div class="navbar-brand">
-			<form method="post" name="default">
-				<input type="hidden" name="to_page" value="DEFAULT">
-				<button type="submit" class="btn btn-link " name="command"
-					value="REDIRECT">
-					<h4>
-						LOWCOST<br>AIRLINES
-					</h4>
-				</button>
-			</form>
-		</div>
-	</nav>
-</header>
-
 <body>
 	<div class="error-code">
 		<h1>Error</h1>
 		<h1>${pageContext.errorData.statusCode}</h1>
-		</div>
+	</div>
 	<div class="error-code col-md-4 offset-md-4">${ERROR_MESSAGE}</div>
 	<script type="text/javascript" src="${style}/js/jquery-3.3.1.min.js"></script>
 	<script type="text/javascript" src="${style}/js/bootstrap.min.js"></script>

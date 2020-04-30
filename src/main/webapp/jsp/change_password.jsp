@@ -15,59 +15,38 @@
 <fmt:setLocale value="${pageContext.response.locale}" scope="session" />
 
 <fmt:bundle basename="pagecontent" prefix="title.">
-	<title><fmt:message key="sign_up" /></title>
+	<title><fmt:message key="change_password" /></title>
 </fmt:bundle>
 </head>
 
 <header>
-	<c:set var="page" value="SIGN_UP" scope="request" />
+	<c:set var="page" value="CHANGE_PASSWORD" scope="request" />
 	<c:import url="/general/header.jsp" />
 </header>
 
 <body>
-<fmt:bundle basename="pagecontent" prefix="signup.input.">
-	<form name="input" class="border border-light " method="post">
-	<input type="hidden" name="from_page" value="${page}" /> 
-		
+	<fmt:bundle basename="pagecontent" prefix="change_password.">
+		<form name="input" class="border border-light " method="post">
+			<input type="hidden" name="from_page" value="${page}"/>
 			<p class="login-header text-center">
 				<fmt:message key="title" />
 			</p>
-
 			<div class="login-form col-md-4 offset-md-4">
-
-				<input class="form-control" type="email" name="email" value=""
-					placeholder="<fmt:message key="email"/>" required
-					pattern="([a-zA-Z_0-9]{1,}@([a-z]{3,7})\.(ru|com|by|net))" /> <input
-					class="form-control" type="password" type="password"
+				<input class="form-control" type="password" type="password"
 					name="password" value="" id="password"
 					placeholder="<fmt:message key="password"/>" required
-					pattern="(\w{5,})" /> <input class="form-control" type="password"
+					pattern="(\w{5,})" /> 
+				<input class="form-control" type="password"
 					name="repeat_password" value="" id="repeatPassword"
 					placeholder="<fmt:message key="repeat_password"/>" required
-					pattern="(\w{5,})" /> <input class="form-control" type="text"
-					name="first_name" value=""
-					placeholder="<fmt:message key="first_name"/>" required /> <input
-					class="form-control" type="text" name="last_name" value=""
-					placeholder="<fmt:message key="last_name"/>" />
-
-				<p>${errorMessage}</p>
-
+					pattern="(\w{5,})" />
 				<button class="btn btn-primary btn-block " type="submit"
-					name="command" value="SIGN_UP">
+					name="command" value="UPDATE_PASSWORD">
 					<fmt:message key="command" />
 				</button>
 			</div>
-			</form>
-			<div class="login-info text-center">
-				<form method="post" name="sign_in">
-					<input type="hidden" name="to_page" value="sign_in" />
-					<button type="submit" class="btn btn-link" name="command"
-						value="REDIRECT">
-						<fmt:message key="sign_in" />
-					</button>
-				</form>
-				</div>
-		</fmt:bundle>
+		</form>
+	</fmt:bundle>
 	<div class="error-code col-md-4 offset-md-4">${ERROR_MESSAGE}</div>
 	<script type="text/javascript">
 		window.onload = function() {

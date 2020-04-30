@@ -163,6 +163,16 @@
 													<fmt:message key="user.delete_user" />
 												</button>
 											</form>
+											
+											<form method="post" name="update_password">
+												<input type="hidden" name="to_page" value="CHANGE_PASSWORD" />
+												<input type="hidden" name="from_page" value="${page }" />
+												<button type="submit"
+													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
+													value="REDIRECT">
+													<fmt:message key="user.update_password" />
+												</button>
+											</form>
 										</c:otherwise>
 									</c:choose>
 								</fmt:bundle>

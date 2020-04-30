@@ -21,20 +21,29 @@ public class RedirectToCreateTicketPageCommand implements Command {
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		session.removeAttribute(Attribute.TICKETS.toString());
-		if (session.getAttribute(Attribute.USER.toString()) == null) {
-			return Page.SIGN_IN.getAddress();
-		}
-		int quantity = (Integer) session.getAttribute(Attribute.PASSENGER_QUANTITY.toString());
-		String id = request.getParameter(JSPParameter.FLIGHT_ID);
+		String flightId = request.getParameter(JSPParameter.FLIGHT_ID);
 		try {
-			Flight flight = getFlightService().getFlightById(id);
-			getTicketService().bookTicketToFlight(flight, quantity);
-			session.setAttribute(Attribute.FLIGHT.toString(), flight);
-			return Page.CREATE_TICKET.getAddress();
+			prepareSession(session, flightId);
+			return getReturnedAddress(session);
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
 			return new ShowAllFlightsCommand().execute(request, response);
 		}
+	}
+	
+	private void prepareSession(HttpSession session, String flightId) throws ServiceException {
+		session.removeAttribute(Attribute.TICKETS.toString());
+		int quantity = (Integer) session.getAttribute(Attribute.PASSENGER_QUANTITY.toString());
+		Flight flight = getFlightService().getFlightById(flightId);
+		getTicketService().bookTicketToFlight(flight, quantity);
+		session.setAttribute(Attribute.FLIGHT.toString(), flight);
+	}
+	
+	private String getReturnedAddress(HttpSession session) {
+		if (session.getAttribute(Attribute.USER.toString()) == null) {
+			session.setAttribute(Attribute.PAGE_FROM.toString(), Page.CREATE_TICKET);
+			return Page.SIGN_IN.getAddress();
+		}
+		return Page.CREATE_TICKET.getAddress();
 	}
 }

@@ -2,7 +2,7 @@ package by.training.karpilovich.lowcost.command;
 
 public enum CommandType {
 	//user command
-	SIGN_IN, SIGN_OUT, SIGN_UP, DEPOSIT, DELETE_USER,
+	SIGN_IN, SIGN_OUT, SIGN_UP, DEPOSIT, DELETE_USER, UPDATE_PASSWORD, 
 	//city command
 	ADD_CITY, SHOW_ALL_CITIES, DELETE_CITY, REDIRECT_TO_UPDATE_CITY_PAGE, UPDATE_CITY,
 	//flight command

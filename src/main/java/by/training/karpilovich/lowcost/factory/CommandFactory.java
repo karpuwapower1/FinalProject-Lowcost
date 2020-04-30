@@ -38,6 +38,7 @@ import by.training.karpilovich.lowcost.command.impl.SortFlightsByDateCommand;
 import by.training.karpilovich.lowcost.command.impl.SortFlightsByPriceCommand;
 import by.training.karpilovich.lowcost.command.impl.UpdateCityCommand;
 import by.training.karpilovich.lowcost.command.impl.UpdateFlightCommand;
+import by.training.karpilovich.lowcost.command.impl.ChangePasswordCommand;
 import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToAddDateCoefficientPageCommand;
 import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToAddPlaceCoefficientPageCommand;
 import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToCreateFlightPageCommand;
@@ -59,6 +60,7 @@ public class CommandFactory {
 		commands.put(CommandType.SIGN_UP, new SignUpCommand());
 		commands.put(CommandType.DEPOSIT, new DepositCommand());
 		commands.put(CommandType.DELETE_USER, new DeleteUserCommand());
+		commands.put(CommandType.UPDATE_PASSWORD, new ChangePasswordCommand());
 		
 		commands.put(CommandType.ADD_CITY, new AddCityCommand());
 		commands.put(CommandType.UPDATE_CITY, new UpdateCityCommand());

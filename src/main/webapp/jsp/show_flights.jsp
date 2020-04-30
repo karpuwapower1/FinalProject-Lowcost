@@ -58,8 +58,8 @@
 						<td><fmt:formatNumber
 								value="${flight.priceForEveryKgOverweight}" /></td>
 
-
-						<c:if test="${USER_ROLE == 'ADMIN'}">
+						<c:choose>
+						<c:when test="${USER_ROLE == 'ADMIN'}">
 							<td>
 								<form method="post" name="update_flight">
 									<input type="hidden" name="from_page" value="${page}" /> <input
@@ -78,9 +78,9 @@
 									</button>
 								</form>
 							</td>
-						</c:if>
+						</c:when>
 
-						<c:if test="${USER_ROLE == 'USER'}">
+						<c:otherwise>
 							<td>
 								<form name="action" method="post">
 									<input type="hidden" name="from_page" value="${page}" /> <input
@@ -91,7 +91,8 @@
 									</button>
 								</form>
 							</td>
-						</c:if>
+						</c:otherwise>
+						</c:choose>
 					</tr>
 				</c:forEach>
 			</tbody>

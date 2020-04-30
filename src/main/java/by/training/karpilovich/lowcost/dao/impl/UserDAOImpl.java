@@ -34,7 +34,7 @@ public class UserDAOImpl implements UserDAO {
 	private static final int EMAIL_DELETE_QUERY_INDEX = 1;
 
 	private static final String UPDATE_QUERY = "UPDATE airport_user "
-			+ "SET password=?, first_name=?, last_name=? role_id=? balance_amount=?" + "WHERE email=?";
+			+ "SET user_password=?, first_name=?, last_name=?, user_role_id=?, balance_amount=? WHERE email=?";
 
 	private static final int UPDATE_QUERY_PASSWORD_INDEX = 1;
 	private static final int UPDATE_QUERY_FIRST_NAME_INDEX = 2;
