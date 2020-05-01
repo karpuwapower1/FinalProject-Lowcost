@@ -68,13 +68,13 @@ public class FlightDAOImpl implements FlightDAO {
 
 	private static final String SELECT_LAST_INSERTED_FLIGHT_ID = "SELECT LAST_INSERT_ID() AS id";
 
-	private static final String COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY = "SELECT count(number) " + " FROM flight "
+	private static final String COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY = "SELECT count(number) count " + " FROM flight "
 			+ " GROUP BY number, date " + " HAVING number = ? AND DATE(date) = ?";
 
 	private static final int COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY_NUMBER_INDEX = 1;
 	private static final int COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY_DATE_INDEX = 2;
 
-	private static final int COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY_RESULT_INDEX = 1;
+	private static final String COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY_RESULT = "count";
 
 	private static final String SELECT_FLIGHTS_QUERY = "SELECT "
 			+ " flight.id AS id, number, date, default_price * dc.coeff * pc.coeff AS price, default_luggage_kg, available_places, "
@@ -207,7 +207,7 @@ public class FlightDAOImpl implements FlightDAO {
 			try (ResultSet resultSet = statement.executeQuery();) {
 				int count = 0;
 				if (resultSet.next()) {
-					count = resultSet.getInt(COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY_RESULT_INDEX);
+					count = resultSet.getInt(COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY_RESULT);
 				}
 				return count;
 			}

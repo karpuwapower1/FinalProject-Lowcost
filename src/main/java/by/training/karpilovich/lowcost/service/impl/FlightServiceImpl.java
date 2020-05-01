@@ -91,7 +91,7 @@ public class FlightServiceImpl implements FlightService {
 		Flight flight = getFlightById(flightId);
 		Flight update = createFlightFromParameters(number, from, to, date, defaultPrice, primaryBoardingPrice, plane,
 				permittedLuggage, priceForKgOverweight);
-		Validator validator = createUpdateFlightValidator(update, flight);
+		Validator validator = createUpdateFlightValidator(flight, update);
 		try {
 			validator.validate();
 			update.setId(flight.getId());
