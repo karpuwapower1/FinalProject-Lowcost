@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="${style}/css/main_page.css" />
 <fmt:setLocale value="${pageContext.response.locale}" scope="session" />
 <fmt:bundle basename="pagecontent" prefix="title.">
-	<title><fmt:message key="show_ticket" /></title>
+	<title><fmt:message key="show_tickets" /></title>
 </fmt:bundle>
 </head>
 

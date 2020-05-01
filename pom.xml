@@ -15,8 +15,12 @@
 		<junitVersion>4.12</junitVersion>
 		<log4jVersion>2.12.1</log4jVersion>
 		<jstlVersion>1.2</jstlVersion>
+		<jsp-api-version>2.1</jsp-api-version>
+		<javaee-web-api-vercion>7.0</javaee-web-api-vercion>
 		<servletApiVersion>4.0.1</servletApiVersion>
+		<javax.mail.Version>1.4.7</javax.mail.Version>
 		<mysql-connector-java-version>8.0.18</mysql-connector-java-version>
+		<maven-compiler-plugin-version>3.5.1</maven-compiler-plugin-version>
 	</properties>
 
 	<dependencies>
@@ -34,14 +38,13 @@
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
-			<version>7.0</version>
+			<version>${javaee-web-api-vercion}</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>jsp-api</artifactId>
-			<version>2.1</version>
+			<version>${jsp-api-version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -65,29 +68,32 @@
 			<artifactId>log4j-api</artifactId>
 			<version>${log4jVersion}</version>
 		</dependency>
-		
-		
-		<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
-<dependency>
-    <groupId>org.apache.pdfbox</groupId>
-    <artifactId>pdfbox</artifactId>
-    <version>2.0.16</version>
-</dependency>
-		
+
+	<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox <dependency> 
+		<groupId>org.apache.pdfbox</groupId> <artifactId>pdfbox</artifactId> <version>2.0.16</version> 
+		</dependency -->
+
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>${javax.mail.Version}</version>
+		</dependency>
+
+
 	</dependencies>
 	<build>
-	 <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-        </plugins>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin-version}</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
 		<finalName>Lowcost</finalName>
 	</build>
 </project>

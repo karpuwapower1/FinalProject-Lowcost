@@ -2,12 +2,14 @@ package by.training.karpilovich.lowcost.factory;
 
 import by.training.karpilovich.lowcost.service.CityService;
 import by.training.karpilovich.lowcost.service.DateCoefficientService;
+import by.training.karpilovich.lowcost.service.EmailSenderService;
 import by.training.karpilovich.lowcost.service.FlightService;
 import by.training.karpilovich.lowcost.service.PlaceCoefficientService;
 import by.training.karpilovich.lowcost.service.TicketService;
 import by.training.karpilovich.lowcost.service.UserService;
 import by.training.karpilovich.lowcost.service.impl.CityServiceImpl;
 import by.training.karpilovich.lowcost.service.impl.DateCoefficientServiceImpl;
+import by.training.karpilovich.lowcost.service.impl.EmailSenderServiceImpl;
 import by.training.karpilovich.lowcost.service.impl.FlightServiceImpl;
 import by.training.karpilovich.lowcost.service.impl.PlaceCoefficientServiceImpl;
 import by.training.karpilovich.lowcost.service.impl.PlaneServiceImpl;
@@ -53,5 +55,9 @@ public class ServiceFactory {
 	
 	public DateCoefficientService getDateCoefficientService() {
 		return DateCoefficientServiceImpl.getInstance();
+	}
+	
+	public EmailSenderService getEmailSenderService() {
+		return EmailSenderServiceImpl.getInstance();
 	}
 }

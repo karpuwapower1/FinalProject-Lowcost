@@ -113,16 +113,32 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
 	public User changePassword(User user, String newPassword, String repeatNewPassword) throws ServiceException {
 		checkUserOnNull(user);
 		try {
-
 			getPasswordValidator(newPassword, repeatNewPassword).validate();
 			User newUser = buildUser(user.getEmail(), newPassword, user.getFirstName(), user.getLastName(),
 					user.getBalanceAmount());
 			userDAO.update(newUser);
 			return newUser;
 		} catch (DAOException | ValidatorException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public String getPasswordByEmail(String email) throws ServiceException {
+		Validator validator = new EmailValidator(email);
+		Validator emailPresenceValidator = new EmailPresenceValidator(email);
+		validator.setNext(emailPresenceValidator);
+		try {
+			Optional<String> optional = userDAO.getUserPasswordByEmail(email);
+			if (optional.isPresent()) {
+				return optional.get();
+			}
+			throw new ServiceException(MessageType.ILLEGAL_EMAIL.getMessage());
+		} catch (DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}

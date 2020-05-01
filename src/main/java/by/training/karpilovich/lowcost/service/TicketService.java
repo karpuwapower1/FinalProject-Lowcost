@@ -28,4 +28,6 @@ public interface TicketService {
 	Ticket getTicketByNumber(String number) throws ServiceException;
 	
 	BigDecimal countTicketPrice(List<Ticket> tickets) throws ServiceException;
+	
+	List<String> getTicketToFlightHolders(Flight flight) throws ServiceException;
 }

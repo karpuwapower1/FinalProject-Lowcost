@@ -147,6 +147,16 @@ public class TicketServiceImpl implements TicketService {
 		return price;
 	}
 
+	@Override
+	public List<String> getTicketToFlightHolders(Flight flight) throws ServiceException {
+		serviceUtil.checkFlightOnNull(flight);
+		try {
+			return ticketDAO.getTicketToFlightHolders(flight);
+		} catch (DAOException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+
 	private void lockPlaces(AtomicInteger placesUnderConsideration, int requiredPlaces, int availablePlaces)
 			throws ServiceException {
 		if (placesUnderConsideration.addAndGet(requiredPlaces) > availablePlaces) {

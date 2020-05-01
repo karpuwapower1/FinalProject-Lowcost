@@ -24,6 +24,7 @@ public class SignUpCommand implements Command {
 		try {
 			User user = signupUser(request);
 			setAttribute(session, user);
+			getEmailSenderService().sendGreetingMessage(user.getEmail(), user.getFirstName(), user.getLastName(), response.getLocale());
 			return ((Page) session.getAttribute(Attribute.PAGE_FROM.toString())).getAddress();
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());

@@ -16,4 +16,6 @@ public interface UserService {
 	User deposit(User user, String amount) throws ServiceException;
 	
 	User changePassword(User user, String newPassword, String repeatNewPassword) throws ServiceException;
+	
+	String getPasswordByEmail(String email) throws ServiceException;
 }

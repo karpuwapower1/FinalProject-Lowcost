@@ -54,8 +54,8 @@ public class TicketDAOImpl implements TicketDAO {
 	private static final String DELETE_TICKET_USER_EMAIL_PARAMETER = "user_email";
 	private static final String DELETE_TICKET_FLIGHT_ID_PARAMETER = "flight_id";
 	private static final String DELETE_TICKET_IS_DELETED_PARAMETER = "is_deleted";
-
-	private static final String SELECT_TICKET_BY_EMAIL_QUERY = " SELECT "
+	
+	private static final String SELECT_TICKET_QUERY =" SELECT "
 			+ "			  ticket_number, price, purchase_date, passenger_first_name, passenger_last_name, passport_number, "
 			+ "			  luggage_quantity, luggage_price, primary_boarding_right, purchase_date, user_email, "
 			+ "			  flight.id AS flight_id, flight.number AS flight_number, flight.date AS departure_date, "
@@ -64,35 +64,19 @@ public class TicketDAOImpl implements TicketDAO {
 			+ "			  FROM ticket " 
 			+ "			  JOIN flight ON ticket.flight_id = flight.id "
 			+ "			  JOIN city AS city_from ON flight.from_id = city_from.id "
-			+ "			  JOIN city AS city_to ON flight.to_id = city_to.id " 
+			+ "			  JOIN city AS city_to ON flight.to_id = city_to.id " ;
+
+	private static final String SELECT_TICKET_BY_EMAIL_QUERY = SELECT_TICKET_QUERY
 			+ "			  WHERE user_email = ?";
 
 	private static final int SELECT_TICKET_BY_EMAIL_QUERY_EMAIL_INDEX = 1;
 
-	private static final String SELECT_TICKET_BY_FLIGHT_ID_QUERY = " SELECT "
-			+ "			  ticket_number, price, purchase_date, passenger_first_name, passenger_last_name, passport_number, "
-			+ "			  luggage_quantity, luggage_price, primary_boarding_right, purchase_date, user_email, "
-			+ "			  flight.id AS flight_id, flight.number AS flight_number, flight.date AS departure_date, "
-			+ "			  city_from.id AS from_id, city_from.name AS from_name, city_from.country_name AS from_country,"
-			+ "			  city_to.id AS to_id, city_to.name AS to_name, city_to.country_name AS to_country "
-			+ "			  FROM ticket " 
-			+ "			  JOIN flight ON ticket.flight_id = flight.id "
-			+ "			  JOIN city AS city_from ON flight.from_id = city_from.id "
-			+ "			  JOIN city AS city_to ON flight.to_id = city_to.id " 
+	private static final String SELECT_TICKET_BY_FLIGHT_ID_QUERY = SELECT_TICKET_QUERY
 			+ "			  WHERE flight_id = ?";
 
 	private static final int SELECT_TICKET_BY_FLIGHT_ID_QUERY_ID_INDEX = 1;
 	
-	private static final String SELECT_TICKET_BY_NUMBER_QUERY = " SELECT "
-			+ "			  ticket_number, price, purchase_date, passenger_first_name, passenger_last_name, passport_number, "
-			+ "			  luggage_quantity, luggage_price, primary_boarding_right, purchase_date, user_email, "
-			+ "			  flight.id AS flight_id, flight.number AS flight_number, flight.date AS departure_date, "
-			+ "			  city_from.id AS from_id, city_from.name AS from_name, city_from.country_name AS from_country,"
-			+ "			  city_to.id AS to_id, city_to.name AS to_name, city_to.country_name AS to_country "
-			+ "			  FROM ticket " 
-			+ "			  JOIN flight ON ticket.flight_id = flight.id "
-			+ "			  JOIN city AS city_from ON flight.from_id = city_from.id "
-			+ "			  JOIN city AS city_to ON flight.to_id = city_to.id " 
+	private static final String SELECT_TICKET_BY_NUMBER_QUERY = SELECT_TICKET_QUERY
 			+ "			  WHERE ticket_number = ?";
 
 	private static final int SELECT_TICKET_BY_NUMBER_QUERY_NUMBER_INDEX = 1;
@@ -116,6 +100,11 @@ public class TicketDAOImpl implements TicketDAO {
 	private static final String SELECT_TICKET_CITY_TO_ID_ROW = "to_id";
 	private static final String SELECT_TICKET_CITY_TO_NAME_ROW = "to_name";
 	private static final String SELECT_TICKET_CITY_TO_COUNTRY_ROW = "to_country";
+	
+	private static final String SELECT_USER_EMAIL_AND_TICKET_NUMBERS_BY_FLIGHT_ID = "SELECT DISTINCT user_email FROM ticket "
+			+ " WHERE flight_id = ? ";
+	
+	private static final int SELECT_USER_EMAIL_AND_TICKET_NUMBERS_BY_FLIGHT_ID_ID_INDEX = 1; 
 
 	private static final Logger LOGGER = LogManager.getLogger(TicketDAOImpl.class);
 	
@@ -219,6 +208,20 @@ public class TicketDAOImpl implements TicketDAO {
 		}
 	}
 
+	@Override
+	public List<String> getTicketToFlightHolders(Flight flight) throws DAOException {
+		try (Connection connection = pool.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SELECT_USER_EMAIL_AND_TICKET_NUMBERS_BY_FLIGHT_ID);) {
+			prepareSelectUserEmailAndTicketNumbersQuery(statement, flight);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				return getAllBuyers(resultSet);
+			}
+		} catch (SQLException | ConnectionPoolException e) {
+			LOGGER.error("Error while getting user emails and ticket numbers by fligth id=" + flight.getId() , e);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
+		}
+	}
+
 	private void prepareAddStatement(CallableStatement statement, Ticket ticket, BigDecimal price) throws SQLException {
 		statement.setString(ADD_TICKET_USER_EMAIL_PARAMETER, ticket.getEmail());
 		statement.setBigDecimal(ADD_TICKET_PRICE_PARAMETER, ticket.getPrice());
@@ -240,6 +243,11 @@ public class TicketDAOImpl implements TicketDAO {
 		statement.setInt(DELETE_TICKET_FLIGHT_ID_PARAMETER, ticket.getFlight().getId());
 		statement.registerOutParameter(DELETE_TICKET_IS_DELETED_PARAMETER, Types.BOOLEAN);
 	}
+	
+	private void prepareSelectUserEmailAndTicketNumbersQuery(PreparedStatement statement, Flight flight) throws SQLException {
+		statement.setInt(SELECT_USER_EMAIL_AND_TICKET_NUMBERS_BY_FLIGHT_ID_ID_INDEX, flight.getId());
+	}
+	
 
 	private Ticket buildTicket(ResultSet resultSet) throws SQLException {
 		TicketBuilder builder = new TicketBuilder();
@@ -281,5 +289,13 @@ public class TicketDAOImpl implements TicketDAO {
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTimeInMillis(timestamp.getTime());
 		return calendar;
+	}
+	
+	private List<String> getAllBuyers(ResultSet resultSet) throws SQLException {
+		List<String> buyers = new ArrayList<>();
+		while (resultSet.next()) {
+			buyers.add(resultSet.getString(SELECT_TICKET_TICKET_USER_EMAIL_ROW));
+		}
+		return buyers;
 	}
 }

@@ -28,6 +28,7 @@ import by.training.karpilovich.lowcost.command.impl.admin.ticket.ShowAllTicketCo
 import by.training.karpilovich.lowcost.command.impl.admin.ticket.ShowAllTicketToFlightCommand;
 import by.training.karpilovich.lowcost.command.impl.general.ChangeLanguageCommand;
 import by.training.karpilovich.lowcost.command.impl.general.ChangePasswordCommand;
+import by.training.karpilovich.lowcost.command.impl.general.RestorePasswordCommand;
 import by.training.karpilovich.lowcost.command.impl.general.SearchFlightCommand;
 import by.training.karpilovich.lowcost.command.impl.general.SignInCommand;
 import by.training.karpilovich.lowcost.command.impl.general.SignOutCommand;
@@ -61,6 +62,7 @@ public class CommandFactory {
 		commands.put(CommandType.DEPOSIT, new DepositCommand());
 		commands.put(CommandType.DELETE_USER, new DeleteUserCommand());
 		commands.put(CommandType.UPDATE_PASSWORD, new ChangePasswordCommand());
+		commands.put(CommandType.RESTORE_PASSWORD, new RestorePasswordCommand());
 		
 		commands.put(CommandType.ADD_CITY, new AddCityCommand());
 		commands.put(CommandType.UPDATE_CITY, new UpdateCityCommand());

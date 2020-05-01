@@ -96,4 +96,20 @@ public class ServiceUtil {
 			throw new ServiceException(MessageType.NO_SUCH_TICKET.getMessage());
 		}
 	}
+	
+	public boolean checkEmailAddress(String address) {
+		return (address != null && !address.isEmpty());
+	}
+	
+	public boolean checkEmailAddresses(Collection<String> addresses) {
+		if (addresses == null) {
+			return false;
+		}
+		for (String address : addresses) {
+			if (!checkEmailAddress(address)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

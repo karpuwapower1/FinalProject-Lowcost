@@ -23,7 +23,8 @@ public class DepositCommand implements Command {
 		User user = (User) session.getAttribute(Attribute.USER.toString());
 		String amount = request.getParameter(JSPParameter.AMOUNT);
 		try {
-			getUserService().deposit(user, amount);
+			user = getUserService().deposit(user, amount);
+			session.setAttribute(Attribute.USER.toString(), user);
 			return Page.DEFAULT.getAddress();
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
