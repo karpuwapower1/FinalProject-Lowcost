@@ -58,11 +58,14 @@
 						<fmt:message key="register" />
 					</button>
 				</form>
-
-				<p>
-					<a href=""><fmt:message key="forgot_password" /></a>
-				</p>
-
+				
+				<form method="post" name="restore_password">
+					<input type="hidden" name="to_page" value="RESTORE_PASSWORD" />
+					<button type="submit" class="btn btn-link" name="command"
+						value="REDIRECT">
+						<fmt:message key="forgot_password" />
+					</button>
+				</form>
 			</div>
 	</fmt:bundle>
 	<div class="error-code col-md-4 offset-md-4">${ERROR_MESSAGE}</div>
