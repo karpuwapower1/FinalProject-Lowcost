@@ -19,16 +19,27 @@ public class SignOutCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		deleteSession(request);
+		clearCookies(request.getCookies(), response);
+		createNewSession(request);
+		return new RedirectToDefaultPageCommand().execute(request, response);
+	}
+
+	private void deleteSession(HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		session.invalidate();
+	}
+
+	private void createNewSession(HttpServletRequest request) {
 		HttpSession newSession = request.getSession();
 		newSession.setAttribute(Attribute.USER_ROLE.toString(), Role.GUEST);
-		Cookie[] cookies = request.getCookies();
+	}
+
+	private void clearCookies(Cookie[] cookies, HttpServletResponse response) {
 		if (cookies != null) {
 			removeCookie(cookies, CookieName.EMAIL.toString(), response);
 			removeCookie(cookies, CookieName.PASSWORD.toString(), response);
 		}
-		return new RedirectToDefaultPageCommand().execute(request, response);
 	}
 
 	private void removeCookie(Cookie[] cookies, String name, HttpServletResponse response) {
@@ -39,5 +50,4 @@ public class SignOutCommand implements Command {
 			}
 		}
 	}
-
 }

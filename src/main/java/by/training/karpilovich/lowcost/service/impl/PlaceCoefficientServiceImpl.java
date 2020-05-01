@@ -15,7 +15,6 @@ import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.service.PlaceCoefficientService;
 import by.training.karpilovich.lowcost.service.util.ServiceUtil;
-import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.util.PlaceCoefficientByBoundComparator;
 import by.training.karpilovich.lowcost.validator.Validator;
 import by.training.karpilovich.lowcost.validator.coefficient.PlaceCoefficientBoundFromValidator;
@@ -65,9 +64,7 @@ public class PlaceCoefficientServiceImpl implements PlaceCoefficientService {
 	@Override
 	public void saveCoefficients(Flight flight, SortedSet<PlaceCoefficient> coefficients)
 			throws ServiceException {
-		if (flight == null) {
-			throw new ServiceException(MessageType.NULL_FLIGHT.getMessage());
-		}
+		serviceUtil.checkFlightOnNull(flight);
 		checkAndFillPlaceCoefficients(flight, coefficients);
 		try {
 			placeCoefficientDAO.addCoefficients(flight.getId(), coefficients);

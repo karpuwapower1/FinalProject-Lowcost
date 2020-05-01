@@ -36,7 +36,6 @@ public class LocaleFilter implements Filter {
 			throws IOException, ServletException {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
-
 		setLocale(httpRequest, httpResponse);
 		chain.doFilter(httpRequest, httpResponse);
 	}
@@ -47,17 +46,15 @@ public class LocaleFilter implements Filter {
 		if (locale == null) {
 			LocaleType type = getLocaleType(request);
 			locale = new Locale(type.getLanguage(), type.getCountry());
-			if (type == defaultLocale) {
-				setCookie(response);
-			}
+			setLocaleCookie(type, response);
+			session.setAttribute(Attribute.LOCALE.toString(), locale);
 		}
-		session.setAttribute(Attribute.LOCALE.toString(), locale);
 		response.setLocale(locale);
 	}
-	
+
 	private LocaleType getLocaleType(HttpServletRequest request) {
 		Optional<String> optional = getLocaleFromCookies(request);
-		return optional.isPresent() ?  LocaleType.valueOf(optional.get().toUpperCase()) : defaultLocale;
+		return optional.isPresent() ? LocaleType.valueOf(optional.get().toUpperCase()) : defaultLocale;
 	}
 
 	private Optional<String> getLocaleFromCookies(HttpServletRequest request) {
@@ -75,6 +72,12 @@ public class LocaleFilter implements Filter {
 			}
 		}
 		return Optional.empty();
+	}
+
+	private void setLocaleCookie(LocaleType type, HttpServletResponse response) {
+		if (type == defaultLocale) {
+			setCookie(response);
+		}
 	}
 
 	private void setCookie(HttpServletResponse response) {

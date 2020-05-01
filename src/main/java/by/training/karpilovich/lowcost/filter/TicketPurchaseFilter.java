@@ -1,6 +1,7 @@
 package by.training.karpilovich.lowcost.filter;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,25 +40,35 @@ public class TicketPurchaseFilter implements Filter {
 			throws IOException, ServletException {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
-		String command = request.getParameter(JSPParameter.COMMAND);
 		HttpSession session = httpRequest.getSession();
-
-		if (command != null && !command.isEmpty()) {
-			CommandType commandType = CommandType.valueOf(request.getParameter(JSPParameter.COMMAND).toUpperCase());
-			if (commandType == CommandType.BUY_TICKET || commandType == CommandType.CREATE_TICKET
-					|| commandType == CommandType.REDIRECT_TO_CREATE_TICKET_PAGE) {
-				AtomicBoolean flag = takeFlagFromSession(session);
-				if (flag.get()) {
-					createPurchaseTimeChecker(session);
-				} else {
-					unbookFlightPlaces(session);
-					removeSessionAttributes(session);
-					request.getRequestDispatcher(new RedirectToDefaultPageCommand().execute(httpRequest, httpResponse)).forward(httpRequest, httpResponse);
-					return;
-				}
+		Optional<CommandType> commandType = getCommandType(httpRequest);
+		if (commandType.isPresent() && isTypeSpecialCommand(commandType.get())) {
+			AtomicBoolean flag = takeFlagFromSession(session);
+			if (flag.get()) {
+				createPurchaseTimeChecker(session);
+			} else {
+				unbookFlightPlaces(session);
+				removeSessionAttributes(session);
+				request.getRequestDispatcher(new RedirectToDefaultPageCommand().execute(httpRequest, httpResponse))
+						.forward(httpRequest, httpResponse);
+				return;
 			}
 		}
 		chain.doFilter(httpRequest, httpResponse);
+	}
+
+	private Optional<CommandType> getCommandType(HttpServletRequest request) {
+		Optional<CommandType> optional = Optional.empty();
+		String command = request.getParameter(JSPParameter.COMMAND);
+		if (command != null && !command.isEmpty()) {
+			optional = Optional.of(CommandType.valueOf(command.toUpperCase()));
+		}
+		return optional;
+	}
+
+	private boolean isTypeSpecialCommand(CommandType commandType) {
+		return commandType == CommandType.BUY_TICKET || commandType == CommandType.CREATE_TICKET
+				|| commandType == CommandType.REDIRECT_TO_CREATE_TICKET_PAGE;
 	}
 
 	private AtomicBoolean takeFlagFromSession(HttpSession session) {
@@ -79,7 +90,7 @@ public class TicketPurchaseFilter implements Filter {
 			LOGGER.error("Error while unbboking places. Flight =" + flight + " quantity=" + quantity, e);
 		}
 	}
-	
+
 	private void createPurchaseTimeChecker(HttpSession session) {
 		CountDownLatch countDownLatch = new CountDownLatch(COUNT_DOWN_LATCH_COUNT);
 		session.setAttribute(Attribute.COUNT_DOWN_LATCH.toString(), countDownLatch);

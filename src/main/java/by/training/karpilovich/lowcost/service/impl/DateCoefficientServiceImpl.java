@@ -18,7 +18,6 @@ import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.service.DateCoefficientService;
 import by.training.karpilovich.lowcost.service.util.ServiceUtil;
 import by.training.karpilovich.lowcost.util.DateCoefficientByBoundComparator;
-import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 import by.training.karpilovich.lowcost.validator.coefficient.DateCoefficientBoundFromValidator;
 import by.training.karpilovich.lowcost.validator.coefficient.DateCoefficientBoundToValidator;
@@ -65,9 +64,7 @@ public class DateCoefficientServiceImpl implements DateCoefficientService {
 
 	@Override
 	public void saveCoefficients(Flight flight, SortedSet<DateCoefficient> coefficients) throws ServiceException {
-		if (flight == null) {
-			throw new ServiceException(MessageType.NULL_FLIGHT.getMessage());
-		}
+		serviceUtil.checkFlightOnNull(flight);
 		checkAndFillDateCoefficients(flight, coefficients);
 		try {
 			dateCoefficientDAO.addCoefficients(flight.getId(), coefficients);
