@@ -3,6 +3,7 @@ package by.training.karpilovich.lowcost.service.impl;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
@@ -57,12 +58,9 @@ public class FlightServiceImpl implements FlightService {
 	public Flight createFlight(String number, City from, City to, String date, String defaultPrice,
 			String primaryBoardingPrice, Plane plane, String permittedLuggage, String priceForKgOverweight)
 			throws ServiceException {
-		if (from == null || to == null) {
-			throw new ServiceException(MessageType.NO_SUCH_CITY.getMessage());
-		}
-		if (plane == null) {
-			throw new ServiceException(MessageType.NO_SUCH_PLANE_MODEL.getMessage());
-		}
+		serviceUtil.checkCityOnNull(from);
+		serviceUtil.checkCityOnNull(to);
+		serviceUtil.checkPlaneOnNull(plane);
 		Flight flight = createFlightFromParameters(number, from, to, date, defaultPrice, primaryBoardingPrice, plane,
 				permittedLuggage, priceForKgOverweight);
 		Validator validator = createFlightValidator(flight);
@@ -76,9 +74,7 @@ public class FlightServiceImpl implements FlightService {
 
 	@Override
 	public void addFlight(Flight flight) throws ServiceException {
-		if (flight == null) {
-			throw new ServiceException(MessageType.NULL_FLIGHT.getMessage());
-		}
+		serviceUtil.checkFlightOnNull(flight);
 		Validator validator = createFlightValidator(flight);
 		try {
 			validator.validate();
@@ -95,7 +91,7 @@ public class FlightServiceImpl implements FlightService {
 		Flight flight = getFlightById(flightId);
 		Flight update = createFlightFromParameters(number, from, to, date, defaultPrice, primaryBoardingPrice, plane,
 				permittedLuggage, priceForKgOverweight);
-		Validator validator = createUpdateFlightValidator(update, flight);
+		Validator validator = createUpdateFlightValidator(flight, update);
 		try {
 			validator.validate();
 			update.setId(flight.getId());
@@ -117,9 +113,8 @@ public class FlightServiceImpl implements FlightService {
 
 	@Override
 	public List<Flight> getFlight(City from, City to, String date, String passengerQuantity) throws ServiceException {
-		if (from == null || to == null) {
-			throw new ServiceException(MessageType.NO_SUCH_CITY.getMessage());
-		}
+		serviceUtil.checkCityOnNull(from);
+		serviceUtil.checkCityOnNull(to);
 		Calendar departureDate = serviceUtil.takeDateFromString(date);
 		int quantity = serviceUtil.takeIntFromString(passengerQuantity);
 		Validator dateValidator = new DateValidator(departureDate);
@@ -173,18 +168,14 @@ public class FlightServiceImpl implements FlightService {
 
 	@Override
 	public void sortFlightByTicketPrice(List<Flight> flights) throws ServiceException {
-		if (flights == null) {
-			throw new ServiceException(MessageType.NULL_FLIGHT.getMessage());
-		}
-		Collections.sort(flights, new FlightByTicketPriceComparator());
+		serviceUtil.checkCollectionFlightsOnNull(flights);
+		sortFlights(flights, new FlightByTicketPriceComparator());
 	}
 
 	@Override
 	public void sortFlightByDepartureDate(List<Flight> flights) throws ServiceException {
-		if (flights == null) {
-			throw new ServiceException(MessageType.NULL_FLIGHT.getMessage());
-		}
-		Collections.sort(flights, new FligthByDepartureDateComparator());
+		serviceUtil.checkCollectionFlightsOnNull(flights);
+		sortFlights(flights, new FligthByDepartureDateComparator());
 	}
 
 	@Override
@@ -278,12 +269,16 @@ public class FlightServiceImpl implements FlightService {
 		builder.setOverweightLuggagePrice(overweightPrice);
 		return builder.getFlight();
 	}
-	
+
 	private List<Flight> getFlightsBetweenDates(Calendar from, Calendar to) throws ServiceException {
 		try {
 			return flightDAO.getFlightsBetweenDates(from, to);
 		} catch (DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
+	}
+
+	private void sortFlights(List<Flight> flights, Comparator<Flight> comparator) {
+		Collections.sort(flights, comparator);
 	}
 }

@@ -104,20 +104,51 @@ public class UserServiceImpl implements UserService {
 		try {
 			validator.validate();
 			BigDecimal newBalance = user.getBalanceAmount().add(additionalAmount);
-			User update = buildUser(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName(), newBalance);
+			User update = buildUser(user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName(),
+					newBalance);
 			userDAO.update(update);
 			return update;
 		} catch (ValidatorException | DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
-	
+
+	@Override
+	public User changePassword(User user, String newPassword, String repeatNewPassword) throws ServiceException {
+		checkUserOnNull(user);
+		try {
+			getPasswordValidator(newPassword, repeatNewPassword).validate();
+			User newUser = buildUser(user.getEmail(), newPassword, user.getFirstName(), user.getLastName(),
+					user.getBalanceAmount());
+			userDAO.update(newUser);
+			return newUser;
+		} catch (DAOException | ValidatorException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public String getPasswordByEmail(String email) throws ServiceException {
+		Validator validator = new EmailValidator(email);
+		Validator emailPresenceValidator = new EmailPresenceValidator(email);
+		validator.setNext(emailPresenceValidator);
+		try {
+			Optional<String> optional = userDAO.getUserPasswordByEmail(email);
+			if (optional.isPresent()) {
+				return optional.get();
+			}
+			throw new ServiceException(MessageType.ILLEGAL_EMAIL.getMessage());
+		} catch (DAOException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+
 	private void checkUserOnNull(User user) throws ServiceException {
 		if (user == null) {
 			throw new ServiceException(MessageType.USER_IS_NULL.getMessage());
 		}
 	}
-	
+
 	private Validator getUserValidator(String email, String password, String repeatPassword, String firstName) {
 		Validator validator = new EmailValidator(email);
 		Validator emailPresenceValidator = new EmailPresenceValidator(email);
@@ -135,6 +166,13 @@ public class UserServiceImpl implements UserService {
 		Validator validator = new EmailValidator(email);
 		Validator passwordValidator = new PasswordValidator(password);
 		validator.setNext(passwordValidator);
+		return validator;
+	}
+
+	private Validator getPasswordValidator(String password, String repeatPassword) {
+		Validator validator = new PasswordValidator(password);
+		Validator passwordMatchValidator = new PasswordMatchValidator(password, repeatPassword);
+		validator.setNext(passwordMatchValidator);
 		return validator;
 	}
 

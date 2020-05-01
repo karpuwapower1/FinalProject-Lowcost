@@ -29,5 +29,4 @@ public class LocaleMessageManager {
 		}
 		return value;
 	}
-
 }

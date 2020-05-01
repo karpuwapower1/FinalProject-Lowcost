@@ -26,7 +26,7 @@ public class RedirectToDefaultPageCommand implements Command {
 				Set<City> cities = getCityService().getAllCities();
 				session.setAttribute(Attribute.CITIES.toString(), cities);
 			} catch (ServiceException e) {
-				return Page.INTERNAL_ERROR.getAddress();
+				page = Page.INTERNAL_ERROR;
 			}
 		}
 		return page.getAddress();

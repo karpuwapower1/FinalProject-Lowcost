@@ -33,7 +33,7 @@
 		<input type="hidden" name="from_page" value="${page}" /> 
 			<div class="login-form col-md-4 offset-md-4">
 				<input type="text" class="form-control"
-					placeholder="<fmt:message key="current_amount"/>, <fmt:formatNumber value="${user.balanceAmount}"/>"
+					placeholder="<fmt:message key="current_amount"/>, <fmt:formatNumber value="${USER.balanceAmount}"/>"
 					readonly /> <input type="text" class="form-control" name="amount"
 					value="" placeholder="<fmt:message key="deposit_value"/>" required
 					pattern="(([0-9]{1,})(.[0-9]{0,}))" />

@@ -76,3 +76,8 @@ nb-configuration.xml
 ## OS X
 ##############################
 .DS_Store
+
+##############################
+## My files
+##############################
+src/main/resources/mail.properties

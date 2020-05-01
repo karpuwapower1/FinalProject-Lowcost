@@ -16,4 +16,6 @@ public interface UserDAO {
 	Optional<User> selectUserByEmaiAndPassword(String email, String password) throws DAOException;
 
 	int countUserWithEmail(String email) throws DAOException;
+	
+	Optional<String> getUserPasswordByEmail(String email) throws DAOException;
 }

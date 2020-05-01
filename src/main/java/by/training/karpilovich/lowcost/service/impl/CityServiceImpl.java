@@ -106,7 +106,7 @@ public class CityServiceImpl implements CityService {
 		try {
 			Specification specification = specificationFactory.getQuerySpecificationById(id);
 			Set<City> cities = cityRepository.getCities(specification);
-			if (cities.size() == 1) {
+			if (!cities.isEmpty()) {
 				return cities.iterator().next();
 			}
 			LOGGER.error("Error while getting city by id " + id);

@@ -47,15 +47,15 @@ public class TicketServiceImpl implements TicketService {
 
 	@Override
 	public void bookTicketToFlight(Flight flight, int passengerQuantity) throws ServiceException {
-		checkFlightOnNull(flight);
+		serviceUtil.checkFlightOnNull(flight);
 		lockPlaces(cache.getOccupiedPlaces(flight), passengerQuantity, flight.getAvailablePlaceQuantity());
 	}
 
 	@Override
 	public Ticket createTicket(User user, Flight flight, String firstName, String lastName, String passportNumber,
 			String luggageQuantity, String primaryBoardingRight) throws ServiceException {
-		checkUserOnNull(user);
-		checkFlightOnNull(flight);
+		serviceUtil.checkUserOnNull(user);
+		serviceUtil.checkFlightOnNull(flight);
 		int luggage = serviceUtil.takeIntFromString(luggageQuantity);
 		boolean boarding = serviceUtil.takeBooleanFromString(primaryBoardingRight);
 		Validator validator = new BuyerDataValidator(user.getEmail(), firstName, lastName, passportNumber, luggage);
@@ -69,23 +69,12 @@ public class TicketServiceImpl implements TicketService {
 
 	@Override
 	public List<Ticket> byeTickets(User user, List<Ticket> tickets) throws ServiceException {
-		checkUserOnNull(user);
-		if (tickets == null || tickets.isEmpty()) {
-			throw new ServiceException(MessageType.NO_SUCH_TICKET.getMessage());
-		}
-		Map<Ticket, BigDecimal> ticketsAndPrices = new HashMap<>();
-		BigDecimal ticketPrice;
-		BigDecimal sum = BigDecimal.ZERO;
+		serviceUtil.checkUserOnNull(user);
+		serviceUtil.checkCollectionTicketsOnNull(tickets);
 		try {
-			for (Ticket ticket : tickets) {
-				createTicketValidator(ticket).validate();
-				ticketPrice = ticket.getOverweightLuggagePrice().add(ticket.getPrice());
-				sum = sum.add(ticketPrice);
-				ticketsAndPrices.put(ticket, ticketPrice);
-			}
-			if (user.getBalanceAmount().compareTo(sum) < 0) {
-				throw new ServiceException(MessageType.INSUFFICIENT_FUNDS.getMessage());
-			}
+			validateTickets(tickets);
+			checkcIfUserhaveEnoughMoney(user, tickets);
+			Map<Ticket, BigDecimal> ticketsAndPrices = createTicketAndPriceMap(tickets);
 			return ticketDAO.add(ticketsAndPrices);
 		} catch (DAOException | ValidatorException e) {
 			throw new ServiceException(e.getMessage(), e);
@@ -99,7 +88,7 @@ public class TicketServiceImpl implements TicketService {
 
 	@Override
 	public List<Ticket> getAllUserTickets(User user) throws ServiceException {
-		checkUserOnNull(user);
+		serviceUtil.checkUserOnNull(user);
 		try {
 			return ticketDAO.getTicketByEmail(user.getEmail());
 		} catch (DAOException e) {
@@ -108,13 +97,10 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	public void returnTicket(User user, String ticketNumber) throws ServiceException {
-		checkUserOnNull(user);
+		serviceUtil.checkUserOnNull(user);
 		try {
 			Ticket ticket = getTicketByNumber(ticketNumber);
-			if (ticketDAO.deleteTicket(ticket)) {
-				return;
-			}
-			throw new ServiceException(MessageType.NO_SUCH_TICKET.getMessage());
+			ticketDAO.deleteTicket(ticket);
 		} catch (DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -122,9 +108,7 @@ public class TicketServiceImpl implements TicketService {
 
 	@Override
 	public List<Ticket> getAllTicketsToFlight(Flight flight) throws ServiceException {
-		if (flight == null) {
-			throw new ServiceException(MessageType.NULL_FLIGHT.getMessage());
-		}
+		serviceUtil.checkFlightOnNull(flight);
 		try {
 			return ticketDAO.getTicketsByFlightId(flight.getId());
 		} catch (DAOException e) {
@@ -134,10 +118,10 @@ public class TicketServiceImpl implements TicketService {
 
 	@Override
 	public void unbookTicketToFlight(Flight flight, int passengerQuantity) throws ServiceException {
-		checkFlightOnNull(flight);
+		serviceUtil.checkFlightOnNull(flight);
 		unlockPlaces(flight, passengerQuantity);
 	}
-	
+
 	@Override
 	public Ticket getTicketByNumber(String ticketNumber) throws ServiceException {
 		long number = serviceUtil.takeLongFromString(ticketNumber);
@@ -151,18 +135,26 @@ public class TicketServiceImpl implements TicketService {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
-	
+
 	@Override
 	public BigDecimal countTicketPrice(List<Ticket> tickets) throws ServiceException {
-		if (tickets == null || tickets.isEmpty()) {
-			throw new ServiceException(MessageType.NO_SUCH_TICKET.getMessage());
-		}
+		serviceUtil.checkCollectionTicketsOnNull(tickets);
 		BigDecimal price = BigDecimal.ZERO;
 		for (Ticket ticket : tickets) {
 			price = price.add(ticket.getOverweightLuggagePrice());
 			price = price.add(ticket.getPrice());
 		}
 		return price;
+	}
+
+	@Override
+	public List<String> getTicketToFlightHolders(Flight flight) throws ServiceException {
+		serviceUtil.checkFlightOnNull(flight);
+		try {
+			return ticketDAO.getTicketToFlightHolders(flight);
+		} catch (DAOException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
 	}
 
 	private void lockPlaces(AtomicInteger placesUnderConsideration, int requiredPlaces, int availablePlaces)
@@ -179,15 +171,9 @@ public class TicketServiceImpl implements TicketService {
 		}
 	}
 
-	private void checkUserOnNull(User user) throws ServiceException {
-		if (user == null) {
-			throw new ServiceException(MessageType.USER_IS_NULL.getMessage());
-		}
-	}
-
-	private void checkFlightOnNull(Flight flight) throws ServiceException {
-		if (flight == null) {
-			throw new ServiceException(MessageType.NULL_FLIGHT.getMessage());
+	private void validateTickets(List<Ticket> tickets) throws ValidatorException {
+		for (Ticket ticket : tickets) {
+			createTicketValidator(ticket).validate();
 		}
 	}
 
@@ -227,6 +213,20 @@ public class TicketServiceImpl implements TicketService {
 		builder.setPrice(price);
 		builder.setPrimaryBoardingRight(primaryBoardingRight);
 		return builder.getTicket();
+	}
+	
+	private Map<Ticket, BigDecimal> createTicketAndPriceMap(List<Ticket> tickets) {
+		Map<Ticket, BigDecimal> ticketsAndPrices = new HashMap<>();
+		for (Ticket ticket : tickets) {
+			ticketsAndPrices.put(ticket, ticket.getOverweightLuggagePrice().add(ticket.getPrice()));
+		}
+		return ticketsAndPrices;
+	}
+	
+	private void checkcIfUserhaveEnoughMoney(User user, List<Ticket> tickets) throws ServiceException {
+		if (user.getBalanceAmount().compareTo(countTicketPrice(tickets))< 0) {
+			throw new ServiceException(MessageType.INSUFFICIENT_FUNDS.getMessage());
+		}
 	}
 
 	private class FlightCache {

@@ -34,7 +34,7 @@ public class UserDAOImpl implements UserDAO {
 	private static final int EMAIL_DELETE_QUERY_INDEX = 1;
 
 	private static final String UPDATE_QUERY = "UPDATE airport_user "
-			+ "SET password=?, first_name=?, last_name=? role_id=? balance_amount=?" + "WHERE email=?";
+			+ "SET user_password=?, first_name=?, last_name=?, user_role_id=?, balance_amount=? WHERE email=?";
 
 	private static final int UPDATE_QUERY_PASSWORD_INDEX = 1;
 	private static final int UPDATE_QUERY_FIRST_NAME_INDEX = 2;
@@ -50,12 +50,16 @@ public class UserDAOImpl implements UserDAO {
 	private static final int EMAIL_SELECT_BY_EMAIL_AND_PASSWORD_QUERY_INDEX = 1;
 	private static final int PASSWORD_SELECT_BY_EMAIL_AND_PASSWORD_QUERY_INDEX = 2;
 
-	private static final String SELECT_BY_EMAIL_AND_PASSWORD_RESULT_EMAIL = "email";
-	private static final String SELECT_BY_EMAIL_AND_PASSWORD_RESULT_PASSWORD = "user_password";
-	private static final String SELECT_BY_EMAIL_AND_PASSWORD_RESULT_FIRST_NAME = "first_name";
-	private static final String SELECT_BY_EMAIL_AND_PASSWORD_RESULT_LAST_NAME = "last_name";
-	private static final String SELECT_BY_EMAIL_AND_PASSWORD_RESULT_ROLE = "role_name";
-	private static final String SELECT_BY_EMAIL_AND_PASSWORD_RESULT_BALANCE_AMOUNT = "balance_amount";
+	private static final String SELECT_USER_PASSWORD_BY_EMAIL = "SELECT user_password FROM airport_user WHERE email=?";
+
+	private static final int SELECT_USER_PASSWORD_BY_EMAIL_EMAIL_INDEX = 1;
+
+	private static final String SELECT_USER_RESULT_EMAIL_ROW = "email";
+	private static final String SELECT_USER_RESULT_PASSWORD_ROW = "user_password";
+	private static final String SELECT_USER_RESULT_FIRST_NAME_ROW = "first_name";
+	private static final String SELECT_USER_RESULT_LAST_NAME_ROW = "last_name";
+	private static final String SELECT_USER_RESULT_ROLE_ROW = "role_name";
+	private static final String SELECT_USER_RESULT_BALANCE_AMOUNT_ROW = "balance_amount";
 
 	private static final String COUNT_EMAIL_QUERY = "SELECT count(email) FROM airport_user GROUP BY email HAVING email=?";
 
@@ -150,6 +154,21 @@ public class UserDAOImpl implements UserDAO {
 		}
 	}
 
+	@Override
+	public Optional<String> getUserPasswordByEmail(String email) throws DAOException {
+		try (Connection connection = pool.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SELECT_USER_PASSWORD_BY_EMAIL);) {
+			prepareSelectUserPasswordStatement(statement, email);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				return resultSet.next() ? Optional.of(resultSet.getString(SELECT_USER_RESULT_PASSWORD_ROW))
+						: Optional.empty();
+			}
+		} catch (SQLException | ConnectionPoolException e) {
+			LOGGER.error("Error while getting password by email=" + email, e);
+			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
+		}
+	}
+
 	private void prepareAddStatement(PreparedStatement statement, User user) throws SQLException {
 		statement.setString(EMAIL_ADD_QUERY_INDEX, user.getEmail());
 		statement.setString(PASSWORD_ADD_QUERY_INDEX, user.getPassword());
@@ -181,14 +200,18 @@ public class UserDAOImpl implements UserDAO {
 		statement.setString(COUNT_EMAIL_QUERY_EMAIL_INDEX, email);
 	}
 
+	private void prepareSelectUserPasswordStatement(PreparedStatement statement, String email) throws SQLException {
+		statement.setString(SELECT_USER_PASSWORD_BY_EMAIL_EMAIL_INDEX, email);
+	}
+
 	private User buildUser(ResultSet resultSet) throws SQLException {
 		UserBuilder builder = new UserBuilder();
-		builder.setUserRole(Role.valueOf(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_ROLE).toUpperCase()));
-		builder.setUserEmail(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_EMAIL));
-		builder.setUserPassword(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_PASSWORD));
-		builder.setUserFirstName(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_FIRST_NAME));
-		builder.setUserLastName(resultSet.getString(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_LAST_NAME));
-		builder.setBalanceAmount(resultSet.getBigDecimal(SELECT_BY_EMAIL_AND_PASSWORD_RESULT_BALANCE_AMOUNT));
+		builder.setUserRole(Role.valueOf(resultSet.getString(SELECT_USER_RESULT_ROLE_ROW).toUpperCase()));
+		builder.setUserEmail(resultSet.getString(SELECT_USER_RESULT_EMAIL_ROW));
+		builder.setUserPassword(resultSet.getString(SELECT_USER_RESULT_PASSWORD_ROW));
+		builder.setUserFirstName(resultSet.getString(SELECT_USER_RESULT_FIRST_NAME_ROW));
+		builder.setUserLastName(resultSet.getString(SELECT_USER_RESULT_LAST_NAME_ROW));
+		builder.setBalanceAmount(resultSet.getBigDecimal(SELECT_USER_RESULT_BALANCE_AMOUNT_ROW));
 		return builder.getUser();
 	}
 }

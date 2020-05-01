@@ -25,10 +25,10 @@
 </header>
 
 <body>
-
+<fmt:bundle basename="pagecontent" prefix="signup.input.">
 	<form name="input" class="border border-light " method="post">
 	<input type="hidden" name="from_page" value="${page}" /> 
-		<fmt:bundle basename="pagecontent" prefix="signup.input.">
+		
 			<p class="login-header text-center">
 				<fmt:message key="title" />
 			</p>
@@ -57,8 +57,17 @@
 					<fmt:message key="command" />
 				</button>
 			</div>
+			</form>
+			<div class="login-info text-center">
+				<form method="post" name="sign_in">
+					<input type="hidden" name="to_page" value="sign_in" />
+					<button type="submit" class="btn btn-link" name="command"
+						value="REDIRECT">
+						<fmt:message key="sign_in" />
+					</button>
+				</form>
+				</div>
 		</fmt:bundle>
-	</form>
 	<div class="error-code col-md-4 offset-md-4">${ERROR_MESSAGE}</div>
 	<script type="text/javascript">
 		window.onload = function() {

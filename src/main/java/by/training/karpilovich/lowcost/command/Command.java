@@ -13,6 +13,7 @@ import by.training.karpilovich.lowcost.factory.ServiceFactory;
 
 import by.training.karpilovich.lowcost.service.CityService;
 import by.training.karpilovich.lowcost.service.DateCoefficientService;
+import by.training.karpilovich.lowcost.service.EmailSenderService;
 import by.training.karpilovich.lowcost.service.FlightService;
 import by.training.karpilovich.lowcost.service.PlaceCoefficientService;
 import by.training.karpilovich.lowcost.service.PlaneService;
@@ -56,6 +57,10 @@ public interface Command {
 
 	default DateCoefficientService getDateCoefficientService() {
 		return ServiceFactory.getInstance().getDateCoefficientService();
+	}
+	
+	default EmailSenderService getEmailSenderService() {
+		return ServiceFactory.getInstance().getEmailSenderService();
 	}
 
 	String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;

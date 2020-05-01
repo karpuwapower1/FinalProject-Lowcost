@@ -26,7 +26,7 @@
 <body>
 	<fmt:bundle basename="pagecontent" prefix="signin.input.">
 		<form name="input" class="border border-light " method="post">
-		<input type="hidden" name="from_page" value="${page}" /> 
+			<input type="hidden" name="from_page" value="${page}" />
 			<p class="login-header text-center">
 				<fmt:message key="title" />
 			</p>
@@ -49,17 +49,24 @@
 				</div>
 
 			</div>
+			</form>
 			<div class="login-info text-center">
-
-				<p>
-					<a href=""><fmt:message key="register" /></a>
-				</p>
-				<p>
-					<a href=""><fmt:message key="forgot_password" /></a>
-				</p>
-
+				<form method="post" name="sign_in">
+					<input type="hidden" name="to_page" value="sign_up" />
+					<button type="submit" class="btn btn-link" name="command"
+						value="REDIRECT">
+						<fmt:message key="register" />
+					</button>
+				</form>
+				
+				<form method="post" name="restore_password">
+					<input type="hidden" name="to_page" value="RESTORE_PASSWORD" />
+					<button type="submit" class="btn btn-link" name="command"
+						value="REDIRECT">
+						<fmt:message key="forgot_password" />
+					</button>
+				</form>
 			</div>
-		</form>
 	</fmt:bundle>
 	<div class="error-code col-md-4 offset-md-4">${ERROR_MESSAGE}</div>
 	<script type="text/javascript" src="${style}/js/jquery-3.3.1.min.js"></script>
