@@ -23,10 +23,10 @@ public class DateCoefficientBoundsValidator extends Validator {
 	@Override
 	public void validate() throws ValidatorException {
 		for (DateCoefficient coefficient : coefficients) {
-			if (boundFrom.compareTo(coefficient.getFrom()) <= 0 && boundFrom.compareTo(coefficient.getTo()) >= 0) {
+			if (boundFrom.compareTo(coefficient.getFrom()) >= 0 && boundFrom.compareTo(coefficient.getTo()) <= 0) {
 				throw new ValidatorException(MessageType.INVALID_COEFFICINET_BOUND_FROM.getMessage());
 			}
-			if (boundTo.compareTo(coefficient.getFrom()) <= 0 && boundTo.compareTo(coefficient.getTo()) >= 0) {
+			if (boundTo.compareTo(coefficient.getFrom()) >= 0 && boundTo.compareTo(coefficient.getTo()) <= 0) {
 				throw new ValidatorException(MessageType.INVALID_COEFFICINET_BOUND_TO.getMessage());
 			}
 		}

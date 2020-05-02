@@ -26,7 +26,6 @@ import by.training.karpilovich.lowcost.validator.flight.PriceValidator;
 import by.training.karpilovich.lowcost.validator.ticket.BuyerDataValidator;
 import by.training.karpilovich.lowcost.validator.ticket.FlightNumberAndDateValidator;
 import by.training.karpilovich.lowcost.validator.ticket.LuggagePriceValidator;
-import by.training.karpilovich.lowcost.validator.ticket.TicketOnNullValidator;
 
 public class TicketServiceImpl implements TicketService {
 
@@ -171,21 +170,20 @@ public class TicketServiceImpl implements TicketService {
 		}
 	}
 
-	private void validateTickets(List<Ticket> tickets) throws ValidatorException {
+	private void validateTickets(List<Ticket> tickets) throws ValidatorException, ServiceException {
 		for (Ticket ticket : tickets) {
+			serviceUtil.checkTicketOnNull(ticket);
 			createTicketValidator(ticket).validate();
 		}
 	}
 
 	private Validator createTicketValidator(Ticket ticket) {
-		Validator validator = new TicketOnNullValidator(ticket);
-		Validator userDateValidator = new BuyerDataValidator(ticket.getEmail(), ticket.getPassengerFirstName(),
+		Validator validator = new BuyerDataValidator(ticket.getEmail(), ticket.getPassengerFirstName(),
 				ticket.getPassengerLastName(), ticket.getPassengerPassportNumber(), ticket.getLuggageQuantity());
 		Validator flightValidator = new FlightNumberAndDateValidator(ticket.getFlight());
 		Validator priceValidator = new PriceValidator(ticket.getPrice());
 		Validator luggagePriceValidator = new LuggagePriceValidator(ticket.getOverweightLuggagePrice());
-		validator.setNext(userDateValidator);
-		userDateValidator.setNext(flightValidator);
+		validator.setNext(flightValidator);
 		flightValidator.setNext(priceValidator);
 		priceValidator.setNext(luggagePriceValidator);
 		return validator;
@@ -214,7 +212,7 @@ public class TicketServiceImpl implements TicketService {
 		builder.setPrimaryBoardingRight(primaryBoardingRight);
 		return builder.getTicket();
 	}
-	
+
 	private Map<Ticket, BigDecimal> createTicketAndPriceMap(List<Ticket> tickets) {
 		Map<Ticket, BigDecimal> ticketsAndPrices = new HashMap<>();
 		for (Ticket ticket : tickets) {
@@ -222,9 +220,9 @@ public class TicketServiceImpl implements TicketService {
 		}
 		return ticketsAndPrices;
 	}
-	
+
 	private void checkcIfUserhaveEnoughMoney(User user, List<Ticket> tickets) throws ServiceException {
-		if (user.getBalanceAmount().compareTo(countTicketPrice(tickets))< 0) {
+		if (user.getBalanceAmount().compareTo(countTicketPrice(tickets)) < 0) {
 			throw new ServiceException(MessageType.INSUFFICIENT_FUNDS.getMessage());
 		}
 	}

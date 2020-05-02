@@ -13,15 +13,30 @@ public class EmailValidator extends Validator {
 
 	public EmailValidator(String email) {
 		this.email = email;
-		pattern = Pattern.compile(EMAIL_REGEX);
-		matcher = pattern.matcher(email);
 	}
 
 	@Override
 	public void validate() throws ValidatorException {
-		if (email == null || email.isEmpty() || !matcher.find()) {
+		isEmailPresent();
+		isEmailMatchMatcher();
+		continueValidate();
+	}
+
+	private void isEmailPresent() throws ValidatorException {
+		if (email == null || email.isEmpty()) {
 			throw new ValidatorException(MessageType.ILLEGAL_EMAIL.getMessage());
 		}
-		continueValidate();
+	}
+
+	private void isEmailMatchMatcher() throws ValidatorException {
+		createMatcher();
+		if (!matcher.find()) {
+			throw new ValidatorException(MessageType.ILLEGAL_EMAIL.getMessage());
+		}
+	}
+
+	private void createMatcher() {
+		pattern = Pattern.compile(EMAIL_REGEX);
+		matcher = pattern.matcher(email);
 	}
 }

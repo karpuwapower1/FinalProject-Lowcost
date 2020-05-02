@@ -8,12 +8,12 @@ public class PasswordMatchValidator extends Validator {
 
 	private String password;
 	private String repeatPassword;
-	
+
 	public PasswordMatchValidator(String password, String repeatPassword) {
 		this.password = password;
 		this.repeatPassword = repeatPassword;
 	}
-	
+
 	@Override
 	public void validate() throws ValidatorException {
 		if (password == null || !password.equals(repeatPassword)) {
@@ -21,6 +21,4 @@ public class PasswordMatchValidator extends Validator {
 		}
 		continueValidate();
 	}
-	
-	
 }

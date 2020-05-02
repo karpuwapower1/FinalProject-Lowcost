@@ -6,11 +6,11 @@ import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.util.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 
-public class PlaceCoefficientValueValidator extends Validator {
+public class CoefficientValueValidator extends Validator {
 	
 	private BigDecimal value;
 
-	public PlaceCoefficientValueValidator(BigDecimal value) {
+	public CoefficientValueValidator(BigDecimal value) {
 		this.value = value;
 	}
 

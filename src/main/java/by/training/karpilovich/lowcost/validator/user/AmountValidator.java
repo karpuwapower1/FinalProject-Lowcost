@@ -16,7 +16,7 @@ public class AmountValidator extends Validator {
 
 	@Override
 	public void validate() throws ValidatorException {
-		if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+		if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
 			throw new ValidatorException(MessageType.INVALID_AMOUNT.getMessage());
 		}
 		continueValidate();
