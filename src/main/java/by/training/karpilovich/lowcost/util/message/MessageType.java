@@ -1,4 +1,4 @@
-package by.training.karpilovich.lowcost.util;
+package by.training.karpilovich.lowcost.util.message;
 
 public enum MessageType {
 	

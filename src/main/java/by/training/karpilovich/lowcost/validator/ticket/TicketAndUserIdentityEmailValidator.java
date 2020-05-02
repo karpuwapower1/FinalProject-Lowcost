@@ -3,7 +3,7 @@ package by.training.karpilovich.lowcost.validator.ticket;
 import by.training.karpilovich.lowcost.entity.Ticket;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ValidatorException;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 
 public class TicketAndUserIdentityEmailValidator extends Validator {

@@ -18,7 +18,7 @@ import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.repository.CityRepository;
 import by.training.karpilovich.lowcost.specification.Specification;
 import by.training.karpilovich.lowcost.util.CityByCountryAndNameComparator;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 
 public class CityRepositoryImpl implements CityRepository {
 

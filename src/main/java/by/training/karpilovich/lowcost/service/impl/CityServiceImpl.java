@@ -20,7 +20,7 @@ import by.training.karpilovich.lowcost.repository.CityRepository;
 import by.training.karpilovich.lowcost.service.CityService;
 import by.training.karpilovich.lowcost.service.util.ServiceUtil;
 import by.training.karpilovich.lowcost.specification.Specification;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 import by.training.karpilovich.lowcost.validator.city.CityAbsenceValidator;
 import by.training.karpilovich.lowcost.validator.city.CityNameValidator;
@@ -104,13 +104,7 @@ public class CityServiceImpl implements CityService {
 	@Override
 	public City getCityById(int id) throws ServiceException {
 		try {
-			Specification specification = specificationFactory.getQuerySpecificationById(id);
-			Set<City> cities = cityRepository.getCities(specification);
-			if (!cities.isEmpty()) {
-				return cities.iterator().next();
-			}
-			LOGGER.error("Error while getting city by id " + id);
-			throw new ServiceException(MessageType.INTERNAL_ERROR.getMessage());
+			return findCityById(id);
 		} catch (RepositoryException e) {
 			throw new ServiceException(e.getMessage());
 		}
@@ -140,5 +134,15 @@ public class CityServiceImpl implements CityService {
 		nameValidator.setNext(countryNameValidator);
 		countryNameValidator.setNext(cityPresenceValidator);
 		return nameValidator;
+	}
+	
+	private City findCityById(int id) throws ServiceException, RepositoryException {
+		Specification specification = specificationFactory.getQuerySpecificationById(id);
+		Set<City> cities = cityRepository.getCities(specification);
+		if (!cities.isEmpty()) {
+			return cities.iterator().next();
+		}
+		LOGGER.error("Error while getting city by id " + id);
+		throw new ServiceException(MessageType.INTERNAL_ERROR.getMessage());
 	}
 }

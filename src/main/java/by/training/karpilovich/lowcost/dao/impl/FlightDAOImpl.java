@@ -27,7 +27,7 @@ import by.training.karpilovich.lowcost.entity.Flight;
 import by.training.karpilovich.lowcost.entity.Plane;
 import by.training.karpilovich.lowcost.exception.ConnectionPoolException;
 import by.training.karpilovich.lowcost.exception.DAOException;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 
 public class FlightDAOImpl implements FlightDAO {
 

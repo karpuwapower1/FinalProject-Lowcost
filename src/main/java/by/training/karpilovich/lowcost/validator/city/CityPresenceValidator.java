@@ -9,7 +9,7 @@ import by.training.karpilovich.lowcost.factory.RepositoryFactory;
 import by.training.karpilovich.lowcost.factory.SpecificationFactory;
 import by.training.karpilovich.lowcost.repository.CityRepository;
 import by.training.karpilovich.lowcost.specification.Specification;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 
 public class CityPresenceValidator extends Validator {

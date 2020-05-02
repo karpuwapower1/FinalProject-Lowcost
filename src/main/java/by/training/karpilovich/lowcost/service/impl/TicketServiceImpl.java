@@ -20,7 +20,7 @@ import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.service.TicketService;
 import by.training.karpilovich.lowcost.service.util.ServiceUtil;
 import by.training.karpilovich.lowcost.util.FlightByIdComparator;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 import by.training.karpilovich.lowcost.validator.flight.PriceValidator;
 import by.training.karpilovich.lowcost.validator.ticket.BuyerDataValidator;

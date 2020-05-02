@@ -16,7 +16,7 @@ import by.training.karpilovich.lowcost.entity.Role;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ConnectionPoolException;
 import by.training.karpilovich.lowcost.exception.DAOException;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 
 public class UserDAOImpl implements UserDAO {
 

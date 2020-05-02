@@ -3,7 +3,7 @@ package by.training.karpilovich.lowcost.validator.user;
 import java.math.BigDecimal;
 
 import by.training.karpilovich.lowcost.exception.ValidatorException;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 
 public class FundsValidator extends Validator {
