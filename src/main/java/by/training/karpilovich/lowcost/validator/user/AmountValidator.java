@@ -3,7 +3,7 @@ package by.training.karpilovich.lowcost.validator.user;
 import java.math.BigDecimal;
 
 import by.training.karpilovich.lowcost.exception.ValidatorException;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 
 public class AmountValidator extends Validator {
@@ -16,7 +16,7 @@ public class AmountValidator extends Validator {
 
 	@Override
 	public void validate() throws ValidatorException {
-		if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+		if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
 			throw new ValidatorException(MessageType.INVALID_AMOUNT.getMessage());
 		}
 		continueValidate();

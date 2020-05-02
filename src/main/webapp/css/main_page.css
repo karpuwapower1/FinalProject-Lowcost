@@ -60,23 +60,29 @@ body .form-control, body .custom-select, body .btn-light {
 
 menu .dropdown-item {
 	font-size: 5px;
-	line-height=10px
+	line-height
+	=10px
 }
 
 form {
-    margin: 0;
+	margin: 0;
 }
 
-.table {
+table {
 	font-family: 'Sen', sans-serif;
-	font-size : 12px;
+	font-size: 12px;
 	text-align: center;
 }
 
-.error-code {
-	text-align:center;
+error-code {
+	text-align: center;
 	font-family: 'Sen', sans-serif;
 	font-color: #FF0000;
 	font-size: 20px;
 	text-align: center;
+}
+
+footer {
+	text-align: center;
+	font-size: 10px;
 }

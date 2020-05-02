@@ -15,12 +15,12 @@ import by.training.karpilovich.lowcost.entity.Ticket;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.util.DateParser;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 
 public class ServiceUtil {
-	
+
 	private static final Logger LOGGER = LogManager.getLogger(ServiceUtil.class);
-	
+
 	public BigDecimal takeBigDecimalFromString(String value) throws ServiceException {
 		try {
 			return new BigDecimal(value);
@@ -47,7 +47,7 @@ public class ServiceUtil {
 			throw new ServiceException(MessageType.INTERNAL_ERROR.getMessage());
 		}
 	}
-	
+
 	public long takeLongFromString(String value) throws ServiceException {
 		try {
 			return Long.parseLong(value);
@@ -56,51 +56,51 @@ public class ServiceUtil {
 			throw new ServiceException(MessageType.INTERNAL_ERROR.getMessage());
 		}
 	}
-	
+
 	public boolean takeBooleanFromString(String value) {
 		return value != null;
 	}
-	
+
 	public void checkFlightOnNull(Flight flight) throws ServiceException {
 		if (flight == null) {
 			throw new ServiceException(MessageType.NULL_FLIGHT.getMessage());
 		}
 	}
-	
+
 	public void checkCityOnNull(City city) throws ServiceException {
 		if (city == null) {
 			throw new ServiceException(MessageType.NO_SUCH_CITY.getMessage());
 		}
 	}
-	
+
 	public void checkPlaneOnNull(Plane plane) throws ServiceException {
 		if (plane == null) {
 			throw new ServiceException(MessageType.NO_SUCH_PLANE_MODEL.getMessage());
 		}
 	}
-	
+
 	public void checkCollectionFlightsOnNull(Collection<Flight> flights) throws ServiceException {
 		if (flights == null) {
 			throw new ServiceException(MessageType.NULL_FLIGHT.getMessage());
 		}
 	}
-	
+
 	public void checkUserOnNull(User user) throws ServiceException {
 		if (user == null) {
 			throw new ServiceException(MessageType.USER_IS_NULL.getMessage());
 		}
 	}
-	
+
 	public void checkCollectionTicketsOnNull(Collection<Ticket> tickets) throws ServiceException {
 		if (tickets == null || tickets.isEmpty()) {
 			throw new ServiceException(MessageType.NO_SUCH_TICKET.getMessage());
 		}
 	}
-	
+
 	public boolean checkEmailAddress(String address) {
 		return (address != null && !address.isEmpty());
 	}
-	
+
 	public boolean checkEmailAddresses(Collection<String> addresses) {
 		if (addresses == null) {
 			return false;
@@ -111,5 +111,11 @@ public class ServiceUtil {
 			}
 		}
 		return true;
+	}
+
+	public void checkTicketOnNull(Ticket ticket) throws ServiceException {
+		if (ticket == null) {
+			throw new ServiceException(MessageType.NO_SUCH_TICKET.getMessage());
+		}
 	}
 }

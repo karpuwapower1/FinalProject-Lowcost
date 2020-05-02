@@ -3,12 +3,12 @@ package by.training.karpilovich.lowcost.validator.ticket;
 import java.util.regex.Pattern;
 
 import by.training.karpilovich.lowcost.exception.ValidatorException;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 
 public class PassportNumberValidator extends Validator {
 
-	private static final String PASSPORT_NUMBER_REGEX = "([A-Z]{2}[0-9]{5})";
+	private static final String PASSPORT_NUMBER_REGEX = "([A-Z]{2}[0-9]{7})";
 
 	private String passportNumber;
 
@@ -18,11 +18,26 @@ public class PassportNumberValidator extends Validator {
 
 	@Override
 	public void validate() throws ValidatorException {
-		pattern = Pattern.compile(PASSPORT_NUMBER_REGEX);
-		matcher = pattern.matcher(passportNumber);
-		if (passportNumber == null || passportNumber.isEmpty() || !matcher.find()) {
+		isPasspotNumberPresent();
+		ispasswordMatchPattern();
+		continueValidate();
+	}
+
+	private void isPasspotNumberPresent() throws ValidatorException {
+		if (passportNumber == null || passportNumber.isEmpty()) {
 			throw new ValidatorException(MessageType.INVALID_PASSPORT_NUMBER.getMessage());
 		}
-		continueValidate();
+	}
+
+	private void ispasswordMatchPattern() throws ValidatorException {
+		createMatcher();
+		if (!matcher.find()) {
+			throw new ValidatorException(MessageType.INVALID_PASSPORT_NUMBER.getMessage());
+		}
+	}
+
+	private void createMatcher() {
+		pattern = Pattern.compile(PASSPORT_NUMBER_REGEX);
+		matcher = pattern.matcher(passportNumber);
 	}
 }

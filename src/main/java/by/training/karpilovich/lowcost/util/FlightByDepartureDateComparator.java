@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import by.training.karpilovich.lowcost.entity.Flight;
 
-public class FligthByDepartureDateComparator implements Comparator<Flight> {
+public class FlightByDepartureDateComparator implements Comparator<Flight> {
 
 	@Override
 	public int compare(Flight first, Flight second) {

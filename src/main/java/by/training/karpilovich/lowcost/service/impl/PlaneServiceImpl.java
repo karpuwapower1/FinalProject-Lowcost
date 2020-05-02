@@ -12,7 +12,7 @@ import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.service.PlaneService;
 import by.training.karpilovich.lowcost.service.util.ServiceUtil;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 import by.training.karpilovich.lowcost.validator.plane.ModelAbsenceValidator;
 import by.training.karpilovich.lowcost.validator.plane.ModelValidator;

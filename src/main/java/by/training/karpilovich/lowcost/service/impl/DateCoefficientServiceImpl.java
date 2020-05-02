@@ -22,7 +22,7 @@ import by.training.karpilovich.lowcost.validator.Validator;
 import by.training.karpilovich.lowcost.validator.coefficient.DateCoefficientBoundFromValidator;
 import by.training.karpilovich.lowcost.validator.coefficient.DateCoefficientBoundToValidator;
 import by.training.karpilovich.lowcost.validator.coefficient.DateCoefficientBoundsValidator;
-import by.training.karpilovich.lowcost.validator.coefficient.PlaceCoefficientValueValidator;
+import by.training.karpilovich.lowcost.validator.coefficient.CoefficientValueValidator;
 
 public class DateCoefficientServiceImpl implements DateCoefficientService {
 
@@ -114,7 +114,7 @@ public class DateCoefficientServiceImpl implements DateCoefficientService {
 	private Validator createDateCoefficientValidator(Calendar maxValue, Calendar from, Calendar to, BigDecimal value) {
 		Validator validator = new DateCoefficientBoundFromValidator(from, maxValue);
 		Validator boundToValidator = new DateCoefficientBoundToValidator(to, from, maxValue);
-		Validator coefficientValueValidator = new PlaceCoefficientValueValidator(value);
+		Validator coefficientValueValidator = new CoefficientValueValidator(value);
 		validator.setNext(boundToValidator);
 		boundToValidator.setNext(coefficientValueValidator);
 		return validator;

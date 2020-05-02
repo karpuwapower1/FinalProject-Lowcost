@@ -8,11 +8,9 @@ public class FlightByIdComparator implements Comparator<Flight> {
 
 	@Override
 	public int compare(Flight first, Flight second) {
-		if (first.getId() < second.getId()) {
-			return -1;
-		} else if (first.getId() > second.getId()) {
-			return 1;
+		if (first.getId() == second.getId()) {
+			return 0;
 		}
-		return 0;
+		return first.getId() < second.getId() ? -1 : 1;
 	}
 }

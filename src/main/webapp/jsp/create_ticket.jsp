@@ -40,7 +40,7 @@
 				type="text" class="form-control col-md-4 offset-md-4"
 				name="passport_number" value=""
 				placeholder="<fmt:message key="passport_number"/>" required
-				pattern="([A-Za-z]{2}[0-9]{5})" /> <input type="text"
+				pattern="([A-Za-z]{2}[0-9]{7})" /> <input type="text"
 				class="form-control col-md-4 offset-md-4" name="luggage" value=""
 				placeholder="<fmt:message key="luggage"/>" required
 				pattern="[0-9]{1,}" />

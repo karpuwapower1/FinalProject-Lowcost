@@ -1,4 +1,4 @@
-package by.training.karpilovich.lowcost.util;
+package by.training.karpilovich.lowcost.util.message;
 
 import java.util.Locale;
 import java.util.MissingResourceException;

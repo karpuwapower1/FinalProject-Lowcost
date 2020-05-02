@@ -20,7 +20,7 @@ import by.training.karpilovich.lowcost.validator.Validator;
 import by.training.karpilovich.lowcost.validator.coefficient.PlaceCoefficientBoundFromValidator;
 import by.training.karpilovich.lowcost.validator.coefficient.PlaceCoefficientBoundToValidator;
 import by.training.karpilovich.lowcost.validator.coefficient.PlaceCoefficientBoundsValidator;
-import by.training.karpilovich.lowcost.validator.coefficient.PlaceCoefficientValueValidator;
+import by.training.karpilovich.lowcost.validator.coefficient.CoefficientValueValidator;
 
 public class PlaceCoefficientServiceImpl implements PlaceCoefficientService {
 	
@@ -111,7 +111,7 @@ public class PlaceCoefficientServiceImpl implements PlaceCoefficientService {
 	private Validator createPlaceCoefficientValidator(int maxPlacesQuantity, int from, int to, BigDecimal value) {
 		Validator validator = new PlaceCoefficientBoundFromValidator(from, maxPlacesQuantity);
 		Validator boundToValidator = new PlaceCoefficientBoundToValidator(to, from, maxPlacesQuantity);
-		Validator coefficientValueValidator = new PlaceCoefficientValueValidator(value);
+		Validator coefficientValueValidator = new CoefficientValueValidator(value);
 		validator.setNext(boundToValidator);
 		boundToValidator.setNext(coefficientValueValidator);
 		return validator;

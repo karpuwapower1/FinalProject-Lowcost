@@ -6,7 +6,7 @@ import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.factory.ServiceFactory;
 import by.training.karpilovich.lowcost.service.FlightService;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 
 public class NumberAndDateAbsenceValidator extends Validator {

@@ -23,8 +23,8 @@ import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.service.FlightService;
 import by.training.karpilovich.lowcost.service.util.ServiceUtil;
 import by.training.karpilovich.lowcost.util.FlightByTicketPriceComparator;
-import by.training.karpilovich.lowcost.util.FligthByDepartureDateComparator;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.FlightByDepartureDateComparator;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 import by.training.karpilovich.lowcost.validator.city.CityPresenceValidator;
 import by.training.karpilovich.lowcost.validator.flight.AvailablePlaceValidator;
@@ -175,7 +175,7 @@ public class FlightServiceImpl implements FlightService {
 	@Override
 	public void sortFlightByDepartureDate(List<Flight> flights) throws ServiceException {
 		serviceUtil.checkCollectionFlightsOnNull(flights);
-		sortFlights(flights, new FligthByDepartureDateComparator());
+		sortFlights(flights, new FlightByDepartureDateComparator());
 	}
 
 	@Override

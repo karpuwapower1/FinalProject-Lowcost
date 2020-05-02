@@ -19,7 +19,7 @@ import by.training.karpilovich.lowcost.service.PlaceCoefficientService;
 import by.training.karpilovich.lowcost.service.PlaneService;
 import by.training.karpilovich.lowcost.service.TicketService;
 import by.training.karpilovich.lowcost.service.UserService;
-import by.training.karpilovich.lowcost.util.LocaleMessageManager;
+import by.training.karpilovich.lowcost.util.message.LocaleMessageManager;
 
 public interface Command {
 

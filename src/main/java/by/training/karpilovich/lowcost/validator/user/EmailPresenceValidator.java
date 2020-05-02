@@ -4,7 +4,7 @@ import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.factory.ServiceFactory;
 import by.training.karpilovich.lowcost.service.UserService;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 
 public class EmailPresenceValidator extends Validator {

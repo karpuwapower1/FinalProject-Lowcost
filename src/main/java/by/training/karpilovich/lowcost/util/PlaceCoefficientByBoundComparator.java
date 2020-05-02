@@ -8,13 +8,12 @@ public class PlaceCoefficientByBoundComparator implements Comparator<PlaceCoeffi
 
 	@Override
 	public int compare(PlaceCoefficient first, PlaceCoefficient second) {
-		
-		if (first.equals(second)) {
+
+		if (first.equals(second) || first.getFrom() == second.getFlightId() || first.getTo() == second.getTo()
+				|| (first.getFrom() <= second.getFrom() && first.getTo() >= second.getTo())
+				|| (first.getFrom() >= second.getFrom() && first.getTo() <= second.getTo())) {
 			return 0;
 		}
-		if (first.getTo() <= (second.getFrom())) {
-			return -1;
-		}
-		return 1;
+		return first.getTo() <= second.getFrom() ? -1 : 1;
 	}
 }

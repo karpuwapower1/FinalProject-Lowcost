@@ -2,7 +2,7 @@ package by.training.karpilovich.lowcost.validator.ticket;
 
 import by.training.karpilovich.lowcost.entity.Flight;
 import by.training.karpilovich.lowcost.exception.ValidatorException;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 import by.training.karpilovich.lowcost.validator.flight.DateValidator;
 import by.training.karpilovich.lowcost.validator.flight.NumberAndDatePresenceValidator;

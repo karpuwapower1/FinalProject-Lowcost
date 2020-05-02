@@ -14,7 +14,7 @@ import by.training.karpilovich.lowcost.dao.DateCoefficientDAO;
 import by.training.karpilovich.lowcost.entity.DateCoefficient;
 import by.training.karpilovich.lowcost.exception.ConnectionPoolException;
 import by.training.karpilovich.lowcost.exception.DAOException;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 
 public class DateCoefficientDAOImpl implements DateCoefficientDAO {
 	

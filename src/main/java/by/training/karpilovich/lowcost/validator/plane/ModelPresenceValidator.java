@@ -4,7 +4,7 @@ import by.training.karpilovich.lowcost.dao.PlaneDAO;
 import by.training.karpilovich.lowcost.exception.DAOException;
 import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.factory.DAOFactory;
-import by.training.karpilovich.lowcost.util.MessageType;
+import by.training.karpilovich.lowcost.util.message.MessageType;
 import by.training.karpilovich.lowcost.validator.Validator;
 
 public class ModelPresenceValidator extends Validator {
