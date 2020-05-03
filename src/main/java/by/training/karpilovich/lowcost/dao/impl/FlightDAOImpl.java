@@ -77,10 +77,13 @@ public class FlightDAOImpl implements FlightDAO {
 	private static final String COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY_RESULT = "count";
 
 	private static final String SELECT_FLIGHTS_QUERY = "SELECT "
-			+ " flight.id AS id, number, date, default_price * dc.coeff * pc.coeff AS price, default_luggage_kg, available_places, "
+			+ " flight.id AS id, number,  date, default_luggage_kg, available_places, "
 			+ " primary_boarding_right_price, plane.model, plane.places_quantity, price_for_every_kg_overweight, "
 			+ " city_from.id AS city_from_id, city_from.name  AS city_from_name, city_from.country_name AS country_from, "
-			+ " city_to.id AS city_to_id, city_to.name AS city_to_name, city_to.country_name AS country_to"
+			+ " city_to.id AS city_to_id, city_to.name AS city_to_name, city_to.country_name AS country_to, "
+			+ " default_price * "
+			+ " (CASE WHEN dc.coeff IS NULL THEN 1 ELSE dc.coeff END) * "
+			+ " (CASE WHEN pc.coeff IS NULL THEN 1 ELSE pc.coeff END) AS price "
 			+ " FROM flight " + " JOIN city AS city_from ON flight.from_id = city_from.id "
 			+ " JOIN city AS city_to ON flight.to_id = city_to.id " + " JOIN plane ON flight.plane_model = plane.model "
 			+ " JOIN date_coeff AS dc ON flight.id = dc.flight_id AND CURDATE() BETWEEN dc.from and dc.to "

@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.CommandType;
 import by.training.karpilovich.lowcost.command.JSPParameter;
-import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
+import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.entity.Flight;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 import by.training.karpilovich.lowcost.factory.ServiceFactory;
@@ -49,8 +49,7 @@ public class TicketPurchaseFilter implements Filter {
 			} else {
 				unbookFlightPlaces(session);
 				removeSessionAttributes(session);
-				request.getRequestDispatcher(new RedirectToDefaultPageCommand().execute(httpRequest, httpResponse))
-						.forward(httpRequest, httpResponse);
+				request.getRequestDispatcher(Page.DEFAULT.getAddress()).forward(httpRequest, httpResponse);
 				return;
 			}
 		}

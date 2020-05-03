@@ -66,9 +66,10 @@
 
 </body>
 
-<nav
-	class="navbar fixed-bottom navbar-light bg-light login-form text-center">
-	<custom:copyRight />
+<nav class="navbar fixed-bottom navbar-light bg-light ">
+	<div class="navbar-nav ml-auto ">
+		<custom:copyRight />
+	</div>
 </nav>
 
 <script type="text/javascript" src="${style}/js/jquery-3.3.1.min.js"></script>
