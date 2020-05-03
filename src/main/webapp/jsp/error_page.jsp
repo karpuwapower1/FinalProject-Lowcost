@@ -19,7 +19,7 @@
 </fmt:bundle>
 </head>
 <body>
-	<div class="error-code">
+	<div class="error-code text-center">
 		<h1>Error</h1>
 		<h1>${pageContext.errorData.statusCode}</h1>
 	</div>

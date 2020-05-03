@@ -83,7 +83,7 @@ public class CommandFactory {
 		}
 		return command;
 	}
-	
+
 	public Set<CommandType> getCommandToTole(Role role) {
 		return commandsToRole.get(role);
 	}

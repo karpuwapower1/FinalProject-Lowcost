@@ -10,7 +10,7 @@ public enum Page {
 	ADD_DATE_COEFFICIENT("/jsp/add_date_coefficient.jsp"), SHOW_FLIGHTS("/jsp/show_flights.jsp"),
 	UPDATE_FLIGHT("jsp/update_flight.jsp"), DEPOSIT("/jsp/deposit.jsp"), CREATE_TICKET("/jsp/create_ticket.jsp"),
 	BYE_TICKETS("/jsp/buy_tickets.jsp"), SHOW_TICKET("/jsp/show_ticket.jsp"), SHOW_PLANES("/jsp/show_planes.jsp"),
-	ADD_PLANE("/jsp/add_plane.jsp"), CHOOSE_DATE_BOUNDS("/jsp/choose_date_bounds.jsp"), INTERNAL_ERROR("TODO");
+	ADD_PLANE("/jsp/add_plane.jsp"), CHOOSE_DATE_BOUNDS("/jsp/choose_date_bounds.jsp"), ERROR("jsp/error_page.jsp");
 
 	private String address;
 
