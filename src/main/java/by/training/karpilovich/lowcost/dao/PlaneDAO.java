@@ -10,8 +10,6 @@ public interface PlaneDAO {
 	
 	void addPlane(Plane plane) throws DAOException;
 	
-	void updatePlane(Plane plane, Plane update) throws DAOException;
-	
 	void deletePlane(Plane plane) throws DAOException;
 	
 	List<Plane> getAllPlanes() throws DAOException;

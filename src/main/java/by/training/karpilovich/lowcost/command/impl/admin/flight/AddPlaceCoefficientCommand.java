@@ -25,20 +25,28 @@ public class AddPlaceCoefficientCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String to = request.getParameter(JSPParameter.BOUND_TO);
-		String from = request.getParameter(JSPParameter.BOUND_FROM);
-		String value = request.getParameter(JSPParameter.VALUE);
 		HttpSession session = request.getSession();
-		Flight flight = (Flight) session.getAttribute(Attribute.FLIGHT.toString());
 		SortedSet<PlaceCoefficient> coefficients = util.takePlaceCoefficientFromSession(session);
 		try {
-			getPlaceCoefficientService().addPlaceCoefficientToSet(coefficients, flight.getAvailablePlaceQuantity(),
-					from, to, value);
+			addCoefficientToSet(request, coefficients);
 			session.setAttribute(Attribute.PLACE_COEFFICIENT.toString(), coefficients);
 			return Page.FLIGHT_PREVIEW.getAddress();
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
 			return new RedirectToAddPlaceCoefficientPageCommand().execute(request, response);
 		}
+	}
+	
+	private void addCoefficientToSet(HttpServletRequest request, SortedSet<PlaceCoefficient> coefficients)
+			throws ServiceException {
+		getPlaceCoefficientService().addPlaceCoefficientToSet(coefficients, createPlaceCoeffient(request));
+	}
+
+	private PlaceCoefficient createPlaceCoeffient(HttpServletRequest request) throws ServiceException {
+		String to = request.getParameter(JSPParameter.BOUND_TO);
+		String from = request.getParameter(JSPParameter.BOUND_FROM);
+		String value = request.getParameter(JSPParameter.VALUE);
+		Flight flight = (Flight) request.getSession().getAttribute(Attribute.FLIGHT.toString());
+		return getPlaceCoefficientService().createPlaceCoefficient(flight.getAvailablePlaceQuantity(), from, to, value);
 	}
 }

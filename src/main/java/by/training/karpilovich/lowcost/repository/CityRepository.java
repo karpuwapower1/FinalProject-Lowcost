@@ -17,7 +17,4 @@ public interface CityRepository {
 	void update(City city) throws RepositoryException;
 	
 	SortedSet<City> getCities(Specification specification) throws RepositoryException;
-	
-	
-
 }

@@ -4,17 +4,23 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.karpilovich.lowcost.entity.City;
+import by.training.karpilovich.lowcost.entity.DateCoefficient;
 import by.training.karpilovich.lowcost.entity.Flight;
+import by.training.karpilovich.lowcost.entity.PlaceCoefficient;
 import by.training.karpilovich.lowcost.entity.Plane;
 import by.training.karpilovich.lowcost.entity.Ticket;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ServiceException;
+import by.training.karpilovich.lowcost.util.DateCoefficientByBoundComparator;
 import by.training.karpilovich.lowcost.util.DateParser;
+import by.training.karpilovich.lowcost.util.PlaceCoefficientByBoundComparator;
 import by.training.karpilovich.lowcost.util.message.MessageType;
 
 public class ServiceUtil {
@@ -117,5 +123,25 @@ public class ServiceUtil {
 		if (ticket == null) {
 			throw new ServiceException(MessageType.NO_SUCH_TICKET.getMessage());
 		}
+	}
+
+	public void checkDateCoefficientOnNull(DateCoefficient coefficient) throws ServiceException {
+		if (coefficient == null) {
+			throw new ServiceException(MessageType.INVALID_COEFFICIENT.getMessage());
+		}
+	}
+
+	public SortedSet<DateCoefficient> checkAndGetSetDateCoefficient(SortedSet<DateCoefficient> coefficients) {
+		return coefficients == null ? new TreeSet<>(new DateCoefficientByBoundComparator()) : coefficients;
+	}
+
+	public void checkPlaceCoefficientOnNull(PlaceCoefficient coefficient) throws ServiceException {
+		if (coefficient == null) {
+			throw new ServiceException(MessageType.INVALID_COEFFICIENT.getMessage());
+		}
+	}
+
+	public SortedSet<PlaceCoefficient> checkAndGetSetPlaceCoefficient(SortedSet<PlaceCoefficient> coefficients) {
+		return coefficients == null ? new TreeSet<>(new PlaceCoefficientByBoundComparator()) : coefficients;
 	}
 }

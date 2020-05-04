@@ -3,7 +3,6 @@ package by.training.karpilovich.lowcost.service.impl;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import by.training.karpilovich.lowcost.builder.PlaceCoefficientBuilder;
 import by.training.karpilovich.lowcost.dao.PlaceCoefficientDAO;
@@ -15,18 +14,18 @@ import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.service.PlaceCoefficientService;
 import by.training.karpilovich.lowcost.service.util.ServiceUtil;
-import by.training.karpilovich.lowcost.util.PlaceCoefficientByBoundComparator;
 import by.training.karpilovich.lowcost.validator.Validator;
+import by.training.karpilovich.lowcost.validator.coefficient.CoefficientValueValidator;
 import by.training.karpilovich.lowcost.validator.coefficient.PlaceCoefficientBoundFromValidator;
 import by.training.karpilovich.lowcost.validator.coefficient.PlaceCoefficientBoundToValidator;
 import by.training.karpilovich.lowcost.validator.coefficient.PlaceCoefficientBoundsValidator;
-import by.training.karpilovich.lowcost.validator.coefficient.CoefficientValueValidator;
 
 public class PlaceCoefficientServiceImpl implements PlaceCoefficientService {
-	
+
 	private static final int INCREASE_PLACE_COEFFICIENT_VALUE = 1;
 	private static final int MIN_PLACE_COEFFICIENT_VALUE = 0;
-	
+	private static final BigDecimal DEFAULT_COEFFICIENT_VALUE = BigDecimal.ONE;
+
 	private PlaceCoefficientDAO placeCoefficientDAO = DAOFactory.getInstance().getPlaceCoefficientDAO();
 	private ServiceUtil serviceUtil = new ServiceUtil();
 
@@ -42,28 +41,37 @@ public class PlaceCoefficientServiceImpl implements PlaceCoefficientService {
 	}
 
 	@Override
-	public void addPlaceCoefficientToSet(SortedSet<PlaceCoefficient> coefficients, int maxPlacesQuantity, String from,
-			String to, String value) throws ServiceException {
-		if (coefficients == null) {
-			coefficients = new TreeSet<>(new PlaceCoefficientByBoundComparator());
-		}
-		int boundFrom = serviceUtil.takeIntFromString(from);
-		int boundTo = serviceUtil.takeIntFromString(to);
-		BigDecimal coefficientValue = serviceUtil.takeBigDecimalFromString(value);
-		Validator validator = createPlaceCoefficientValidator(maxPlacesQuantity, boundFrom, boundTo, coefficientValue);
-		Validator boundsValidator = new PlaceCoefficientBoundsValidator(boundFrom, boundTo, coefficients);
-		boundsValidator.setNext(validator);
+	public PlaceCoefficient createPlaceCoefficient(int maxPlacesQuantity, String boundFrom, String boundTo,
+			String coefficientValue) throws ServiceException {
+		int from = serviceUtil.takeIntFromString(boundFrom);
+		int to = serviceUtil.takeIntFromString(boundTo);
+		BigDecimal value = serviceUtil.takeBigDecimalFromString(coefficientValue);
+		Validator validator = createPlaceCoefficientValidator(maxPlacesQuantity, from, to, value);
 		try {
-			boundsValidator.validate();
-			coefficients.add(buildPlaceCoefficient(boundFrom, boundTo, coefficientValue));
+			validator.validate();
+			return buildPlaceCoefficient(from, to, value);
 		} catch (ValidatorException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public void saveCoefficients(Flight flight, SortedSet<PlaceCoefficient> coefficients)
+	public void addPlaceCoefficientToSet(SortedSet<PlaceCoefficient> coefficients, PlaceCoefficient coefficient)
 			throws ServiceException {
+		coefficients = serviceUtil.checkAndGetSetPlaceCoefficient(coefficients);
+		serviceUtil.checkPlaceCoefficientOnNull(coefficient);
+		Validator validator = new PlaceCoefficientBoundsValidator(coefficient.getFrom(), coefficient.getTo(),
+				coefficients);
+		try {
+			validator.validate();
+			coefficients.add(coefficient);
+		} catch (ValidatorException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public void saveCoefficients(Flight flight, SortedSet<PlaceCoefficient> coefficients) throws ServiceException {
 		serviceUtil.checkFlightOnNull(flight);
 		checkAndFillPlaceCoefficients(flight, coefficients);
 		try {
@@ -74,7 +82,7 @@ public class PlaceCoefficientServiceImpl implements PlaceCoefficientService {
 	}
 
 	@Override
-	public int getNextBoundFromValuePlaceCoefficient(SortedSet<PlaceCoefficient> coefficients) throws ServiceException {
+	public int getNextBoundFromValuePlaceCoefficient(SortedSet<PlaceCoefficient> coefficients) {
 		int bound = MIN_PLACE_COEFFICIENT_VALUE;
 		if (coefficients != null && !coefficients.isEmpty()) {
 			bound = coefficients.last().getTo() + INCREASE_PLACE_COEFFICIENT_VALUE;
@@ -85,8 +93,7 @@ public class PlaceCoefficientServiceImpl implements PlaceCoefficientService {
 	private void checkAndFillPlaceCoefficients(Flight flight, SortedSet<PlaceCoefficient> coefficients) {
 		Optional<Integer> optional = checkIfPlaceCoefficientFilled(flight, coefficients);
 		if (optional.isPresent()) {
-			coefficients.add(buildPlaceCoefficient(optional.get(), flight.getAvailablePlaceQuantity(),
-					BigDecimal.ONE));
+			coefficients.add(buildPlaceCoefficient(optional.get(), flight.getAvailablePlaceQuantity(), DEFAULT_COEFFICIENT_VALUE));
 		}
 	}
 

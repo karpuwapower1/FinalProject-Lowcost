@@ -3,9 +3,6 @@ package by.training.karpilovich.lowcost.service.impl;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import by.training.karpilovich.lowcost.builder.UserBuilder;
 import by.training.karpilovich.lowcost.dao.UserDAO;
 import by.training.karpilovich.lowcost.entity.Role;
@@ -26,8 +23,6 @@ import by.training.karpilovich.lowcost.validator.user.PasswordMatchValidator;
 import by.training.karpilovich.lowcost.validator.user.PasswordValidator;
 
 public class UserServiceImpl implements UserService {
-
-	private static final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
 
 	private UserDAO userDAO = DAOFactory.getInstance().getUserDAO();
 	private ServiceUtil serviceUtil = new ServiceUtil();
@@ -54,7 +49,6 @@ public class UserServiceImpl implements UserService {
 			}
 			throw new ServiceException(MessageType.ILLEGAL_EMAIL_OR_PASSWORD_MESSAGE.getMessage());
 		} catch (ValidatorException | DAOException e) {
-			LOGGER.warn(e);
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}

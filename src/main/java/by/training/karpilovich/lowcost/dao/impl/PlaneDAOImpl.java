@@ -26,13 +26,6 @@ public class PlaneDAOImpl implements PlaneDAO {
 	private static final int ADD_QUERY_MODEL_INDEX = 1;
 	private static final int ADD_QUERY_PLACE_QUANTITY_INDEX = 2;
 
-	private static final String UPDATE_PLANE_QUERY = "UPDATE plane " + " SET model=?, places_quantity=? "
-			+ " WHERE model=?";
-
-	private static final int UPDATE_QUERY_NEW_MODEL_INDEX = 1;
-	private static final int UPDATE_QUERY_NEW_PLACE_QUANTITY_INDEX = 2;
-	private static final int UPDATE_QUERY_OLD_MODEL_INDEX = 3;
-
 	private static final String DELETE_PLANE_QUERY = "DELETE FROM plane " + "	WHERE model=?";
 
 	private static final int DELETE_QUERY_MODEL_INDEX = 1;
@@ -70,18 +63,6 @@ public class PlaneDAOImpl implements PlaneDAO {
 			statement.executeUpdate();
 		} catch (ConnectionPoolException | SQLException e) {
 			LOGGER.error("Error while adding a plane=" + plane, e);
-			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
-		}
-	}
-
-	@Override
-	public void updatePlane(Plane plane, Plane update) throws DAOException {
-		try (Connection connection = pool.getConnection();
-				PreparedStatement statement = connection.prepareStatement(UPDATE_PLANE_QUERY);) {
-			prepareUpdateStatement(statement, plane, update);
-			statement.executeUpdate();
-		} catch (ConnectionPoolException | SQLException e) {
-			LOGGER.error("Error while updating plane " + update, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
@@ -135,12 +116,6 @@ public class PlaneDAOImpl implements PlaneDAO {
 	private void prepareAddStatement(PreparedStatement statement, Plane plane) throws SQLException {
 		statement.setString(ADD_QUERY_MODEL_INDEX, plane.getModel());
 		statement.setInt(ADD_QUERY_PLACE_QUANTITY_INDEX, plane.getPlaceQuantity());
-	}
-
-	private void prepareUpdateStatement(PreparedStatement statement, Plane plane, Plane update) throws SQLException {
-		statement.setString(UPDATE_QUERY_NEW_MODEL_INDEX, update.getModel());
-		statement.setInt(UPDATE_QUERY_NEW_PLACE_QUANTITY_INDEX, update.getPlaceQuantity());
-		statement.setString(UPDATE_QUERY_OLD_MODEL_INDEX, plane.getModel());
 	}
 
 	private void prepareDeleteStatement(PreparedStatement statement, Plane plane) throws SQLException {

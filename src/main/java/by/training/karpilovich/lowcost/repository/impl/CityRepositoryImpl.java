@@ -63,7 +63,7 @@ public class CityRepositoryImpl implements CityRepository {
 	}
 
 	@Override
-	public void delete(City city) throws RepositoryException{
+	public void delete(City city) throws RepositoryException {
 		checkRepositoryBeenInitialized();
 		cities.remove(city);
 	}
@@ -83,7 +83,7 @@ public class CityRepositoryImpl implements CityRepository {
 		checkRepositoryBeenInitialized();
 		return specification.specify(cities);
 	}
-	
+
 	private void checkRepositoryBeenInitialized() throws RepositoryException {
 		if (!isRepositoryInitialized.get()) {
 			LOGGER.fatal("Repository hasn't been initializad");

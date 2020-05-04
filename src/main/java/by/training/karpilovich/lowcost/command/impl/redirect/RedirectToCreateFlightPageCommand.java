@@ -2,7 +2,7 @@ package by.training.karpilovich.lowcost.command.impl.redirect;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.SortedSet;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +30,7 @@ public class RedirectToCreateFlightPageCommand implements Command {
 	}
 
 	private void setAttributes(HttpServletRequest request) throws ServiceException {
-		SortedSet<City> cities = getCityService().getAllCities();
+		Set<City> cities = getCityService().getAllCities();
 		List<Plane> planes = getPlaneService().getAllPlanes();
 		request.setAttribute(Attribute.CITIES.toString(), cities);
 		request.setAttribute(Attribute.PLANES.toString(), planes);

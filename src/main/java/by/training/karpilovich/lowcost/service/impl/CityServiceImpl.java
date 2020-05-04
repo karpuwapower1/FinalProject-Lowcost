@@ -60,12 +60,12 @@ public class CityServiceImpl implements CityService {
 	}
 
 	@Override
-	public void updateCity(String id, String name, String country) throws ServiceException {
+	public void updateCity(String cityId, String name, String country) throws ServiceException {
 		Validator validator = getCityValidator(name, country);
 		try {
 			validator.validate();
 			City city = buildCity(name, country);
-			city.setId(serviceUtil.takeIntFromString(id));
+			city.setId(serviceUtil.takeIntFromString(cityId));
 			cityDAO.updateCity(city);
 			cityRepository.update(city);
 		} catch (ValidatorException | DAOException | RepositoryException e) {
@@ -75,7 +75,7 @@ public class CityServiceImpl implements CityService {
 
 	@Override
 	public void deleteCity(String cityId) throws ServiceException {
-		int id =serviceUtil.takeIntFromString(cityId);
+		int id = serviceUtil.takeIntFromString(cityId);
 		City city = getCityById(id);
 		try {
 			cityDAO.deleteCity(city);
@@ -110,16 +110,6 @@ public class CityServiceImpl implements CityService {
 		}
 	}
 
-	@Override
-	public SortedSet<City> getCities(String name, String countryName) throws ServiceException {
-		Specification specification = specificationFactory.getQuerySpecificationByNameAndCountryName(name, countryName);
-		try {
-			return cityRepository.getCities(specification);
-		} catch (RepositoryException e) {
-			throw new ServiceException(e.getMessage());
-		}
-	}
-
 	private City buildCity(String name, String countryName) {
 		CityBuilder builder = new CityBuilder();
 		builder.setCityName(name);
@@ -135,7 +125,7 @@ public class CityServiceImpl implements CityService {
 		countryNameValidator.setNext(cityPresenceValidator);
 		return nameValidator;
 	}
-	
+
 	private City findCityById(int id) throws ServiceException, RepositoryException {
 		Specification specification = specificationFactory.getQuerySpecificationById(id);
 		Set<City> cities = cityRepository.getCities(specification);
