@@ -1,12 +1,39 @@
 Система LowCost-Авиакомпания. Клиент заказывает и оплачивает Билет на Рейс с учетом наличия\отсутствия багажа и права первоочередной регистрации и посадки (Цена Билета может быть ниже стоимости провоза багажа). С приближением даты Рейса или наполнением самолета, цена на Билет может повышаться.
 
+LowCost Airlines system. Client orders and pays Flight's Ticket including\excluding Luggage and primary boarding right (Ticket's price could be less than luggage transfer's price). Price could increase with the departure date approaching or the Plane filling.
 
-В приложении есть следующие таблицы:
-role : admin, user. Admin вносит измерения в расписание, удаляет, добавляет рейсы. User покупает или бронирует билет на рейс;
-client : пользователь, у которого есть login, password под которыми он входит в систему;
-ticket - билет на рейс. buyer - client, который купил билет (один client может покупать билеты на разные имена); price - цена, за которую client купил билет; luggage_quantity - количество богажа клиента; purchase_date - дата покупки билета; passenger_name - имя рассажира; flight_date - дата и время вылета; payment_status - состояние билета, оплачен или забронирован; ticket_status - статус билета : доступен или нет (куплен/забронирован или свободен), primary_boarding_right - право первоочередной посадки клиента;
-plane - представляет самолет у которого model - модель самолета, places_quantity - вместительность;
-flight - представляет рейс, и включает в себя модель самолета (model), направление рейса (from, to), дату вылета (date), начальную цену без учета коээфициентов заполненности, близости даты вылета и количества багажа (default_price), количество багажа, входящего в стоимость (default_luggage_kg), и количество оставшихся свободных мест (available_places);
-date_coeff - коэффициент повышения цены в зависимости от близости даты вылета. days - количество дней до вылета, coeff - коэффициент
-free_places_coeff - коэффициент повышения цены в зависимости о количества оставшихся свободных мест. free_places - количество свободных мест, coeff - коэффициент
-overweigth_luggage_price - цена за каждый килограмм веса сверх нормы на дынный рейс, где цена (price_for_every_kg_overweight) зависит от веса багажа находящегося между weigth_from и weight_to
+Lowcost
+The application contains three roles: "Guest", "User", "Admin"
+The application provides the following operations
+1) For the role "Guest"
+Sign up
+Sign in
+Restore password
+Change language
+Search flights
+Sort flight by date and price
+2) For the role "User"
+All operations that "Guest" can do
+Deposit the balane
+Buy ticket
+Return ticket
+Look all bought tickets
+Change user data
+Remove account
+Sign out
+3) For the role "Admin"
+All operations that "Guest" can do
+Create and add new flight
+Update flight
+Look all flights
+Look flights at certain date
+Look flights for the next 24 hours
+Remove flight
+Add new city
+Update city
+Look all cities
+Remove city
+Add new plane
+Update plane
+Look all planes
+Sign out
