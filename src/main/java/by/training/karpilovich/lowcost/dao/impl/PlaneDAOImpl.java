@@ -39,9 +39,9 @@ public class PlaneDAOImpl implements PlaneDAO {
 
 	private static final String RESULT_SELECT_PLANE_BY_MODEL_MODEL = "model";
 	private static final String RESULT_SELECT_PLANE_BY_MODEL_PLACE_QUANTITY = "places_quantity";
-	
+
 	private static final Logger LOGGER = LogManager.getLogger(PlaneDAOImpl.class);
-	
+
 	private ConnectionPool pool = ConnectionPool.getInstance();
 
 	private PlaneDAOImpl() {
@@ -84,11 +84,7 @@ public class PlaneDAOImpl implements PlaneDAO {
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(SELECT_ALL_PLANES_QUERY);
 				ResultSet resultSet = statement.executeQuery();) {
-			List<Plane> planes = new ArrayList<>();
-			while (resultSet.next()) {
-				planes.add(buildPlane(resultSet));
-			}
-			return planes;
+			return getPlanesFromResultSet(resultSet);
 		} catch (ConnectionPoolException | SQLException e) {
 			LOGGER.error("Error while getting all planes", e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
@@ -101,11 +97,7 @@ public class PlaneDAOImpl implements PlaneDAO {
 				PreparedStatement statement = connection.prepareStatement(SELECT_PLANE_BY_MODEL_QUERY);) {
 			prepareSelectPlaneByModelStatement(statement, model);
 			try (ResultSet resultSet = statement.executeQuery();) {
-				Optional<Plane> plane = Optional.empty();
-				if (resultSet.next()) {
-					plane = Optional.of(buildPlane(resultSet));
-				}
-				return plane;
+				return getPlaneFromResultSet(resultSet);
 			}
 		} catch (ConnectionPoolException | SQLException e) {
 			LOGGER.error("Error while getting plane by molel=" + model, e);
@@ -124,6 +116,18 @@ public class PlaneDAOImpl implements PlaneDAO {
 
 	private void prepareSelectPlaneByModelStatement(PreparedStatement statement, String model) throws SQLException {
 		statement.setString(SELECT_PLANE_BY_MODEL_QUERY_MODEL_INDEX, model);
+	}
+
+	private List<Plane> getPlanesFromResultSet(ResultSet resultSet) throws SQLException {
+		List<Plane> planes = new ArrayList<>();
+		while (resultSet.next()) {
+			planes.add(buildPlane(resultSet));
+		}
+		return planes;
+	}
+
+	private Optional<Plane> getPlaneFromResultSet(ResultSet resultSet) throws SQLException {
+		return resultSet.next() ? Optional.of(buildPlane(resultSet)) : Optional.empty();
 	}
 
 	private Plane buildPlane(ResultSet resultSet) throws SQLException {

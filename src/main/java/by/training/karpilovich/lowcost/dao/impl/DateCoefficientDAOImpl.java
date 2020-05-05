@@ -21,7 +21,8 @@ public class DateCoefficientDAOImpl implements DateCoefficientDAO {
 	private final ConnectionPool pool = ConnectionPool.getInstance();
 
 	private static final String ADD_DATE_COEFFICIENT_QUERY = "INSERT INTO "
-			+ " date_coeff (`flight_id`, `from`, `to`, `coeff`) " + " VALUES(?, ?, ?, ?)";
+			+ " date_coeff (`flight_id`, `from`, `to`, `coeff`) " 
+			+ " VALUES(?, ?, ?, ?)";
 
 	private static final int ADD_COEFFICIENT_QUERY_FLIGHT_ID_INDEX = 1;
 	private static final int ADD_COEFFICIENT_QUERY_BOUND_FROM_INDEX = 2;

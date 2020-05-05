@@ -112,7 +112,7 @@ public interface TicketService {
 	List<Ticket> getAllTicketsToFlight(Flight flight) throws ServiceException;
 
 	/**
-	 * Returns <tt>ticket with <tt>ticketNumber</tt> back an returns tickets's cost
+	 * Returns <tt>ticket</tt> with <tt>ticketNumber</tt> back an returns tickets's cost
 	 * back to user. Throws ServiceException if <tt>user</tt> is null or
 	 * <tt>user</tt> do not possess {@link Ticket} with <tt>ticketNumber</tt> if
 	 * <tt>ticketNumber</tt> is null or empty or if an error occurs while parsing it

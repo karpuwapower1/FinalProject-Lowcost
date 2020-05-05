@@ -76,7 +76,7 @@ public class TicketServiceImpl implements TicketService {
 			validateTickets(tickets);
 			checkcIfUserHaveEnoughMoney(user, tickets);
 			Map<Ticket, BigDecimal> ticketsAndPrices = createTicketAndPriceMap(tickets);
-			return ticketDAO.add(ticketsAndPrices);
+			return ticketDAO.buyTickets(ticketsAndPrices);
 		} catch (DAOException | ValidatorException e) {
 			throw new ServiceException(e.getMessage(), e);
 		} finally {
@@ -102,7 +102,7 @@ public class TicketServiceImpl implements TicketService {
 		try {
 			Ticket ticket = getTicketByNumber(ticketNumber);
 			checkTicketDate(ticket);
-			ticketDAO.deleteTicket(ticket);
+			ticketDAO.returnTicket(ticket);
 		} catch (DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -153,7 +153,7 @@ public class TicketServiceImpl implements TicketService {
 	public List<String> getTicketToFlightHolders(Flight flight) throws ServiceException {
 		serviceUtil.checkFlightOnNull(flight);
 		try {
-			return ticketDAO.getTicketToFlightHolders(flight);
+			return ticketDAO.getPossessorsOfTicketToFlightEmails(flight);
 		} catch (DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
