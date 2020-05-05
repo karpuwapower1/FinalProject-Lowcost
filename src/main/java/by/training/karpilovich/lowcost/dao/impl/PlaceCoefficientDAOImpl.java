@@ -20,7 +20,8 @@ public class PlaceCoefficientDAOImpl implements PlaceCoefficientDAO {
 	private final ConnectionPool pool = ConnectionPool.getInstance();
 
 	private static final String ADD_PLACE_COEFFICIENT_QUERY = "INSERT INTO "
-			+ " place_coeff (`flight_id`, `from`, `to`, `coeff`) " + " VALUES(?, ?, ?, ?)";
+			+ " place_coeff (`flight_id`, `from`, `to`, `coeff`) "
+			+ " VALUES(?, ?, ?, ?)";
 
 	private static final int ADD_COEFFICIENT_QUERY_FLIGHT_ID_INDEX = 1;
 	private static final int ADD_COEFFICIENT_QUERY_BOUND_FROM_INDEX = 2;

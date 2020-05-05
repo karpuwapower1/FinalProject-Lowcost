@@ -44,6 +44,6 @@ public class SearchFlightCommand implements Command {
 		City from = getCityService().getCityById(cityFrom);
 		City to = getCityService().getCityById(cityTo);
 		FlightService flightService = getFlightService();
-		return flightService.getFlight(from, to, date, quantity);
+		return flightService.searchFlights(from, to, date, quantity);
 	}
 }

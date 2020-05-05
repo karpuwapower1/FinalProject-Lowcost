@@ -20,7 +20,7 @@ public class ShowNextTwentyFourHoursFlightsCommand implements Command {
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			List<Flight> flights = getFlightService().getNextTwentyForHoursFlights();
+			List<Flight> flights = getFlightService().searchNextTwentyForHoursFlights();
 			request.setAttribute(Attribute.FLIGHTS.toString(), flights);
 			return Page.SHOW_FLIGHTS.getAddress();
 		} catch (ServiceException e) {

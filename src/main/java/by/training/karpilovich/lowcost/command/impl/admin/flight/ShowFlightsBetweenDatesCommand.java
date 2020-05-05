@@ -22,7 +22,7 @@ public class ShowFlightsBetweenDatesCommand implements Command {
 		String from = request.getParameter(JSPParameter.BOUND_FROM);
 		String to = request.getParameter(JSPParameter.BOUND_TO);
 		try {
-			List<Flight> flights = getFlightService().getFlightsBetweenDates(from, to);
+			List<Flight> flights = getFlightService().searchFlightsBetweenDates(from, to);
 			request.setAttribute(Attribute.FLIGHTS.toString(), flights);
 			return Page.SHOW_FLIGHTS.getAddress();
 		} catch (ServiceException e) {

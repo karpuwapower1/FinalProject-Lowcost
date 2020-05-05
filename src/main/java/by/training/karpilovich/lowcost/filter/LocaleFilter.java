@@ -42,7 +42,7 @@ public class LocaleFilter implements Filter {
 
 	private void setLocale(HttpServletRequest request, HttpServletResponse response) {
 		HttpSession session = request.getSession();
-		Locale locale = (Locale) session.getAttribute(Attribute.LOCALE.toString());
+		Locale locale = getLocale(request);
 		if (locale == null) {
 			LocaleType type = getLocaleType(request);
 			locale = new Locale(type.getLanguage(), type.getCountry());
@@ -50,6 +50,10 @@ public class LocaleFilter implements Filter {
 			session.setAttribute(Attribute.LOCALE.toString(), locale);
 		}
 		response.setLocale(locale);
+	}
+
+	private Locale getLocale(HttpServletRequest request) {
+		return (Locale) request.getSession().getAttribute(Attribute.LOCALE.toString());
 	}
 
 	private LocaleType getLocaleType(HttpServletRequest request) {

@@ -123,13 +123,7 @@ public class UserDAOImpl implements UserDAO {
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(SELECT_BY_EMAIL_AND_PASSWORD_QUERY);) {
 			prepareSelectByEmailAndPasswordStatement(statement, email, password);
-			try (ResultSet resultSet = statement.executeQuery()) {
-				Optional<User> optional = Optional.empty();
-				if (resultSet.next()) {
-					optional = Optional.of(buildUser(resultSet));
-				}
-				return optional;
-			}
+			return executeSelectUserStatement(statement);
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while select user by email and password email=" + email + " password=" + password, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
@@ -141,13 +135,7 @@ public class UserDAOImpl implements UserDAO {
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(COUNT_EMAIL_QUERY);) {
 			prepareCountEmailStatementStatement(statement, email);
-			try (ResultSet resultSet = statement.executeQuery()) {
-				int result = 0;
-				if (resultSet.next()) {
-					result = resultSet.getInt(COUNT_EMAIL_QUERY_RESULT_INDEX);
-				}
-				return result;
-			}
+			return executeCountUserStatement(statement);
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("error while counting email=" + email, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
@@ -159,10 +147,7 @@ public class UserDAOImpl implements UserDAO {
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(SELECT_USER_PASSWORD_BY_EMAIL);) {
 			prepareSelectUserPasswordStatement(statement, email);
-			try (ResultSet resultSet = statement.executeQuery()) {
-				return resultSet.next() ? Optional.of(resultSet.getString(SELECT_USER_RESULT_PASSWORD_ROW))
-						: Optional.empty();
-			}
+			return executeSelectPasswordStatement(statement);
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("Error while getting password by email=" + email, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
@@ -204,6 +189,16 @@ public class UserDAOImpl implements UserDAO {
 		statement.setString(SELECT_USER_PASSWORD_BY_EMAIL_EMAIL_INDEX, email);
 	}
 
+	private Optional<User> executeSelectUserStatement(PreparedStatement statement) throws SQLException {
+		try (ResultSet resultSet = statement.executeQuery()) {
+			return getUserFromResultSet(resultSet);
+		}
+	}
+
+	private Optional<User> getUserFromResultSet(ResultSet resultSet) throws SQLException {
+		return resultSet.next() ? Optional.of(buildUser(resultSet)) : Optional.empty();
+	}
+
 	private User buildUser(ResultSet resultSet) throws SQLException {
 		UserBuilder builder = new UserBuilder();
 		builder.setUserRole(Role.valueOf(resultSet.getString(SELECT_USER_RESULT_ROLE_ROW).toUpperCase()));
@@ -213,5 +208,25 @@ public class UserDAOImpl implements UserDAO {
 		builder.setUserLastName(resultSet.getString(SELECT_USER_RESULT_LAST_NAME_ROW));
 		builder.setBalanceAmount(resultSet.getBigDecimal(SELECT_USER_RESULT_BALANCE_AMOUNT_ROW));
 		return builder.getUser();
+	}
+
+	private int executeCountUserStatement(PreparedStatement statement) throws SQLException {
+		try (ResultSet resultSet = statement.executeQuery()) {
+			return getCountUserFromResultSet(resultSet);
+		}
+	}
+
+	private int getCountUserFromResultSet(ResultSet resultSet) throws SQLException {
+		return resultSet.next() ? resultSet.getInt(COUNT_EMAIL_QUERY_RESULT_INDEX) : 0;
+	}
+
+	private Optional<String> executeSelectPasswordStatement(PreparedStatement statement) throws SQLException {
+		try (ResultSet resultSet = statement.executeQuery()) {
+			return getPasswordFromResultSet(resultSet);
+		}
+	}
+
+	private Optional<String> getPasswordFromResultSet(ResultSet resultSet) throws SQLException {
+		return resultSet.next() ? Optional.of(resultSet.getString(SELECT_USER_RESULT_PASSWORD_ROW)) : Optional.empty();
 	}
 }

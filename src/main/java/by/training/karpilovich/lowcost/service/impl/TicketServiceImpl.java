@@ -1,6 +1,7 @@
 package by.training.karpilovich.lowcost.service.impl;
 
 import java.math.BigDecimal;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,8 @@ public class TicketServiceImpl implements TicketService {
 			String luggageQuantity, String primaryBoardingRight) throws ServiceException {
 		serviceUtil.checkUserOnNull(user);
 		serviceUtil.checkFlightOnNull(flight);
-		int luggage = serviceUtil.takeIntFromString(luggageQuantity);
+		int luggage = (luggageQuantity == null || luggageQuantity.isEmpty()) ? 0
+				: serviceUtil.takeIntFromString(luggageQuantity);
 		boolean boarding = serviceUtil.takeBooleanFromString(primaryBoardingRight);
 		Validator validator = new BuyerDataValidator(user.getEmail(), firstName, lastName, passportNumber, luggage);
 		try {
@@ -72,9 +74,9 @@ public class TicketServiceImpl implements TicketService {
 		serviceUtil.checkCollectionTicketsOnNull(tickets);
 		try {
 			validateTickets(tickets);
-			checkcIfUserhaveEnoughMoney(user, tickets);
+			checkcIfUserHaveEnoughMoney(user, tickets);
 			Map<Ticket, BigDecimal> ticketsAndPrices = createTicketAndPriceMap(tickets);
-			return ticketDAO.add(ticketsAndPrices);
+			return ticketDAO.buyTickets(ticketsAndPrices);
 		} catch (DAOException | ValidatorException e) {
 			throw new ServiceException(e.getMessage(), e);
 		} finally {
@@ -99,7 +101,8 @@ public class TicketServiceImpl implements TicketService {
 		serviceUtil.checkUserOnNull(user);
 		try {
 			Ticket ticket = getTicketByNumber(ticketNumber);
-			ticketDAO.deleteTicket(ticket);
+			checkTicketDate(ticket);
+			ticketDAO.returnTicket(ticket);
 		} catch (DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -150,7 +153,7 @@ public class TicketServiceImpl implements TicketService {
 	public List<String> getTicketToFlightHolders(Flight flight) throws ServiceException {
 		serviceUtil.checkFlightOnNull(flight);
 		try {
-			return ticketDAO.getTicketToFlightHolders(flight);
+			return ticketDAO.getPossessorsOfTicketToFlightEmails(flight);
 		} catch (DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -221,9 +224,15 @@ public class TicketServiceImpl implements TicketService {
 		return ticketsAndPrices;
 	}
 
-	private void checkcIfUserhaveEnoughMoney(User user, List<Ticket> tickets) throws ServiceException {
+	private void checkcIfUserHaveEnoughMoney(User user, List<Ticket> tickets) throws ServiceException {
 		if (user.getBalanceAmount().compareTo(countTicketPrice(tickets)) < 0) {
 			throw new ServiceException(MessageType.INSUFFICIENT_FUNDS.getMessage());
+		}
+	}
+	
+	private void checkTicketDate(Ticket ticket) throws ServiceException {
+		if (ticket.getFlight().getDate().compareTo(new GregorianCalendar()) < 0) {
+			throw new ServiceException(MessageType.TICKET_CAN_NOT_BE_RETURNED.getMessage());
 		}
 	}
 

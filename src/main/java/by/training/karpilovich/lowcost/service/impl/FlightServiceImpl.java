@@ -112,7 +112,7 @@ public class FlightServiceImpl implements FlightService {
 	}
 
 	@Override
-	public List<Flight> getFlight(City from, City to, String date, String passengerQuantity) throws ServiceException {
+	public List<Flight> searchFlights(City from, City to, String date, String passengerQuantity) throws ServiceException {
 		serviceUtil.checkCityOnNull(from);
 		serviceUtil.checkCityOnNull(to);
 		Calendar departureDate = serviceUtil.takeDateFromString(date);
@@ -179,7 +179,7 @@ public class FlightServiceImpl implements FlightService {
 	}
 
 	@Override
-	public List<Flight> getFlightsBetweenDates(String dateFrom, String dateTo) throws ServiceException {
+	public List<Flight> searchFlightsBetweenDates(String dateFrom, String dateTo) throws ServiceException {
 		Calendar from = serviceUtil.takeDateFromString(dateFrom);
 		Calendar to = serviceUtil.takeDateFromString(dateTo);
 		if (from.compareTo(to) > 0) {
@@ -189,7 +189,7 @@ public class FlightServiceImpl implements FlightService {
 	}
 
 	@Override
-	public List<Flight> getNextTwentyForHoursFlights() throws ServiceException {
+	public List<Flight> searchNextTwentyForHoursFlights() throws ServiceException {
 		final int additionalHoursQuantity = 24;
 		Calendar from = new GregorianCalendar();
 		Calendar to = new GregorianCalendar();

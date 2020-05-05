@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Optional;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import by.training.karpilovich.lowcost.builder.DateCoefficientBuilder;
 import by.training.karpilovich.lowcost.dao.DateCoefficientDAO;
@@ -17,16 +16,16 @@ import by.training.karpilovich.lowcost.exception.ValidatorException;
 import by.training.karpilovich.lowcost.factory.DAOFactory;
 import by.training.karpilovich.lowcost.service.DateCoefficientService;
 import by.training.karpilovich.lowcost.service.util.ServiceUtil;
-import by.training.karpilovich.lowcost.util.DateCoefficientByBoundComparator;
 import by.training.karpilovich.lowcost.validator.Validator;
+import by.training.karpilovich.lowcost.validator.coefficient.CoefficientValueValidator;
 import by.training.karpilovich.lowcost.validator.coefficient.DateCoefficientBoundFromValidator;
 import by.training.karpilovich.lowcost.validator.coefficient.DateCoefficientBoundToValidator;
 import by.training.karpilovich.lowcost.validator.coefficient.DateCoefficientBoundsValidator;
-import by.training.karpilovich.lowcost.validator.coefficient.CoefficientValueValidator;
 
 public class DateCoefficientServiceImpl implements DateCoefficientService {
 
 	private static final int INCREASE_ONE_DAY_VALUE = 1;
+	private static final BigDecimal DEFAULT_COEFFICIENT_VALUE = BigDecimal.ONE;
 
 	private DateCoefficientDAO dateCoefficientDAO = DAOFactory.getInstance().getDateCoefficientDAO();
 	private ServiceUtil serviceUtil = new ServiceUtil();
@@ -43,20 +42,30 @@ public class DateCoefficientServiceImpl implements DateCoefficientService {
 	}
 
 	@Override
-	public void addDateCoefficientToSet(SortedSet<DateCoefficient> coefficients, Calendar maxValue, String from,
-			String to, String value) throws ServiceException {
-		if (coefficients == null) {
-			coefficients = new TreeSet<>(new DateCoefficientByBoundComparator());
-		}
-		Calendar boundFrom = serviceUtil.takeDateFromString(from);
-		Calendar boundTo = serviceUtil.takeDateFromString(to);
-		BigDecimal coefficientValue = serviceUtil.takeBigDecimalFromString(value);
-		Validator validator = createDateCoefficientValidator(maxValue, boundFrom, boundTo, coefficientValue);
-		Validator dateCoefficientBoundsValidator = new DateCoefficientBoundsValidator(boundFrom, boundTo, coefficients);
-		dateCoefficientBoundsValidator.setNext(validator);
+	public DateCoefficient createDateCoefficient(Calendar maxBound, String boundFrom, String boundTo,
+			String coefficientValue) throws ServiceException {
+		Calendar from = serviceUtil.takeDateFromString(boundFrom);
+		Calendar to = serviceUtil.takeDateFromString(boundTo);
+		BigDecimal value = serviceUtil.takeBigDecimalFromString(coefficientValue);
+		Validator validator = createDateCoefficientValidator(maxBound, from, to, value);
 		try {
-			dateCoefficientBoundsValidator.validate();
-			coefficients.add((buildDateCoefficient(boundFrom, boundTo, coefficientValue)));
+			validator.validate();
+			return buildDateCoefficient(from, to, value);
+		} catch (ValidatorException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public void addDateCoefficientToSet(SortedSet<DateCoefficient> coefficients, DateCoefficient coefficient)
+			throws ServiceException {
+		coefficients = serviceUtil.checkAndGetSetDateCoefficient(coefficients);
+		serviceUtil.checkDateCoefficientOnNull(coefficient);
+		Validator validator = new DateCoefficientBoundsValidator(coefficient.getFrom(), coefficient.getTo(),
+				coefficients);
+		try {
+			validator.validate();
+			coefficients.add(coefficient);
 		} catch (ValidatorException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -74,8 +83,7 @@ public class DateCoefficientServiceImpl implements DateCoefficientService {
 	}
 
 	@Override
-	public Calendar getNextBoundFromValueDateCoefficient(SortedSet<DateCoefficient> coefficients)
-			throws ServiceException {
+	public Calendar getNextBoundFromValueDateCoefficient(SortedSet<DateCoefficient> coefficients) {
 		Calendar calendar = new GregorianCalendar();
 		if (coefficients != null && !coefficients.isEmpty()) {
 			calendar.setTimeInMillis(coefficients.last().getTo().getTimeInMillis());
@@ -87,7 +95,7 @@ public class DateCoefficientServiceImpl implements DateCoefficientService {
 	private void checkAndFillDateCoefficients(Flight flight, SortedSet<DateCoefficient> coefficients) {
 		Optional<Calendar> optional = checkIfDateCoefficientFilled(flight, coefficients);
 		if (optional.isPresent()) {
-			coefficients.add(buildDateCoefficient(optional.get(), flight.getDate(), BigDecimal.ONE));
+			coefficients.add(buildDateCoefficient(optional.get(), flight.getDate(), DEFAULT_COEFFICIENT_VALUE));
 		}
 	}
 

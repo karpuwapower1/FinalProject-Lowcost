@@ -33,18 +33,16 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 		if (util.checkEmailAddress(address)) {
 			String message = messageFactory.getGreetingMessage(firstName, lastName, locale);
 			String subject = messageFactory.getGreetingHeader(locale);
-			Set<String> recepients = new HashSet<>();
-			recepients.add(address);
-			sendMessage(recepients, subject, message);
+			sendMessage(address, subject, message);
 		}
 	}
 
 	@Override
 	public void sendFlightCancelMessage(List<String> addresses, String flightNumber, Calendar date, Locale locale) {
 		if (util.checkEmailAddresses(addresses)) {
-			Set<String> recepients = new HashSet<>(addresses);
 			String message = messageFactory.getCancelFlightMessage(flightNumber, date, locale);
 			String subject = messageFactory.getCancelFlightSubject(locale);
+			Set<String> recepients = new HashSet<>(addresses);
 			sendMessage(recepients, subject, message);
 		}
 	}
@@ -52,12 +50,16 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 	@Override
 	public void sendRemindPasswordMessage(String address, String password, Locale locale) {
 		if (util.checkEmailAddress(address)) {
-			Set<String> recepients = new HashSet<>();
-			recepients.add(address);
 			String subject = messageFactory.getRestorePasswordSubject(locale);
 			String message = messageFactory.getRestorePasswordMessage(password, locale);
-			sendMessage(recepients, subject, message);
+			sendMessage(address, subject, message);
 		}
+	}
+
+	private void sendMessage(String recepient, String subject, String message) {
+		Set<String> recepients = new HashSet<>();
+		recepients.add(recepient);
+		sendMessage(recepients, subject, message);
 	}
 
 	private void sendMessage(Set<String> recepients, String subject, String message) {

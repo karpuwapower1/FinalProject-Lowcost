@@ -12,7 +12,6 @@ import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.command.util.AttributeReceiverUtil;
 import by.training.karpilovich.lowcost.entity.Flight;
 import by.training.karpilovich.lowcost.entity.PlaceCoefficient;
-import by.training.karpilovich.lowcost.exception.ServiceException;
 
 public class RedirectToAddPlaceCoefficientPageCommand implements Command {
 
@@ -20,20 +19,20 @@ public class RedirectToAddPlaceCoefficientPageCommand implements Command {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) {
-		try {
-			setAttributes(request);
-		} catch (ServiceException e) {
-			setErrorMessage(request, response.getLocale(), e.getMessage());
-		}
+		prepareToRedirect(request);
 		return Page.ADD_PLACE_COEFFICIENT.getAddress();
 	}
 
-	private void setAttributes(HttpServletRequest request) throws ServiceException {
+	private void prepareToRedirect(HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		Flight flight = (Flight) session.getAttribute(Attribute.FLIGHT.toString());
 		SortedSet<PlaceCoefficient> coefficients = util.takePlaceCoefficientFromSession(session);
 		int boundFrom = getPlaceCoefficientService().getNextBoundFromValuePlaceCoefficient(coefficients);
+		setAttributes(request, boundFrom, flight.getAvailablePlaceQuantity());
+	}
+
+	private void setAttributes(HttpServletRequest request, int boundFrom, int maxBoundValue) {
 		request.setAttribute(Attribute.BOUND_FROM.toString(), boundFrom);
-		request.setAttribute(Attribute.MAX_BOUND_VALUE.toString(), flight.getAvailablePlaceQuantity());
+		request.setAttribute(Attribute.MAX_BOUND_VALUE.toString(), maxBoundValue);
 	}
 }

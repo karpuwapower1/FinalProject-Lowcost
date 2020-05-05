@@ -10,20 +10,15 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 
-import by.training.karpilovich.lowcost.command.Attribute;
+import by.training.karpilovich.lowcost.command.Page;
 
-@WebFilter(urlPatterns = { "/*" })
-public class ErrorMessageDiactivatorFilter implements Filter {
+@WebFilter(urlPatterns = "*.jsp")
+public class AccessFilter implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
-		deativateErrorMessage(httpRequest);
-		chain.doFilter(httpRequest, response);
-	}
-
-	private void deativateErrorMessage(HttpServletRequest request) {
-		request.getSession().setAttribute(Attribute.ERROR_MESSAGE.toString(), null);
+		request.getRequestDispatcher(httpRequest.getContextPath() + Page.DEFAULT.getAddress()).forward(httpRequest, response);
 	}
 }

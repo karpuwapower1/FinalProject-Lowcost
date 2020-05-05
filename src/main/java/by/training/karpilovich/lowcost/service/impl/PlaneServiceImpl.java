@@ -35,27 +35,12 @@ public class PlaneServiceImpl implements PlaneService {
 	}
 
 	@Override
-	public void add(String model, String quantity) throws ServiceException {
-		int placeQuantity = serviceUtil.takeIntFromString(quantity);
-		Plane plane = buildPlane(model, placeQuantity);
-		Validator validator = createPlaneValidator(plane);
+	public void add(String model, String placeQuantity) throws ServiceException {
+		int quantity = serviceUtil.takeIntFromString(placeQuantity);
+		Validator validator = createPlaneValidator(model, quantity);
 		try {
 			validator.validate();
-			planeDAO.addPlane(plane);
-		} catch (ValidatorException | DAOException e) {
-			throw new ServiceException(e.getMessage(), e);
-		}
-	}
-
-	@Override
-	public void update(String model, String quantity) throws ServiceException {
-		int placeQuantity = serviceUtil.takeIntFromString(quantity);
-		Plane old = getPlaneByModel(model);
-		Plane update = buildPlane(model, placeQuantity);
-		Validator validator = createUpdatePlaneValidator(old, update);
-		try {
-			validator.validate();
-			planeDAO.updatePlane(old, update);
+			planeDAO.addPlane(buildPlane(model, quantity));
 		} catch (ValidatorException | DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -102,22 +87,12 @@ public class PlaneServiceImpl implements PlaneService {
 		return builder.getPlane();
 	}
 
-	private Validator createPlaneValidator(Plane plane) {
-		Validator validator = new ModelValidator(plane.getModel());
-		Validator modelAbsenceValidator = new ModelAbsenceValidator(plane.getModel());
-		Validator placeQuantityVaildator = new PlaceQuantityValidator(plane.getPlaceQuantity());
+	private Validator createPlaneValidator(String model, int placeQuantity) {
+		Validator validator = new ModelValidator(model);
+		Validator modelAbsenceValidator = new ModelAbsenceValidator(model);
+		Validator placeQuantityVaildator = new PlaceQuantityValidator(placeQuantity);
 		validator.setNext(modelAbsenceValidator);
 		modelAbsenceValidator.setNext(placeQuantityVaildator);
-		return validator;
-	}
-
-	private Validator createUpdatePlaneValidator(Plane old, Plane update) {
-		Validator validator = new PlaceQuantityValidator(update.getPlaceQuantity());
-		Validator modelValidator = new ModelValidator(update.getModel());
-		validator.setNext(modelValidator);
-		if (!old.getModel().equals(update.getModel())) {
-			modelValidator.setNext(new ModelAbsenceValidator(update.getModel()));
-		}
 		return validator;
 	}
 }

@@ -15,7 +15,6 @@ import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.command.util.AttributeReceiverUtil;
 import by.training.karpilovich.lowcost.entity.DateCoefficient;
 import by.training.karpilovich.lowcost.entity.Flight;
-import by.training.karpilovich.lowcost.exception.ServiceException;
 
 public class RedirectToAddDateCoefficientPageCommand implements Command {
 
@@ -24,20 +23,20 @@ public class RedirectToAddDateCoefficientPageCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		try {
-			setAttributes(request);
-		} catch (ServiceException e) {
-			setErrorMessage(request, response.getLocale(), e.getMessage());
-		}
+		prepareToRedirect(request);
 		return Page.ADD_DATE_COEFFICIENT.getAddress();
 	}
 
-	private void setAttributes(HttpServletRequest request) throws ServiceException {
+	private void prepareToRedirect(HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		Flight flight = (Flight) session.getAttribute(Attribute.FLIGHT.toString());
 		SortedSet<DateCoefficient> coefficinents = util.takeDateCoefficientFromSession(session);
 		Calendar boundFrom = getDateCoefficientService().getNextBoundFromValueDateCoefficient(coefficinents);
-		request.setAttribute(Attribute.MAX_BOUND_VALUE.toString(), flight.getDate());
+		setAttributes(request, boundFrom, flight.getDate());
+	}
+
+	private void setAttributes(HttpServletRequest request, Calendar boundFrom, Calendar maxBoundFrom) {
+		request.setAttribute(Attribute.MAX_BOUND_VALUE.toString(), maxBoundFrom);
 		request.setAttribute(Attribute.BOUND_FROM.toString(), boundFrom);
 	}
 }

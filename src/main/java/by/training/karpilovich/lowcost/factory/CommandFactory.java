@@ -1,7 +1,9 @@
 package by.training.karpilovich.lowcost.factory;
 
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,14 +50,45 @@ import by.training.karpilovich.lowcost.command.impl.user.CreateTicketCommand;
 import by.training.karpilovich.lowcost.command.impl.user.DeleteUserCommand;
 import by.training.karpilovich.lowcost.command.impl.user.DepositCommand;
 import by.training.karpilovich.lowcost.command.impl.user.ReturnTicketCommand;
+import by.training.karpilovich.lowcost.entity.Role;
 
 public class CommandFactory {
 
 	private static final Logger LOGGER = LogManager.getLogger(CommandFactory.class);
 
 	private final Map<CommandType, Command> commands = new EnumMap<>(CommandType.class);
+	private final Map<Role, EnumSet<CommandType>> commandsToRole = new EnumMap<>(Role.class);
 
 	private CommandFactory() {
+		initCommands();
+		initCommandsToRole();
+	}
+
+	private static final class CommandFactoryInstanceHolder {
+		private static final CommandFactory INSTANCE = new CommandFactory();
+	}
+
+	public static CommandFactory getInstance() {
+		return CommandFactoryInstanceHolder.INSTANCE;
+	}
+
+	public Command getCommad(String commandName) {
+		Command command = new RedirectToDefaultPageCommand();
+		if (commandName != null) {
+			try {
+				command = commands.get(CommandType.valueOf(commandName.toUpperCase()));
+			} catch (IllegalArgumentException e) {
+				LOGGER.error("Illegal command name " + commandName);
+			}
+		}
+		return command;
+	}
+
+	public Set<CommandType> getCommandToTole(Role role) {
+		return commandsToRole.get(role);
+	}
+
+	private void initCommands() {
 		commands.put(CommandType.SIGN_IN, new SignInCommand());
 		commands.put(CommandType.SIGN_OUT, new SignOutCommand());
 		commands.put(CommandType.SIGN_UP, new SignUpCommand());
@@ -63,7 +96,7 @@ public class CommandFactory {
 		commands.put(CommandType.DELETE_USER, new DeleteUserCommand());
 		commands.put(CommandType.UPDATE_PASSWORD, new ChangePasswordCommand());
 		commands.put(CommandType.RESTORE_PASSWORD, new RestorePasswordCommand());
-		
+
 		commands.put(CommandType.ADD_CITY, new AddCityCommand());
 		commands.put(CommandType.UPDATE_CITY, new UpdateCityCommand());
 		commands.put(CommandType.DELETE_CITY, new DeleteCityCommand());
@@ -95,7 +128,7 @@ public class CommandFactory {
 		commands.put(CommandType.SHOW_ALL_TICKET, new ShowAllTicketCommand());
 		commands.put(CommandType.RETURN_TICKET, new ReturnTicketCommand());
 		commands.put(CommandType.SHOW_SOLD_TICKETS, new ShowAllTicketToFlightCommand());
-		
+
 		commands.put(CommandType.ADD_PLANE, new AddPlaneCommand());
 		commands.put(CommandType.SHOW_ALL_PLANES, new ShowAllPlanesCommand());
 
@@ -103,23 +136,38 @@ public class CommandFactory {
 		commands.put(CommandType.CHANGE_LANGUAGE, new ChangeLanguageCommand());
 	}
 
-	private static final class CommandFactoryInstanceHolder {
-		private static final CommandFactory INSTANCE = new CommandFactory();
+	private void initCommandsToRole() {
+		commandsToRole.put(Role.GUEST, initGuestsCommands());
+		commandsToRole.put(Role.USER, initUsersCommands());
+		commandsToRole.put(Role.ADMIN, initAdminsCommands());
 	}
 
-	public static CommandFactory getInstance() {
-		return CommandFactoryInstanceHolder.INSTANCE;
+	private EnumSet<CommandType> initGuestsCommands() {
+		return EnumSet.of(CommandType.SIGN_IN, CommandType.SIGN_UP, CommandType.RESTORE_PASSWORD,
+				CommandType.SEARCH_FLIGHT, CommandType.SORT_FLIGHTS_BY_DEPARTURE_DATE,
+				CommandType.SORT_FLIGHTS_BY_TICKET_PRICE, CommandType.BUY_TICKET, CommandType.REDIRECT,
+				CommandType.CHANGE_LANGUAGE);
 	}
 
-	public Command getCommad(String commandName) {
-		Command command = new RedirectToDefaultPageCommand();
-		if (commandName != null) {
-			try {
-				command = commands.get(CommandType.valueOf(commandName.toUpperCase()));
-			} catch (IllegalArgumentException e) {
-				LOGGER.error("Illegal command name " + commandName);
-			}
-		}
-		return command;
+	private EnumSet<CommandType> initUsersCommands() {
+		return EnumSet.of(CommandType.SIGN_OUT, CommandType.DEPOSIT, CommandType.DELETE_USER,
+				CommandType.UPDATE_PASSWORD, CommandType.SEARCH_FLIGHT, CommandType.SORT_FLIGHTS_BY_DEPARTURE_DATE,
+				CommandType.SORT_FLIGHTS_BY_TICKET_PRICE, CommandType.REDIRECT_TO_CREATE_TICKET_PAGE,
+				CommandType.CREATE_TICKET, CommandType.BUY_TICKET, CommandType.SHOW_ALL_TICKET,
+				CommandType.RETURN_TICKET, CommandType.REDIRECT, CommandType.CHANGE_LANGUAGE);
+	}
+
+	private EnumSet<CommandType> initAdminsCommands() {
+		return EnumSet.of(CommandType.SIGN_OUT, CommandType.UPDATE_PASSWORD, CommandType.ADD_CITY,
+				CommandType.SHOW_ALL_CITIES, CommandType.DELETE_CITY, CommandType.REDIRECT_TO_UPDATE_CITY_PAGE,
+				CommandType.UPDATE_CITY, CommandType.REDIRECT_TO_CREATE_FLIGTH_PAGE, CommandType.CREATE_FLIGHT,
+				CommandType.REDIRECT_TO_ADD_PLACE_COEFFICIENT_PAGE, CommandType.REDIRECT_TO_ADD_DATE_COEFFICIENT_PAGE,
+				CommandType.ADD_PLACE_COEFFICIENT, CommandType.ADD_DATE_COEFFICIENT, CommandType.ADD_FLIGHT,
+				CommandType.CANCEL_FLIGHT_ADDING, CommandType.SHOW_ALL_FLIGHTS, CommandType.SEARCH_FLIGHT,
+				CommandType.SORT_FLIGHTS_BY_DEPARTURE_DATE, CommandType.SORT_FLIGHTS_BY_TICKET_PRICE,
+				CommandType.REDIRECT_TO_UPDATE_FLIGHT_PAGE, CommandType.UPDATE_FLIGHT, CommandType.DELETE_FLIGHT,
+				CommandType.SHOW_NEXT_TWENTY_FOUR_HOURS_FLIGHTS, CommandType.SHOW_FLIGHTS_BETWEEN_DATES,
+				CommandType.SHOW_SOLD_TICKETS, CommandType.ADD_PLANE, CommandType.SHOW_ALL_PLANES, CommandType.REDIRECT,
+				CommandType.CHANGE_LANGUAGE);
 	}
 }

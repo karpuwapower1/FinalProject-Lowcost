@@ -77,11 +77,13 @@ public class FlightDAOImpl implements FlightDAO {
 	private static final String COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY_RESULT = "count";
 
 	private static final String SELECT_FLIGHTS_QUERY = "SELECT "
-			+ " flight.id AS id, number, date, default_price * dc.coeff * pc.coeff AS price, default_luggage_kg, available_places, "
+			+ " flight.id AS id, number,  date, default_luggage_kg, available_places, "
 			+ " primary_boarding_right_price, plane.model, plane.places_quantity, price_for_every_kg_overweight, "
 			+ " city_from.id AS city_from_id, city_from.name  AS city_from_name, city_from.country_name AS country_from, "
-			+ " city_to.id AS city_to_id, city_to.name AS city_to_name, city_to.country_name AS country_to"
-			+ " FROM flight " + " JOIN city AS city_from ON flight.from_id = city_from.id "
+			+ " city_to.id AS city_to_id, city_to.name AS city_to_name, city_to.country_name AS country_to, "
+			+ " default_price * " + " (CASE WHEN dc.coeff IS NULL THEN 1 ELSE dc.coeff END) * "
+			+ " (CASE WHEN pc.coeff IS NULL THEN 1 ELSE pc.coeff END) AS price " + " FROM flight "
+			+ " JOIN city AS city_from ON flight.from_id = city_from.id "
 			+ " JOIN city AS city_to ON flight.to_id = city_to.id " + " JOIN plane ON flight.plane_model = plane.model "
 			+ " JOIN date_coeff AS dc ON flight.id = dc.flight_id AND CURDATE() BETWEEN dc.from and dc.to "
 			+ " JOIN place_coeff AS pc ON flight.id = pc.flight_id AND available_places BETWEEN pc.from and pc.to ";
@@ -145,10 +147,7 @@ public class FlightDAOImpl implements FlightDAO {
 				Statement selectFlightIdStatement = connection.createStatement();) {
 			prepareAddStatement(flightStatement, flight);
 			flightStatement.executeUpdate();
-			try (ResultSet resultSet = selectFlightIdStatement.executeQuery(SELECT_LAST_INSERTED_FLIGHT_ID)) {
-				resultSet.next();
-				flight.setId(resultSet.getInt(RESULT_SELECT_FLIGHT_FLIGHT_ID));
-			}
+			setIdToNewAddedFlight(selectFlightIdStatement, flight);
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("Error while adding a flight " + flight.toString(), e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
@@ -185,13 +184,7 @@ public class FlightDAOImpl implements FlightDAO {
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(SELECT_FLIGHT_BY_FROM_TO_DATE_QUANTITY);) {
 			prepareSelectByFromToDateAndPassengerQuantityStatement(statement, from, to, date, quantity);
-			try (ResultSet resultSet = statement.executeQuery()) {
-				List<Flight> flights = new ArrayList<>();
-				while (resultSet.next()) {
-					flights.add(buildFlight(resultSet));
-				}
-				return flights;
-			}
+			return executeSelectFlightsStatement(statement);
 		} catch (ConnectionPoolException | SQLException e) {
 			LOGGER.error("Error while getting a flight by from, to, date and passenger quantity: from=" + from + " to="
 					+ to + " date=" + date + "quantity=" + quantity, e);
@@ -204,13 +197,7 @@ public class FlightDAOImpl implements FlightDAO {
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY);) {
 			prepareCountFlightByNumberAndDateQuery(statement, number, date);
-			try (ResultSet resultSet = statement.executeQuery();) {
-				int count = 0;
-				if (resultSet.next()) {
-					count = resultSet.getInt(COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY_RESULT);
-				}
-				return count;
-			}
+			return exequtePrepareCountFlightByNumberAndDateQuery(statement);
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("Error while counting flights with number=" + number + " and date=" + date, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
@@ -222,11 +209,7 @@ public class FlightDAOImpl implements FlightDAO {
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(SELECT_ALL_FLIGHTS_QUERY);
 				ResultSet resultSet = statement.executeQuery();) {
-			List<Flight> flights = new ArrayList<>();
-			while (resultSet.next()) {
-				flights.add(buildFlight(resultSet));
-			}
-			return flights;
+			return getAllFlightsFromResultSet(resultSet);
 		} catch (ConnectionPoolException | SQLException e) {
 			LOGGER.error("Error while getting all flights ", e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
@@ -238,13 +221,7 @@ public class FlightDAOImpl implements FlightDAO {
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(SELECT_FLIGHT_BY_ID);) {
 			statement.setInt(SELECT_FLIGHT_BY_ID_ID_INDEX, flightId);
-			try (ResultSet resultSet = statement.executeQuery()) {
-				Optional<Flight> optional = Optional.empty();
-				if (resultSet.next()) {
-					optional = Optional.of(buildFlight(resultSet));
-				}
-				return optional;
-			}
+			return exequteSelectFlightByIdStatement(statement);
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("Error while getting user by id=" + flightId, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
@@ -256,13 +233,7 @@ public class FlightDAOImpl implements FlightDAO {
 		try (Connection connection = pool.getConnection();
 				PreparedStatement statement = connection.prepareStatement(SELECT_FLIGHTS_BETWEEN_DATES);) {
 			prepareSelectFlightBetweenDatesStatement(statement, from, to);
-			List<Flight> flights = new ArrayList<>();
-			try (ResultSet resultSet = statement.executeQuery()) {
-				while (resultSet.next()) {
-					flights.add(buildFlight(resultSet));
-				}
-			}
-			return flights;
+			return executeSelectFlightsStatement(statement);
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("Error while getting flighs between dates : \nfrom=" + from + " \nto=" + to, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
@@ -314,6 +285,51 @@ public class FlightDAOImpl implements FlightDAO {
 			throws SQLException {
 		statement.setTimestamp(SELECT_FLIGHTS_BETWEEN_DATES_FROM_INDEX, new Timestamp(from.getTimeInMillis()));
 		statement.setTimestamp(SELECT_FLIGHTS_BETWEEN_DATES_TO_INDEX, new Timestamp(to.getTimeInMillis()));
+	}
+
+	private List<Flight> executeSelectFlightsStatement(PreparedStatement statement) throws SQLException {
+		try (ResultSet resultSet = statement.executeQuery()) {
+			return getAllFlightsFromResultSet(resultSet);
+		}
+	}
+
+	private Optional<Flight> exequteSelectFlightByIdStatement(PreparedStatement statement) throws SQLException {
+		try (ResultSet resultSet = statement.executeQuery()) {
+			return getFlightFromResultSet(resultSet);
+		}
+	}
+
+	private int exequtePrepareCountFlightByNumberAndDateQuery(PreparedStatement statement) throws SQLException {
+		try (ResultSet resultSet = statement.executeQuery();) {
+			return getCountFlightsFromResultSet(resultSet);
+		}
+	}
+
+	private void setIdToNewAddedFlight(Statement statement, Flight flight) throws SQLException {
+		flight.setId(getNeewAddedFlightId(statement));
+	}
+
+	private int getNeewAddedFlightId(Statement statement) throws SQLException {
+		try (ResultSet resultSet = statement.executeQuery(SELECT_LAST_INSERTED_FLIGHT_ID)) {
+			resultSet.next();
+			return resultSet.getInt(RESULT_SELECT_FLIGHT_FLIGHT_ID);
+		}
+	}
+
+	private List<Flight> getAllFlightsFromResultSet(ResultSet resultSet) throws SQLException {
+		List<Flight> flights = new ArrayList<>();
+		while (resultSet.next()) {
+			flights.add(buildFlight(resultSet));
+		}
+		return flights;
+	}
+
+	private int getCountFlightsFromResultSet(ResultSet resultSet) throws SQLException {
+		return (resultSet.next()) ? resultSet.getInt(COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY_RESULT) : 0;
+	}
+
+	private Optional<Flight> getFlightFromResultSet(ResultSet resultSet) throws SQLException {
+		return resultSet.next() ? Optional.of(buildFlight(resultSet)) : Optional.empty();
 	}
 
 	private Flight buildFlight(ResultSet resultSet) throws SQLException {

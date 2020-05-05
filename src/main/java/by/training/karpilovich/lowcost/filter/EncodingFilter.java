@@ -1,6 +1,7 @@
 package by.training.karpilovich.lowcost.filter;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -13,8 +14,13 @@ import javax.servlet.annotation.WebInitParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @WebFilter(urlPatterns = { "/*" }, initParams = { @WebInitParam(name = "encoding", value = "UTF-8") })
 public class EncodingFilter implements Filter {
+	
+	private static final Logger LOGGER = LogManager.getLogger(EncodingFilter.class);
 	
 	private String encoding;
 
@@ -28,8 +34,16 @@ public class EncodingFilter implements Filter {
 			throws IOException, ServletException {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
-		httpRequest.setCharacterEncoding(encoding);
-		httpResponse.setCharacterEncoding(encoding);
+		setEncoding(httpRequest, httpResponse);
 		chain.doFilter(httpRequest, httpResponse);
+	}
+	
+	private void setEncoding(HttpServletRequest request, HttpServletResponse response) {
+		try {
+		request.setCharacterEncoding(encoding);
+		response.setCharacterEncoding(encoding);
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error("Error while setting encoding ", e);
+		}
 	}
 }
