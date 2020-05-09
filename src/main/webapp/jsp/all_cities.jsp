@@ -38,7 +38,7 @@
 						<td><c:out value="${city.name}" /></td>
 						<td><c:out value="${city.country}" /></td>
 						<td>
-							<form name="action" method="post">
+							<form action="lowcost" name="action" method="post">
 							<input type="hidden" name="from_page" value="${page}" /> 
 								<input type="hidden" name="city_id" value="${city.id}">
 								<input type="hidden" name="to_page" value="UPDATE_CITY">

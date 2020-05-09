@@ -61,7 +61,7 @@
 						<td><c:out value="${ticket.luggageQuantity}" />/<fmt:formatNumber
 								value="${ticket.overweightLuggagePrice}" /></td>
 								<td><fmt:formatDate value="${ticket.purchaseDate.time }"/></td>
-						<td><form name="action" method="post">
+						<td><form action="lowcost" name="action" method="post">
 						<input type="hidden" name="from_page" value="${page}" /> 
 						<input type="hidden" name="number" value="${ticket.number}"/>
 							<c:if test="${USER_ROLE == 'USER' }" >

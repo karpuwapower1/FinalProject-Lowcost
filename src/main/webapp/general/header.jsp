@@ -20,7 +20,7 @@
 <header>
 	<nav class="navbar navbar-expand-sm navbar-light">
 		<div class="navbar-brand">
-			<form method="post" name="default">
+			<form action="lowcost" method="post" name="default">
 				<input type="hidden" name="to_page" value="DEFAULT">
 				<button type="submit" class="btn btn-link " name="command"
 					value="REDIRECT">
@@ -55,7 +55,7 @@
 								<fmt:bundle basename="pagecontent" prefix="header.menu.">
 									<c:choose>
 										<c:when test="${USER_ROLE == 'ADMIN'}">
-											<form method="post" name="add_city">
+											<form action="lowcost" method="post" name="add_city">
 												<input type="hidden" name="to_page" value="ADD_CITY" /> <input
 													type="hidden" name="from_page" value="${page}" />
 												<button type="submit"
@@ -65,7 +65,7 @@
 												</button>
 											</form>
 
-											<form method="post" name="show_all_cities">
+											<form action="lowcost" method="post" name="show_all_cities">
 												<input type="hidden" name="to_page" value="ALL_CITIES" /> <input
 													type="hidden" name="from_page" value="${page}" />
 												<button type="submit"
@@ -75,7 +75,7 @@
 												</button>
 											</form>
 
-											<form method="post" name="add_flight">
+											<form action="lowcost" method="post" name="add_flight">
 												<input type="hidden" name="to_page" value="add_flight" /> <input
 													type="hidden" name="from_page" value="${page }" />
 												<button type="submit"
@@ -85,7 +85,7 @@
 												</button>
 											</form>
 
-											<form method="post" name="show_all_flight">
+											<form action="lowcost" method="post" name="show_all_flight">
 												<input type="hidden" name="to_page" value="all_flight" /> <input
 													type="hidden" name="from_page" value="${page }" />
 												<button type="submit"
@@ -95,7 +95,7 @@
 												</button>
 											</form>
 
-											<form method="post" name="show_next_twenty_four_hours_flights">
+											<form action="lowcost" method="post" name="show_next_twenty_four_hours_flights">
 											 <input type="hidden" name="from_page" value="${page }" />
 												<button type="submit"
 													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
@@ -104,7 +104,7 @@
 												</button>
 											</form>
 											
-											<form method="post" name="show_flights_between_dates">
+											<form action="lowcost" method="post" name="show_flights_between_dates">
 											 <input type="hidden" name="from_page" value="${page }" />
 											 <input type="hidden" name="to_page" value="CHOOSE_DATE_BOUNDS" />
 												<button type="submit"
@@ -114,7 +114,7 @@
 												</button>
 											</form>
 											
-												<form method="post" name="show_all_planes">
+												<form action="lowcost" method="post" name="show_all_planes">
 											 <input type="hidden" name="from_page" value="${page }" />
 												<button type="submit"
 													class="dropdown-item pt-0 pb-0 pr-1 pl-0" name="command"
@@ -123,7 +123,7 @@
 												</button>
 											</form>
 											
-											<form method="post" name="add_plane">
+											<form action="lowcost" method="post" name="add_plane">
 											 <input type="hidden" name="from_page" value="${page }" />
 											 <input type="hidden" name="to_page" value="ADD_PLANE" />
 												<button type="submit"
@@ -135,7 +135,7 @@
 										</c:when>
 
 										<c:otherwise>
-											<form method="post" name="deposit">
+											<form action="lowcost" method="post" name="deposit">
 												<input type="hidden" name="to_page" value="DEPOSIT" /> <input
 													type="hidden" name="from_page" value="${page }" />
 												<button type="submit"
@@ -144,7 +144,7 @@
 													<fmt:message key="user.deposit" />
 												</button>
 											</form>
-											<form method="post" name="show_all_flight">
+											<form action="lowcost" method="post" name="show_all_flight">
 												<input type="hidden" name="to_page" value="show_ticket" />
 												<input type="hidden" name="from_page" value="${page }" />
 												<button type="submit"
@@ -154,7 +154,7 @@
 												</button>
 											</form>
 											
-											<form method="post" name="delete_user">
+											<form action="lowcost" method="post" name="delete_user">
 												<input type="hidden" name="to_page" value="DELETE_USER" />
 												<input type="hidden" name="from_page" value="${page }" />
 												<button type="submit"
@@ -164,7 +164,7 @@
 												</button>
 											</form>
 											
-											<form method="post" name="update_password">
+											<form action="lowcost" method="post" name="update_password">
 												<input type="hidden" name="to_page" value="CHANGE_PASSWORD" />
 												<input type="hidden" name="from_page" value="${page }" />
 												<button type="submit"
@@ -205,14 +205,14 @@
 					<div
 						class="dropdown-menu dropdown-menu-right mt-0 mr-0 ml-0 mb-0 pt-0 pb-0 pr-1 pl-0">
 						<fmt:bundle basename="pagecontent" prefix="header.sort_flights.">
-							<form method="post" name="sort_flight">
+							<form action="lowcost" method="post" name="sort_flight">
 								<input type="hidden" name="from_page" value="${page}" />
 								<button type="submit" class="dropdown-item pt-0 pb-0 pr-1 pl-0"
 									name="command" value="SORT_FLIGHTS_BY_TICKET_PRICE">
 									<fmt:message key="sort_flights_by_ticket_price" />
 								</button>
 							</form>
-							<form method="post" name="sort_flight">
+							<form action="lowcost" method="post" name="sort_flight">
 								<input type="hidden" name="from_page" value="${page}" />
 								<button type="submit" class="dropdown-item pt-0 pb-0 pr-1 pl-0"
 									name="command" value="SORT_FLIGHTS_BY_DEPARTURE_DATE">
@@ -233,7 +233,7 @@
 							<fmt:message key="language" />
 						</button>
 						<div class="dropdown-menu">
-							<form method="post" name="language">
+							<form action="lowcost" method="post" name="language">
 								<input type="hidden" name="command" value="CHANGE_LANGUAGE">
 								<input type="hidden" name="from_page" value="${page}" />
 								<button type="submit" class="btn btn-link" name="language"
@@ -251,7 +251,7 @@
 					<c:if
 						test="${page != 'SIGN_IN' && page != 'SIGN_UP' && USER_ROLE == 'GUEST'}">
 						<div class="nav-item">
-							<form method="post" name="sign_up">
+							<form action="lowcost" method="post" name="sign_up">
 								<input type="hidden" name="to_page" value="sign_up" /> <input
 									type="hidden" name="from_page" value="${page}" />
 								<button type="submit" class="btn btn-link" name="command"
@@ -261,7 +261,7 @@
 							</form>
 						</div>
 						<div class="nav-item">
-							<form method="post" name="sign_in">
+							<form action="lowcost" method="post" name="sign_in">
 								<input type="hidden" name="to_page" value="sign_in" /> <input
 									type="hidden" name="from_page" value="${page}" />
 								<button type="submit" class="btn btn-link" name="command"
@@ -275,7 +275,7 @@
 					<c:if
 						test="${page != 'SIGN_IN' && page != 'SIGN_UP' && USER_ROLE != 'GUEST'}">
 						<div class="nav-item">
-							<form name="sign_out" method="post">
+							<form action="lowcost" name="sign_out" method="post">
 								<button type="submit" class="btn btn-link" name="command"
 									value="SIGN_OUT">
 									<fmt:message key="signout" />

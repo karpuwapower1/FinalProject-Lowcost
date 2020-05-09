@@ -25,7 +25,7 @@
 
 <body>
 	<fmt:bundle basename="pagecontent" prefix="signin.input.">
-		<form name="input" class="border border-light " method="post">
+		<form action="lowcost" name="input" class="border border-light " method="post">
 			<input type="hidden" name="from_page" value="${page}" />
 			<p class="login-header text-center">
 				<fmt:message key="title" />
@@ -51,7 +51,7 @@
 			</div>
 			</form>
 			<div class="login-info text-center">
-				<form method="post" name="sign_in">
+				<form action="lowcost" method="post" name="sign_in">
 					<input type="hidden" name="to_page" value="sign_up" />
 					<button type="submit" class="btn btn-link" name="command"
 						value="REDIRECT">
@@ -59,7 +59,7 @@
 					</button>
 				</form>
 				
-				<form method="post" name="restore_password">
+				<form action="lowcost" method="post" name="restore_password">
 					<input type="hidden" name="to_page" value="RESTORE_PASSWORD" />
 					<button type="submit" class="btn btn-link" name="command"
 						value="REDIRECT">

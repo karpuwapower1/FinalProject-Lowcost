@@ -27,7 +27,7 @@
 
 <body>
 	<fmt:bundle basename="pagecontent" prefix="choose_dates.input.">
-		<form name="input" class="border border-light " method="post">
+		<form action="lowcost" name="input" class="border border-light " method="post">
 			<input type="hidden" name="from_page" value="${page}" /> <input
 				class="form-control form-control-lg col-md-4 offset-md-4" 
 				placeholder="<fmt:message key="bound_from"/>" required type="text"

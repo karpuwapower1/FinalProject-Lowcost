@@ -38,7 +38,7 @@
 						<td><c:out value="${plane.model}" /></td>
 						<td><c:out value="${plane.placeQuantity}" /></td>
 						<td>
-							<form name="action" method="post">
+							<form action="lowcost" name="action" method="post">
 							<input type="hidden" name="from_page" value="${page}" /> 
 								<input type="hidden" name="city_id" value="${plane.model}">
 								<input type="hidden" name="to_page" value="UPDATE_PLANE">

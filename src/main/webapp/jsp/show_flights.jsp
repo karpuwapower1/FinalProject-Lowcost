@@ -61,7 +61,7 @@
 						<c:choose>
 						<c:when test="${USER_ROLE == 'ADMIN'}">
 							<td>
-								<form method="post" name="update_flight">
+								<form action="lowcost" method="post" name="update_flight">
 									<input type="hidden" name="from_page" value="${page}" /> <input
 										type="hidden" name="flight_id" value="${flight.id }" />
 									<button type="submit" class="btn btn-primary btn-sm"
@@ -82,7 +82,7 @@
 
 						<c:otherwise>
 							<td>
-								<form name="action" method="post">
+								<form action="lowcost" name="action" method="post">
 									<input type="hidden" name="from_page" value="${page}" /> <input
 										type=hidden name=flight_id value=${flight.id } />
 									<button class="btn btn-primary" type="submit" name="command"

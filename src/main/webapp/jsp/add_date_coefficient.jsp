@@ -27,7 +27,7 @@
 
 <body>
 	<fmt:bundle basename="pagecontent" prefix="add_coefficient_input.date.">
-		<form name="input" method="post">
+		<form action="lowcost" name="input" method="post">
 			
 				<input type="hidden" name="from_page" value="${page}" /> <input class="form-control col-md-4 offset-md-4"
 					type="text" name="bound_from"
@@ -47,7 +47,7 @@
 					<fmt:message key="add_coefficient" />
 				</button>
 		</form>
-			<form method="post" name="redirect">
+			<form action="lowcost" method="post" name="redirect">
 				<input type="hidden" name="to_page" value="FLIGHT_PREVIEW" />
 				<button class="btn btn-primary btn-block col-md-4 offset-md-4" type="submit"
 					name="command" value="REDIRECT">

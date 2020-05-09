@@ -53,7 +53,7 @@
 		</fmt:bundle>
 
 		<fmt:bundle basename="pagecontent" prefix="flight_preview.table.">
-			<form name="input" method="post">
+			<form action="lowcost" name="input" method="post">
 				<input type="hidden" name="from_page" value="${page}" />
 				<table class="table table-bordered">
 					<thead>

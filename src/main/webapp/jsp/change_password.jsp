@@ -26,7 +26,7 @@
 
 <body>
 	<fmt:bundle basename="pagecontent" prefix="change_password.">
-		<form name="input" class="border border-light " method="post">
+		<form action="lowcost" name="input" class="border border-light " method="post">
 			<input type="hidden" name="from_page" value="${page}"/>
 			<p class="login-header text-center">
 				<fmt:message key="title" />

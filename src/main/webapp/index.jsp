@@ -29,7 +29,7 @@
 	<fmt:bundle basename="pagecontent" prefix="index.select.">
 		<div class="container">
 			<div class="grid">
-				<form name="select" method="post">
+				<form action="lowcost" name="select" method="post">
 					<input type="hidden" name="from_page" value="${page}" />
 					<div class="row">
 						<select class="custom-select  custom-select-lg col-md-3"

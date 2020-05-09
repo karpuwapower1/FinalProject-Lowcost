@@ -29,7 +29,7 @@
 
 <body>
 	<fmt:bundle basename="pagecontent" prefix="update_flight.">
-		<form name="select" method="post">
+		<form action="lowcost" name="select" method="post">
 			<input type="hidden" name="from_page" value="${page}" /> <input
 				type="hidden" name="flight_id" value="${FLIGHT.id}" /> <input
 				type="hidden" name="country_from" value="${FLIGHT.from.id}" /> <input
