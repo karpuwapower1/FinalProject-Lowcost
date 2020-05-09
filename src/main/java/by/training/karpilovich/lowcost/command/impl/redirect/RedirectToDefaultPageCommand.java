@@ -13,22 +13,30 @@ import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.exception.ServiceException;
+import by.training.karpilovich.lowcost.factory.ServiceFactory;
+import by.training.karpilovich.lowcost.service.CityService;
 
 public class RedirectToDefaultPageCommand implements Command {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		HttpSession session = request.getSession();
-		Page page = Page.DEFAULT;
-		if (session.getAttribute(Attribute.CITIES.toString()) == null) {
-			try {
-				Set<City> cities = getCityService().getAllCities();
-				session.setAttribute(Attribute.CITIES.toString(), cities);
-			} catch (ServiceException e) {
-				page = Page.ERROR;
-			}
+		try {
+			setCitiesToSession(request.getSession());
+		} catch (ServiceException e) {
+			setErrorMessage(request, response.getLocale(), e.getMessage());
 		}
-		return page.getAddress();
+		return Page.DEFAULT.getAddress();
+	}
+
+	private void setCitiesToSession(HttpSession session) throws ServiceException {
+		if (session.getAttribute(Attribute.CITIES.toString()) == null) {
+			session.setAttribute(Attribute.CITIES.toString(), getCities());
+		}
+	}
+
+	private Set<City> getCities() throws ServiceException {
+		CityService cityService = ServiceFactory.getInstance().getCityService();
+		return cityService.getAllCities();
 	}
 }

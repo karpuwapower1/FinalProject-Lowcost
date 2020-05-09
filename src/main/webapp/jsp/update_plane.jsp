@@ -27,7 +27,7 @@
 
 <body>
 	<fmt:bundle basename="pagecontent" prefix="update_plane.">
-		<form name="input" class="border border-light " method="post">
+		<form action="lowcost" name="input" class="border border-light " method="post">
 		<input type="hidden" name="from_page" value="${page}" /> 
 			<div class="login-form col-md-4 offset-md-4">
 				<input type="hidden" name="plane_model" value="${PLANE.id}"> <input

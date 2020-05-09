@@ -59,7 +59,7 @@
 				</tr>
 			</tbody>
 		</table>
-		<form name="action" method="post">
+		<form action="lowcost" name="action" method="post">
 			<input type="hidden" name="from_page" value="${page}" />
 			<button class="btn btn-primary" type="submit" name="command"
 				value="BUY_TICKET">

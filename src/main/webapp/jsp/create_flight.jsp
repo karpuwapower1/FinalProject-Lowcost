@@ -29,7 +29,7 @@
 
 <body>
 	<fmt:bundle basename="pagecontent" prefix="create_flight.">
-		<form name="select" method="post">
+		<form action="lowcost" name="select" method="post">
 		<input type="hidden" name="from_page" value="${page}" /> 
 			<input type="text" class="form-control col-md-4 offset-md-4"
 				name="number" value="" placeholder="<fmt:message key="number"/>"

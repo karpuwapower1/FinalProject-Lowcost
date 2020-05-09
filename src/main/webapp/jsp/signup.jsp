@@ -26,7 +26,7 @@
 
 <body>
 <fmt:bundle basename="pagecontent" prefix="signup.input.">
-	<form name="input" class="border border-light " method="post">
+	<form action="lowcost" name="input" class="border border-light " method="post">
 	<input type="hidden" name="from_page" value="${page}" /> 
 		
 			<p class="login-header text-center">
@@ -59,7 +59,7 @@
 			</div>
 			</form>
 			<div class="login-info text-center">
-				<form method="post" name="sign_in">
+				<form action="lowcost" method="post" name="sign_in">
 					<input type="hidden" name="to_page" value="sign_in" />
 					<button type="submit" class="btn btn-link" name="command"
 						value="REDIRECT">

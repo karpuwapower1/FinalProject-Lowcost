@@ -25,7 +25,7 @@
 
 <body>
 	<fmt:bundle basename="pagecontent" prefix="add_plane.">
-		<form name="input" class="border border-light " accept-charset="UTF-8" method="post">
+		<form action="lowcost" name="input" class="border border-light " accept-charset="UTF-8" method="post">
 		<input type="hidden" name="from_page" value="${page}" />
 			<div class="login-form col-md-4 offset-md-4">
 				<input type="text" class="form-control" name="model" value=""

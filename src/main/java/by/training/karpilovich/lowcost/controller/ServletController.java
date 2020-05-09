@@ -20,7 +20,7 @@ import by.training.karpilovich.lowcost.factory.CommandFactory;
 import by.training.karpilovich.lowcost.repository.CityRepository;
 import by.training.karpilovich.lowcost.repository.impl.CityRepositoryImpl;
 
-@WebServlet("")
+@WebServlet("/lowcost")
 public class ServletController extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;

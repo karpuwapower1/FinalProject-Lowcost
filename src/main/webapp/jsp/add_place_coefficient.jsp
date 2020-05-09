@@ -30,7 +30,7 @@
 	<fmt:bundle basename="pagecontent"
 		prefix="add_coefficient_input.place.">
 		<div class="login-form col-md-4 offset-md-4">
-			<form name="input" class="border border-light " method="post">
+			<form action="lowcost" name="input" class="border border-light " method="post">
 				<input type="hidden" name="from_page" value="${page}" /> <input
 					type="text" class="form-control" name="bound_from"
 					value="${BOUND_FROM}" readonly /> <input type="text"
@@ -46,7 +46,7 @@
 					<fmt:message key="add_coefficient" />
 				</button>
 			</form>
-			<form method="post" name="redirect">
+			<form action="lowcost" method="post" name="redirect">
 				<input type="hidden" name="to_page" value="FLIGHT_PREVIEW" />
 				<button class="btn btn-primary btn-block " type="submit"
 					name="command" value="REDIRECT">

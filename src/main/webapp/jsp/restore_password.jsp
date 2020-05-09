@@ -28,7 +28,7 @@
 		<p class="login-header text-center">
 			<fmt:message key="title" />
 		</p>
-		<form name="input" class="border border-light " method="post">
+		<form action="lowcost" name="input" class="border border-light " method="post">
 			<input type="hidden" name="from_page" value="${page}" />
 			<div class="login-form col-md-4 offset-md-4">
 				<input class="form-control" type="email" name="email" value=""
