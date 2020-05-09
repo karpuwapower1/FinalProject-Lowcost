@@ -44,9 +44,7 @@ public class CityDAOImpl implements CityDAO {
 	private static final int RESULT_SELECT_ALL_CITIES_QUERY_NAME_INDEX = 2;
 	private static final int RESULT_SELECT_ALL_CITIES_QUERY_COUNTRY_NAME_INDEX = 3;
 
-	private static final String SELECT_LAST_INSERTED_INDEX = "SELECT LAST_INSERT_ID() FROM city";
-
-	private static final int RESULT_SELECT_LAST_INSERTED_INDEX = 1;
+	private static final int LAST_INSERTED_INDEX = 1;
 
 	private static final Logger LOGGER = LogManager.getLogger(CityDAOImpl.class);
 
@@ -65,18 +63,15 @@ public class CityDAOImpl implements CityDAO {
 
 	@Override
 	public void addCity(City city) throws DAOException {
-		Connection connection = null;
-		try {
-			connection = pool.getConnection();
-			connection.setAutoCommit(false);
-			addCityToDataSource(connection, city);
-			setIdToNewAddedCity(city, connection);
+		try (Connection connection = pool.getConnection();
+				PreparedStatement statement = connection.prepareStatement(ADD_QUERY,
+						Statement.RETURN_GENERATED_KEYS);) {
+			prepareAddStatement(statement, city);
+			statement.executeUpdate();
+			setIdToNewAddedCity(city, statement);
 		} catch (SQLException | ConnectionPoolException e) {
-			rollback(connection);
 			LOGGER.error("Error while adding a city " + city, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
-		} finally {
-			closeConnection(connection);
 		}
 	}
 
@@ -118,17 +113,14 @@ public class CityDAOImpl implements CityDAO {
 		}
 	}
 
-	private void addCityToDataSource(Connection connection, City city) throws SQLException {
-		try (PreparedStatement addStatement = connection.prepareStatement(ADD_QUERY);
-				Statement selectIdStatement = connection.createStatement();) {
-			prepareAddStatement(addStatement, city);
-			addStatement.executeUpdate();
-		}
+	private void setIdToNewAddedCity(City city, Statement statement) throws SQLException {
+		city.setId(getIdFromStatement(statement));
 	}
 
-	private void setIdToNewAddedCity(City city, Connection connection) throws SQLException, DAOException {
-		try (Statement selectIdStatement = connection.createStatement();) {
-			city.setId(getNewAddedCityId(selectIdStatement));
+	private int getIdFromStatement(Statement statement) throws SQLException {
+		try (ResultSet resultSet = statement.getGeneratedKeys()) {
+			resultSet.next();
+			return resultSet.getInt(LAST_INSERTED_INDEX);
 		}
 	}
 
@@ -155,41 +147,11 @@ public class CityDAOImpl implements CityDAO {
 		return builder.getCity();
 	}
 
-	private int getNewAddedCityId(Statement statement) throws SQLException, DAOException {
-		try (ResultSet resultSet = statement.executeQuery(SELECT_LAST_INSERTED_INDEX)) {
-			if (!resultSet.next()) {
-				throw new DAOException(MessageType.INTERNAL_ERROR.getMessage());
-			}
-			return resultSet.getInt(RESULT_SELECT_LAST_INSERTED_INDEX);
-		}
-	}
-
 	private Set<City> getCitiesFromResultSet(ResultSet resultSet) throws SQLException {
 		Set<City> cities = new HashSet<>();
 		while (resultSet.next()) {
 			cities.add(buildCity(resultSet));
 		}
 		return cities;
-	}
-
-	private void rollback(Connection connection) {
-		if (connection != null) {
-			try {
-				connection.rollback();
-			} catch (SQLException e) {
-				LOGGER.error("Error when rollback ", e);
-			}
-		}
-	}
-
-	private void closeConnection(Connection connection) {
-		if (connection != null) {
-			try {
-				connection.setAutoCommit(true);
-				connection.close();
-			} catch (SQLException e) {
-				LOGGER.error("Error while closing connection ", e);
-			}
-		}
 	}
 }

@@ -209,6 +209,11 @@ public class TicketDAOImpl implements TicketDAO {
 		statement.execute();
 	}
 
+	private void setNumberAndDateToNewAddedTicket(CallableStatement statement, Ticket ticket) throws SQLException {
+		ticket.setNumber(statement.getLong(ADD_TICKET_TICKET_NUMBER_PARAMETER));
+		ticket.setPurchaseDate(takeCalendarFromTimestamp(statement.getTimestamp(ADD_TICKET_PURCHASE_DATE_PARAMETER)));
+	}
+
 	private void prepareAddStatement(CallableStatement statement, Ticket ticket, BigDecimal price) throws SQLException {
 		statement.setString(ADD_TICKET_USER_EMAIL_PARAMETER, ticket.getEmail());
 		statement.setBigDecimal(ADD_TICKET_PRICE_PARAMETER, ticket.getPrice());
@@ -222,11 +227,6 @@ public class TicketDAOImpl implements TicketDAO {
 		statement.setBigDecimal(ADD_TICKET_TICKET_PRICE_PARAMETER, price);
 		statement.registerOutParameter(ADD_TICKET_PURCHASE_DATE_PARAMETER, Types.TIMESTAMP);
 		statement.registerOutParameter(ADD_TICKET_TICKET_NUMBER_PARAMETER, Types.BIGINT);
-	}
-
-	private void setNumberAndDateToNewAddedTicket(CallableStatement statement, Ticket ticket) throws SQLException {
-		ticket.setNumber(statement.getLong(ADD_TICKET_TICKET_NUMBER_PARAMETER));
-		ticket.setPurchaseDate(takeCalendarFromTimestamp(statement.getTimestamp(ADD_TICKET_PURCHASE_DATE_PARAMETER)));
 	}
 
 	private void prepareDeleteStatement(CallableStatement statement, Ticket ticket) throws SQLException {

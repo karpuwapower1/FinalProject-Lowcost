@@ -66,8 +66,6 @@ public class FlightDAOImpl implements FlightDAO {
 	private static final int UPDATE_FLIGHT_QUERY_PRICE_FOR_OVERWEIGHT_INDEX = 10;
 	private static final int UPDATE_FLIGHT_QUERY_CONDITION_INDEX = 11;
 
-	private static final String SELECT_LAST_INSERTED_FLIGHT_ID = "SELECT LAST_INSERT_ID() AS id";
-
 	private static final String COUNT_FLIGHT_BY_NUMBER_AND_DATE_QUERY = "SELECT count(number) count " + " FROM flight "
 			+ " GROUP BY number, date " + " HAVING number = ? AND DATE(date) = ?";
 
@@ -124,6 +122,8 @@ public class FlightDAOImpl implements FlightDAO {
 	private static final String RESULT_SELECT_FLIGHT_CITY_TO_ID = "city_to_id";
 	private static final String RESULT_SELECT_FLIGHT_CITY_TO_NAME = "city_to_name";
 	private static final String RESULT_SELECT_FLIGHT_CITY_TO_COUNTRY = "country_to";
+	
+	private static final int LAST_INSERTED_ID = 1;
 
 	private static final Logger LOGGER = LogManager.getLogger(FlightDAOImpl.class);
 
@@ -143,11 +143,11 @@ public class FlightDAOImpl implements FlightDAO {
 	@Override
 	public void add(Flight flight) throws DAOException {
 		try (Connection connection = pool.getConnection();
-				PreparedStatement flightStatement = connection.prepareStatement(ADD_FLIGHT_QUERY);
-				Statement selectFlightIdStatement = connection.createStatement();) {
+				PreparedStatement flightStatement = connection.prepareStatement(ADD_FLIGHT_QUERY,
+						Statement.RETURN_GENERATED_KEYS);) {
 			prepareAddStatement(flightStatement, flight);
 			flightStatement.executeUpdate();
-			setIdToNewAddedFlight(selectFlightIdStatement, flight);
+			setIdToNewAddedFlight(flightStatement, flight);
 		} catch (SQLException | ConnectionPoolException e) {
 			LOGGER.error("Error while adding a flight " + flight.toString(), e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
@@ -310,9 +310,9 @@ public class FlightDAOImpl implements FlightDAO {
 	}
 
 	private int getNeewAddedFlightId(Statement statement) throws SQLException {
-		try (ResultSet resultSet = statement.executeQuery(SELECT_LAST_INSERTED_FLIGHT_ID)) {
+		try (ResultSet resultSet = statement.getGeneratedKeys()) {
 			resultSet.next();
-			return resultSet.getInt(RESULT_SELECT_FLIGHT_FLIGHT_ID);
+			return resultSet.getInt(LAST_INSERTED_ID);
 		}
 	}
 
