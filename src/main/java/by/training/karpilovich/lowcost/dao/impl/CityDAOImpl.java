@@ -114,10 +114,10 @@ public class CityDAOImpl implements CityDAO {
 	}
 
 	private void setIdToNewAddedCity(City city, Statement statement) throws SQLException {
-		city.setId(getIdFromStatement(statement));
+		city.setId(getIdFromPreparedStatement(statement));
 	}
 
-	private int getIdFromStatement(Statement statement) throws SQLException {
+	private int getIdFromPreparedStatement(Statement statement) throws SQLException {
 		try (ResultSet resultSet = statement.getGeneratedKeys()) {
 			resultSet.next();
 			return resultSet.getInt(LAST_INSERTED_INDEX);
