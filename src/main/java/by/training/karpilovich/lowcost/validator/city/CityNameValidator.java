@@ -19,5 +19,4 @@ public class CityNameValidator extends Validator {
 		}
 		continueValidate();
 	}
-
 }

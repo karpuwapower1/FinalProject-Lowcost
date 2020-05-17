@@ -18,26 +18,29 @@ public class UpdateFlightCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String flightId = request.getParameter(JSPParameter.FLIGHT_ID);
-		String number = request.getParameter(JSPParameter.NUMBER).trim();
-		String from = request.getParameter(JSPParameter.COUNTRY_FROM).trim();
-		String to = request.getParameter(JSPParameter.COUNTRY_TO).trim();
-		String plane = request.getParameter(JSPParameter.PLANE).trim();
-		String date = request.getParameter(JSPParameter.DATE).trim();
-		String price = request.getParameter(JSPParameter.PRICE).trim();
-		String luggage = request.getParameter(JSPParameter.LUGGAGE).trim();
-		String priceForKgOverweigth = request.getParameter(JSPParameter.OVERWEIGHT_PRICE).trim();
-		String primaryBoardingPrice = request.getParameter(JSPParameter.PRIMARY_BOARDING_PRICE).trim();
+		String address = null;
 		try {
-			City cityFrom = getCityService().getCityById(from);
-			City cityTo = getCityService().getCityById(to);
-			Plane planeModel = getPlaneService().getPlaneByModel(plane);
-			getFlightService().updateFlight(flightId, number, cityFrom, cityTo, date, price, primaryBoardingPrice,
-					planeModel, luggage, priceForKgOverweigth);
-			return new ShowAllFlightsCommand().execute(request, response);
+			upateFlight(request);
+			address = new ShowAllFlightsCommand().execute(request, response);
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return new RedirectToUpdateFlightPage().execute(request, response);
+			address = new RedirectToUpdateFlightPage().execute(request, response);
 		}
+		return address;
+	}
+
+	private void upateFlight(HttpServletRequest request) throws ServiceException {
+		String flightId = request.getParameter(JSPParameter.FLIGHT_ID);
+		String number = request.getParameter(JSPParameter.NUMBER);
+		String date = request.getParameter(JSPParameter.DATE);
+		String price = request.getParameter(JSPParameter.PRICE);
+		String luggage = request.getParameter(JSPParameter.LUGGAGE);
+		String priceForKgOverweigth = request.getParameter(JSPParameter.OVERWEIGHT_PRICE);
+		String primaryBoardingPrice = request.getParameter(JSPParameter.PRIMARY_BOARDING_PRICE);
+		City cityFrom = getCityService().getCityById(request.getParameter(JSPParameter.COUNTRY_FROM));
+		City cityTo = getCityService().getCityById(request.getParameter(JSPParameter.COUNTRY_TO));
+		Plane planeModel = getPlaneService().getPlaneByModel(request.getParameter(JSPParameter.PLANE));
+		getFlightService().updateFlight(flightId, number, cityFrom, cityTo, date, price, primaryBoardingPrice,
+				planeModel, luggage, priceForKgOverweigth);
 	}
 }

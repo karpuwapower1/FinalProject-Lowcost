@@ -20,15 +20,20 @@ public class DepositCommand implements Command {
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		User user = (User) session.getAttribute(Attribute.USER.toString());
-		String amount = request.getParameter(JSPParameter.AMOUNT);
+		Page page = null;
 		try {
-			user = getUserService().deposit(user, amount);
+			User user = deposit((User) session.getAttribute(Attribute.USER.toString()), request);
 			session.setAttribute(Attribute.USER.toString(), user);
-			return Page.DEFAULT.getAddress();
+			page = Page.DEFAULT;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.DEPOSIT.getAddress();
+			page = Page.DEPOSIT;
 		}
+		return page.getAddress();
+	}
+
+	private User deposit(User user, HttpServletRequest request) throws ServiceException {
+		String amount = request.getParameter(JSPParameter.AMOUNT);
+		return getUserService().deposit(user, amount);
 	}
 }

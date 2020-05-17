@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,16 +26,17 @@ public class CreateFlightCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		HttpSession session = request.getSession();
+		String address = null;
 		try {
 			Flight flight = createFlight(request);
-			session.setAttribute(Attribute.FLIGHT.toString(), flight);
-			return Page.FLIGHT_PREVIEW.getAddress();
+			request.getSession().setAttribute(Attribute.FLIGHT.toString(), flight);
+			address = Page.FLIGHT_PREVIEW.getAddress();
 		} catch (ServiceException e) {
 			LOGGER.debug(e.getMessage(), e);
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return new RedirectToCreateFlightPageCommand().execute(request, response);
+			address = new RedirectToCreateFlightPageCommand().execute(request, response);
 		}
+		return address;
 	}
 
 	private Flight createFlight(HttpServletRequest request) throws ServiceException {

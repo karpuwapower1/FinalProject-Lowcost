@@ -6,7 +6,6 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
@@ -21,15 +20,23 @@ public class ShowAllTicketCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		HttpSession session = request.getSession();
-		User user = (User) session.getAttribute(Attribute.USER.toString());
+		Page page = null;
 		try {
-			List<Ticket> tickets = getTicketService().getAllUserTickets(user);
-			session.setAttribute(Attribute.TICKETS.toString(), tickets);
-			return Page.SHOW_TICKET.getAddress();
+			setTicketsToRequest(request,
+					getAllTicketBelongsToUser((User) request.getSession().getAttribute(Attribute.USER.toString())));
+			page = Page.SHOW_TICKET;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.valueOf(request.getParameter(JSPParameter.FROM_PAGE.toUpperCase())).getAddress();
+			page = Page.valueOf(request.getParameter(JSPParameter.FROM_PAGE.toUpperCase()));
 		}
+		return page.getAddress();
+	}
+
+	private void setTicketsToRequest(HttpServletRequest request, List<Ticket> tickets) {
+		request.setAttribute(Attribute.TICKETS.toString(), tickets);
+	}
+
+	private List<Ticket> getAllTicketBelongsToUser(User user) throws ServiceException {
+		return getTicketService().getAllUserTickets(user);
 	}
 }

@@ -20,10 +20,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 	private EmailSenderServiceImpl() {
 	}
 
-	private static final class EmailSenderServiceInstanceHolder {
-		private static final EmailSenderServiceImpl INSTANCE = new EmailSenderServiceImpl();
-	}
-
 	public static EmailSenderServiceImpl getInstance() {
 		return EmailSenderServiceInstanceHolder.INSTANCE;
 	}
@@ -54,6 +50,10 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 			String message = messageFactory.getRestorePasswordMessage(password, locale);
 			sendMessage(address, subject, message);
 		}
+	}
+
+	private static final class EmailSenderServiceInstanceHolder {
+		private static final EmailSenderServiceImpl INSTANCE = new EmailSenderServiceImpl();
 	}
 
 	private void sendMessage(String recepient, String subject, String message) {

@@ -13,6 +13,7 @@ import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.command.impl.admin.flight.ShowAllFlightsCommand;
 import by.training.karpilovich.lowcost.entity.Flight;
+import by.training.karpilovich.lowcost.entity.Role;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 
 public class RedirectToCreateTicketPageCommand implements Command {
@@ -20,15 +21,16 @@ public class RedirectToCreateTicketPageCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		String address = null;
 		HttpSession session = request.getSession();
-		String flightId = request.getParameter(JSPParameter.FLIGHT_ID);
 		try {
-			prepareSession(session, flightId);
-			return getReturnedAddress(session);
+			prepareSession(session, request.getParameter(JSPParameter.FLIGHT_ID));
+			address = getReturnedAddress(session);
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return new ShowAllFlightsCommand().execute(request, response);
+			address = new ShowAllFlightsCommand().execute(request, response);
 		}
+		return address;
 	}
 	
 	private void prepareSession(HttpSession session, String flightId) throws ServiceException {
@@ -40,7 +42,7 @@ public class RedirectToCreateTicketPageCommand implements Command {
 	}
 	
 	private String getReturnedAddress(HttpSession session) {
-		if (session.getAttribute(Attribute.USER.toString()) == null) {
+		if (session.getAttribute(Attribute.USER_ROLE.toString()) == Role.GUEST) {
 			session.setAttribute(Attribute.PAGE_FROM.toString(), Page.CREATE_TICKET);
 			return Page.SIGN_IN.getAddress();
 		}

@@ -40,9 +40,9 @@ public class CityDAOImpl implements CityDAO {
 	private static final String SELECT_ALL_CITIES_QUERY = " SELECT id, name, country_name " + " FROM city "
 			+ " ORDER BY country_name, name";
 
-	private static final int RESULT_SELECT_ALL_CITIES_QUERY_ID_INDEX = 1;
-	private static final int RESULT_SELECT_ALL_CITIES_QUERY_NAME_INDEX = 2;
-	private static final int RESULT_SELECT_ALL_CITIES_QUERY_COUNTRY_NAME_INDEX = 3;
+	private static final String RESULT_SELECT_ALL_CITIES_QUERY_ID_INDEX = "id";
+	private static final String RESULT_SELECT_ALL_CITIES_QUERY_NAME_INDEX = "name";
+	private static final String RESULT_SELECT_ALL_CITIES_QUERY_COUNTRY_NAME_INDEX = "country_name";
 
 	private static final int LAST_INSERTED_INDEX = 1;
 
@@ -51,10 +51,6 @@ public class CityDAOImpl implements CityDAO {
 	private ConnectionPool pool = ConnectionPool.getInstance();
 
 	private CityDAOImpl() {
-	}
-
-	private static final class CityDAOImplInstanceHolder {
-		private static final CityDAOImpl INSTANCE = new CityDAOImpl();
 	}
 
 	public static CityDAOImpl getInstance() {
@@ -112,6 +108,10 @@ public class CityDAOImpl implements CityDAO {
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
+	
+	private static final class CityDAOImplInstanceHolder {
+		private static final CityDAOImpl INSTANCE = new CityDAOImpl();
+	}
 
 	private void setIdToNewAddedCity(City city, Statement statement) throws SQLException {
 		city.setId(getIdFromPreparedStatement(statement));
@@ -140,11 +140,9 @@ public class CityDAOImpl implements CityDAO {
 	}
 
 	private City buildCity(ResultSet resultSet) throws SQLException {
-		CityBuilder builder = new CityBuilder();
-		builder.setCityId(resultSet.getInt(RESULT_SELECT_ALL_CITIES_QUERY_ID_INDEX));
-		builder.setCityName(resultSet.getString(RESULT_SELECT_ALL_CITIES_QUERY_NAME_INDEX));
-		builder.setCityCountry(resultSet.getString(RESULT_SELECT_ALL_CITIES_QUERY_COUNTRY_NAME_INDEX));
-		return builder.getCity();
+		return new CityBuilder().setCityId(resultSet.getInt(RESULT_SELECT_ALL_CITIES_QUERY_ID_INDEX))
+				.setCityName(resultSet.getString(RESULT_SELECT_ALL_CITIES_QUERY_NAME_INDEX))
+				.setCityCountry(resultSet.getString(RESULT_SELECT_ALL_CITIES_QUERY_COUNTRY_NAME_INDEX)).getCity();
 	}
 
 	private Set<City> getCitiesFromResultSet(ResultSet resultSet) throws SQLException {

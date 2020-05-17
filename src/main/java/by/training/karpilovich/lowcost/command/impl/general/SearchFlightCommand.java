@@ -6,7 +6,6 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
@@ -22,18 +21,20 @@ public class SearchFlightCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		HttpSession session = request.getSession();
 		Page page = null;
 		try {
-			List<Flight> flights = findFlights(request);
-			request.setAttribute(Attribute.FLIGHTS.toString(), flights);
-			session.setAttribute(Attribute.PASSENGER_QUANTITY.toString(), Integer.parseInt(request.getParameter(JSPParameter.QUANTITY)));
+			setFlightsToRequest(request, findFlights(request));
+			setPassengerQuantityToSession(request);
 			page = Page.SHOW_FLIGHTS;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
 			page = Page.DEFAULT;
 		}
 		return page.getAddress();
+	}
+
+	private void setFlightsToRequest(HttpServletRequest request, List<Flight> flights) {
+		request.setAttribute(Attribute.FLIGHTS.toString(), flights);
 	}
 
 	private List<Flight> findFlights(HttpServletRequest request) throws ServiceException {
@@ -45,5 +46,10 @@ public class SearchFlightCommand implements Command {
 		City to = getCityService().getCityById(cityTo);
 		FlightService flightService = getFlightService();
 		return flightService.searchFlights(from, to, date, quantity);
+	}
+
+	private void setPassengerQuantityToSession(HttpServletRequest request) {
+		request.getSession().setAttribute(Attribute.PASSENGER_QUANTITY.toString(),
+				Integer.parseInt(request.getParameter(JSPParameter.QUANTITY)));
 	}
 }

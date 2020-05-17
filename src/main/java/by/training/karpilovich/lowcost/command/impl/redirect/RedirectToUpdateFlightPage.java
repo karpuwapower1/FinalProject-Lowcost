@@ -18,14 +18,18 @@ public class RedirectToUpdateFlightPage implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String flightId = request.getParameter(JSPParameter.FLIGHT_ID);
+		Page page = null;
 		try {
-			Flight flight = getFlightService().getFlightById(flightId);
-			request.setAttribute(Attribute.FLIGHT.toString(), flight);
-			return Page.UPDATE_FLIGHT.getAddress();
+			request.setAttribute(Attribute.FLIGHT.toString(), getFlight(request.getParameter(JSPParameter.FLIGHT_ID)));
+			page = Page.UPDATE_FLIGHT;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.SHOW_FLIGHTS.getAddress();
+			page = Page.SHOW_FLIGHTS;
 		}
+		return page.getAddress();
+	}
+
+	private Flight getFlight(String id) throws ServiceException {
+		return getFlightService().getFlightById(id);
 	}
 }

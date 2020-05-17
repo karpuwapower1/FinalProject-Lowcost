@@ -9,7 +9,7 @@ import by.training.karpilovich.lowcost.entity.Ticket;
 public class TicketBuilder {
 
 	private Ticket ticket;
-	
+
 	public TicketBuilder() {
 		ticket = new Ticket();
 	}
@@ -18,47 +18,58 @@ public class TicketBuilder {
 		return ticket;
 	}
 
-	public void setNumber(long number) {
+	public TicketBuilder setNumber(long number) {
 		ticket.setNumber(number);
+		return this;
 	}
-	
-	public void setEmail(String email) {
+
+	public TicketBuilder setEmail(String email) {
 		ticket.setEmail(email);
+		return this;
 	}
 
-	public void setFlight(Flight flight) {
+	public TicketBuilder setFlight(Flight flight) {
 		ticket.setFlight(flight);
-	}
-	
-	public void setPurshaseDate(Calendar purchaseDate) {
-		ticket.setPurchaseDate(purchaseDate);
-	}
-	
-	public void setPrice(BigDecimal price) {
-		ticket.setPrice(price);
-	}
-	
-	public void setPassengerFirstName(String firstName) {
-		ticket.setPassengerFirstName(firstName);
+		return this;
 	}
 
-	public void setPassengerLastName(String lastName) {
+	public TicketBuilder setPurshaseDate(Calendar purchaseDate) {
+		ticket.setPurchaseDate(purchaseDate);
+		return this;
+	}
+
+	public TicketBuilder setPrice(BigDecimal price) {
+		ticket.setPrice(price);
+		return this;
+	}
+
+	public TicketBuilder setPassengerFirstName(String firstName) {
+		ticket.setPassengerFirstName(firstName);
+		return this;
+	}
+
+	public TicketBuilder setPassengerLastName(String lastName) {
 		ticket.setPassengerLastName(lastName);
+		return this;
 	}
-	
-	public void setPassengerPassportNumber(String number) {
+
+	public TicketBuilder setPassengerPassportNumber(String number) {
 		ticket.setPassengerPassportNumber(number);
+		return this;
 	}
-	
-	public void setOverweightLuggagePrice(BigDecimal price) {
+
+	public TicketBuilder setOverweightLuggagePrice(BigDecimal price) {
 		ticket.setOverweightLuggagePrice(price);
+		return this;
 	}
-	
-	public void setLuggageQuantity(int quantity) {
+
+	public TicketBuilder setLuggageQuantity(int quantity) {
 		ticket.setLuggageQuantity(quantity);
+		return this;
 	}
-	
-	public void setPrimaryBoardingRight(boolean right) {
+
+	public TicketBuilder setPrimaryBoardingRight(boolean right) {
 		ticket.setPrimaryBoargingRight(right);
+		return this;
 	}
 }

@@ -45,11 +45,11 @@ public class TicketPurchaseFilter implements Filter {
 		if (commandType.isPresent() && isTypeSpecialCommand(commandType.get())) {
 			AtomicBoolean flag = takeFlagFromSession(session);
 			if (flag.get()) {
-				createPurchaseTimeChecker(session);
+				createPurchaseTimeChecker(httpRequest);
 			} else {
 				unbookFlightPlaces(session);
 				removeSessionAttributes(session);
-				request.getRequestDispatcher(Page.DEFAULT.getAddress()).forward(httpRequest, httpResponse);
+				httpRequest.getRequestDispatcher(Page.DEFAULT.getAddress()).forward(httpRequest, httpResponse);
 				return;
 			}
 		}
@@ -90,10 +90,10 @@ public class TicketPurchaseFilter implements Filter {
 		}
 	}
 
-	private void createPurchaseTimeChecker(HttpSession session) {
+	private void createPurchaseTimeChecker(HttpServletRequest request) {
 		CountDownLatch countDownLatch = new CountDownLatch(COUNT_DOWN_LATCH_COUNT);
-		session.setAttribute(Attribute.COUNT_DOWN_LATCH.toString(), countDownLatch);
-		new Thread(new BuyTicketInterruptThread(session)).start();
+		request.setAttribute(Attribute.COUNT_DOWN_LATCH.toString(), countDownLatch);
+		new Thread(new BuyTicketInterruptThread(request)).start();
 	}
 
 	private void removeSessionAttributes(HttpSession session) {
@@ -109,9 +109,9 @@ public class TicketPurchaseFilter implements Filter {
 		private CountDownLatch countDownlatch;
 		AtomicBoolean flag;
 
-		private BuyTicketInterruptThread(HttpSession session) {
-			countDownlatch = (CountDownLatch) session.getAttribute(Attribute.COUNT_DOWN_LATCH.toString());
-			flag = (AtomicBoolean) session.getAttribute(Attribute.BUYING_FLAG.toString());
+		private BuyTicketInterruptThread(HttpServletRequest request) {
+			countDownlatch = (CountDownLatch) request.getAttribute(Attribute.COUNT_DOWN_LATCH.toString());
+			flag = (AtomicBoolean) request.getSession().getAttribute(Attribute.BUYING_FLAG.toString());
 		}
 
 		@Override
@@ -123,7 +123,6 @@ public class TicketPurchaseFilter implements Filter {
 				Thread.currentThread().interrupt();
 			} finally {
 				flag.set(await);
-				LOGGER.debug(flag);
 			}
 		}
 	}

@@ -14,15 +14,18 @@ public class CityBuilder {
 		return city;
 	}
 
-	public void setCityId(int id) {
+	public CityBuilder setCityId(int id) {
 		city.setId(id);
+		return this;
 	}
 
-	public void setCityName(String name) {
+	public CityBuilder setCityName(String name) {
 		city.setName(name);
+		return this;
 	}
 
-	public void setCityCountry(String country) {
+	public CityBuilder setCityCountry(String country) {
 		city.setCountry(country);
+		return this;
 	}
 }

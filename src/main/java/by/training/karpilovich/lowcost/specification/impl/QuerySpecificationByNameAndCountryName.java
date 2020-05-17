@@ -11,17 +11,15 @@ public class QuerySpecificationByNameAndCountryName implements Specification {
 
 	private String name;
 	private String countryName;
-	
-	
+
 	private QuerySpecificationByNameAndCountryName(String name, String countryName) {
 		this.name = name;
 		this.countryName = countryName;
 	}
-	
+
 	public static Specification getInstance(String name, String countryName) {
 		return new QuerySpecificationByNameAndCountryName(name, countryName);
 	}
-
 
 	@Override
 	public SortedSet<City> specify(SortedSet<City> cities) {

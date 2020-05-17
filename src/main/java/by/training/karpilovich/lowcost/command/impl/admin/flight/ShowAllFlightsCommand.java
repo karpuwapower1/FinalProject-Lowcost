@@ -6,29 +6,34 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.Page;
 import by.training.karpilovich.lowcost.entity.Flight;
 import by.training.karpilovich.lowcost.exception.ServiceException;
-import by.training.karpilovich.lowcost.service.FlightService;
 
 public class ShowAllFlightsCommand implements Command {
 	
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		FlightService flightService = getFlightService();
-		HttpSession session = request.getSession();
+		Page page = null;
 		try {
-			List<Flight> flights = flightService.getAllFlights();
-			session.setAttribute(Attribute.FLIGHTS.toString(), flights);
-			return Page.SHOW_FLIGHTS.getAddress();
+			setFlightsToRequest(request, getAllFlights());
+			page = Page.SHOW_FLIGHTS;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.DEFAULT.getAddress();
+			page = Page.DEFAULT;
 		}
+		return page.getAddress();
+	}
+	
+	private void setFlightsToRequest(HttpServletRequest request, List<Flight> flights) {
+		request.setAttribute(Attribute.FLIGHTS.toString(), flights);
+	}
+	
+	private List<Flight> getAllFlights() throws ServiceException {
+		return getFlightService().getAllFlights();
 	}
 }

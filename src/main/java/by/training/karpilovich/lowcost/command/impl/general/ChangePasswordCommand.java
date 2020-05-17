@@ -19,16 +19,18 @@ public class ChangePasswordCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		Page page = null;
 		try {
-			changeUserpassword(request);
-			return ((Page) request.getSession().getAttribute(Attribute.PAGE_FROM.toString())).getAddress();
+			changeUserPassword(request);
+			page = (Page) request.getSession().getAttribute(Attribute.PAGE_FROM.toString());
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.CHANGE_PASSWORD.getAddress();
+			page = Page.CHANGE_PASSWORD;
 		}
+		return page.getAddress();
 	}
 
-	void changeUserpassword(HttpServletRequest request) throws ServiceException {
+	void changeUserPassword(HttpServletRequest request) throws ServiceException {
 		String password = request.getParameter(JSPParameter.PASSWORD);
 		String repeatPassword = request.getParameter(JSPParameter.REPEAT_PASSWORD);
 		HttpSession session = request.getSession();

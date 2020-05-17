@@ -30,8 +30,7 @@ public class PlaceCoefficientDAOImpl implements PlaceCoefficientDAO {
 
 	private static final Logger LOGGER = LogManager.getLogger(PlaceCoefficientDAOImpl.class);
 	
-	private static final class PlaceCoefficientDAOImplInstanceHolder {
-		private static final PlaceCoefficientDAOImpl INSTATNCE = new PlaceCoefficientDAOImpl();
+	private PlaceCoefficientDAOImpl() {
 	}
 
 	public static PlaceCoefficientDAOImpl getInstance() {
@@ -60,6 +59,10 @@ public class PlaceCoefficientDAOImpl implements PlaceCoefficientDAO {
 			LOGGER.error("Error while adding coefficients ", e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
+	}
+	
+	private static final class PlaceCoefficientDAOImplInstanceHolder {
+		private static final PlaceCoefficientDAOImpl INSTATNCE = new PlaceCoefficientDAOImpl();
 	}
 
 	private void prepareAddPlaceCoefficientStatement(PreparedStatement statement, Set<PlaceCoefficient> coefficients,

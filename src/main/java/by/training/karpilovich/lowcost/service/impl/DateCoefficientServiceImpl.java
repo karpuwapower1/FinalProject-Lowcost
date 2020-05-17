@@ -33,10 +33,6 @@ public class DateCoefficientServiceImpl implements DateCoefficientService {
 	private DateCoefficientServiceImpl() {
 	}
 
-	private static final class DateCoefficientServiceImpllInstanceHolder {
-		private static final DateCoefficientServiceImpl INSTANCE = new DateCoefficientServiceImpl();
-	}
-
 	public static DateCoefficientServiceImpl getInstance() {
 		return DateCoefficientServiceImpllInstanceHolder.INSTANCE;
 	}
@@ -92,6 +88,10 @@ public class DateCoefficientServiceImpl implements DateCoefficientService {
 		return calendar;
 	}
 
+	private static final class DateCoefficientServiceImpllInstanceHolder {
+		private static final DateCoefficientServiceImpl INSTANCE = new DateCoefficientServiceImpl();
+	}
+
 	private void checkAndFillDateCoefficients(Flight flight, SortedSet<DateCoefficient> coefficients) {
 		Optional<Calendar> optional = checkIfDateCoefficientFilled(flight, coefficients);
 		if (optional.isPresent()) {
@@ -112,19 +112,12 @@ public class DateCoefficientServiceImpl implements DateCoefficientService {
 	}
 
 	private DateCoefficient buildDateCoefficient(Calendar from, Calendar to, BigDecimal value) {
-		DateCoefficientBuilder builder = new DateCoefficientBuilder();
-		builder.setFrom(from);
-		builder.setTo(to);
-		builder.setValue(value);
-		return builder.getCoefficient();
+		return new DateCoefficientBuilder().setFrom(from).setTo(to).setValue(value).getCoefficient();
 	}
 
 	private Validator createDateCoefficientValidator(Calendar maxValue, Calendar from, Calendar to, BigDecimal value) {
-		Validator validator = new DateCoefficientBoundFromValidator(from, maxValue);
-		Validator boundToValidator = new DateCoefficientBoundToValidator(to, from, maxValue);
-		Validator coefficientValueValidator = new CoefficientValueValidator(value);
-		validator.setNext(boundToValidator);
-		boundToValidator.setNext(coefficientValueValidator);
-		return validator;
+		return new DateCoefficientBoundFromValidator(from, maxValue)
+				.setNext(new DateCoefficientBoundToValidator(to, from, maxValue))
+				.setNext(new CoefficientValueValidator(value));
 	}
 }

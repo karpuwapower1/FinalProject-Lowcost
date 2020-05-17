@@ -22,7 +22,7 @@ CREATE PROCEDURE add_ticket ( IN `user_email` varchar(255), IN `price` decimal,
         COMMIT;
 		END //
         
-     DELIMITER //    
+     DELIMITER / 
 		DROP PROCEDURE IF EXISTS lowcost_schema.remove_ticket;
 		CREATE PROCEDURE remove_ticket (IN `deleted_ticket_number` bigint, IN `user_email` varchar(255), IN `flight_id` INT, 
 								OUT is_deleted tinyint) 
@@ -42,4 +42,23 @@ CREATE PROCEDURE add_ticket ( IN `user_email` varchar(255), IN `price` decimal,
 				SET is_deleted=false;
 		END CASE;
         COMMIT;
-		END //
+		END /
+        
+        
+        DELIMITER ///
+        DROP PROCEDURE IF EXISTS lowcost_schema.remove_flight;
+ CREATE PROCEDURE remove_flight (IN `deleted_flight_id` int) 
+         BEGIN
+         START TRANSACTION;
+         UPDATE airport_user SET balance_amount = balance_amount + (SELECT SUM(price) 
+    FROM ticket
+             GROUP BY user_email, flight_id
+             HAVING ticket.flight_id = deleted_flight_id AND ticket.user_email = airport_user.email)
+        WHERE airport_user.email IN (SELECT user_email FROM ticket WHERE ticket.flight_id = deleted_flight_id);
+      --   INSERT INTO transactions(`from_id`,  `ticket_number`, `date`, `amount`) 
+-- 					VALUES(SELECT user_email,  ticket_number, NOW(),  -ticket_price FROM ticket WHERE ticket.flight_id = deleted_flight_id); 
+         DELETE FROM ticket WHERE ticket.flight_id = deleted_flight_id;
+         DELETE FROM flight WHERE flight.id = deleted_flight_id;
+         COMMIT;
+   END  /// 
+       

@@ -25,16 +25,18 @@ public class AddPlaceCoefficientCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		String address = null;
 		HttpSession session = request.getSession();
 		SortedSet<PlaceCoefficient> coefficients = util.takePlaceCoefficientFromSession(session);
 		try {
 			addCoefficientToSet(request, coefficients);
 			session.setAttribute(Attribute.PLACE_COEFFICIENT.toString(), coefficients);
-			return Page.FLIGHT_PREVIEW.getAddress();
+			address = Page.FLIGHT_PREVIEW.getAddress();
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return new RedirectToAddPlaceCoefficientPageCommand().execute(request, response);
+			address = new RedirectToAddPlaceCoefficientPageCommand().execute(request, response);
 		}
+		return address;
 	}
 	
 	private void addCoefficientToSet(HttpServletRequest request, SortedSet<PlaceCoefficient> coefficients)

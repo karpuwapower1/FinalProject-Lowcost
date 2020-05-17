@@ -30,10 +30,6 @@ public class DateCoefficientDAOImpl implements DateCoefficientDAO {
 	private static final int ADD_COEFFICIENT_QUERY_VALUE_INDEX = 4;
 
 	private static final Logger LOGGER = LogManager.getLogger(DateCoefficientDAOImpl.class);
-	
-	private static final class DateCoefficientDAOImplInstanceHolder {
-		private static final DateCoefficientDAOImpl INSTATNCE = new DateCoefficientDAOImpl();
-	}
 
 	public static DateCoefficientDAOImpl getInstance() {
 		return DateCoefficientDAOImplInstanceHolder.INSTATNCE;
@@ -61,6 +57,10 @@ public class DateCoefficientDAOImpl implements DateCoefficientDAO {
 			LOGGER.error("Error while adding coefficients ", e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
+	}
+	
+	private static final class DateCoefficientDAOImplInstanceHolder {
+		private static final DateCoefficientDAOImpl INSTATNCE = new DateCoefficientDAOImpl();
 	}
 
 	private void prepareAddDateCoefficientStatement(PreparedStatement statement, Set<DateCoefficient> coefficients,

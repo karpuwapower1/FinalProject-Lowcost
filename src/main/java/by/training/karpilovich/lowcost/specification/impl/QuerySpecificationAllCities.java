@@ -18,5 +18,4 @@ public class QuerySpecificationAllCities implements Specification {
 	public SortedSet<City> specify(SortedSet<City> cities) {
 		return cities;
 	}
-
 }

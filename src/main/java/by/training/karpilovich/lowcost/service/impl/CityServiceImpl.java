@@ -38,10 +38,6 @@ public class CityServiceImpl implements CityService {
 	private CityServiceImpl() {
 	}
 
-	private static final class CityCerviceImplInstanceHolder {
-		private static final CityServiceImpl INSTANCE = new CityServiceImpl();
-	}
-
 	public static CityServiceImpl getInstance() {
 		return CityCerviceImplInstanceHolder.INSTANCE;
 	}
@@ -110,20 +106,17 @@ public class CityServiceImpl implements CityService {
 		}
 	}
 
+	private static final class CityCerviceImplInstanceHolder {
+		private static final CityServiceImpl INSTANCE = new CityServiceImpl();
+	}
+
 	private City buildCity(String name, String countryName) {
-		CityBuilder builder = new CityBuilder();
-		builder.setCityName(name);
-		builder.setCityCountry(countryName);
-		return builder.getCity();
+		return new CityBuilder().setCityName(name).setCityCountry(countryName).getCity();
 	}
 
 	private Validator getCityValidator(String name, String countryName) {
-		Validator nameValidator = new CityNameValidator(name);
-		Validator countryNameValidator = new CountryNameValidator(countryName);
-		Validator cityPresenceValidator = new CityAbsenceValidator(name, countryName);
-		nameValidator.setNext(countryNameValidator);
-		countryNameValidator.setNext(cityPresenceValidator);
-		return nameValidator;
+		return new CityNameValidator(name).setNext(new CountryNameValidator(countryName))
+				.setNext(new CityAbsenceValidator(name, countryName));
 	}
 
 	private City findCityById(int id) throws ServiceException, RepositoryException {

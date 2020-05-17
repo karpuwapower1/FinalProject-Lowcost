@@ -19,5 +19,4 @@ public class CountryNameValidator extends Validator {
 		}
 		continueValidate();
 	}
-
 }

@@ -19,47 +19,58 @@ public class FlightBuilder {
 		return flight;
 	}
 
-	public void setId(int id) {
+	public FlightBuilder setId(int id) {
 		flight.setId(id);
+		return this;
 	}
 
-	public void setAvailablePlaceQuantity(int places) {
+	public FlightBuilder setAvailablePlaceQuantity(int places) {
 		flight.setAvailablePlaceQuantity(places);
+		return this;
 	}
 
-	public void setPermittedLuggageWeight(int weight) {
+	public FlightBuilder setPermittedLuggageWeight(int weight) {
 		flight.setPermittedLuggageWeigth(weight);
+		return this;
 	}
 
-	public void setPrice(BigDecimal price) {
+	public FlightBuilder setPrice(BigDecimal price) {
 		flight.setPrice(price);
+		return this;
 	}
 
-	public void setDate(Calendar date) {
+	public FlightBuilder setDate(Calendar date) {
 		flight.setDate(date);
+		return this;
 	}
 
-	public void setFlightNumber(String number) {
+	public FlightBuilder setFlightNumber(String number) {
 		flight.setNumber(number);
+		return this;
 	}
 
-	public void setPlaneModel(Plane model) {
+	public FlightBuilder setPlaneModel(Plane model) {
 		flight.setPlaneModel(model);
+		return this;
 	}
 
-	public void setFrom(City from) {
+	public FlightBuilder setFrom(City from) {
 		flight.setFrom(from);
+		return this;
 	}
 
-	public void setTo(City to) {
+	public FlightBuilder setTo(City to) {
 		flight.setTo(to);
+		return this;
 	}
 
-	public void setPrimaryBoardingPrice(BigDecimal primaryBoardingPrice) {
+	public FlightBuilder setPrimaryBoardingPrice(BigDecimal primaryBoardingPrice) {
 		flight.setPrimaryBoardingPrice(primaryBoardingPrice);
+		return this;
 	}
-	
-	public void setOverweightLuggagePrice(BigDecimal price) {
+
+	public FlightBuilder setOverweightLuggagePrice(BigDecimal price) {
 		flight.setPriceForEveryKgOverweight(price);
+		return this;
 	}
 }

@@ -1,6 +1,7 @@
 package by.training.karpilovich.lowcost.command.impl.general;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -20,19 +21,20 @@ public class SignUpCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		HttpSession session = request.getSession();
+		Page page = null;
 		try {
-			User user = signupUser(request);
-			setAttribute(session, user);
-			getEmailSenderService().sendGreetingMessage(user.getEmail(), user.getFirstName(), user.getLastName(), response.getLocale());
-			return ((Page) session.getAttribute(Attribute.PAGE_FROM.toString())).getAddress();
+			User user = signUpUser(request);
+			setAttribute(request, user);
+			sendGreetingEmail(user, response.getLocale());
+			page = (Page) request.getSession().getAttribute(Attribute.PAGE_FROM.toString());
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.SIGN_UP.getAddress();
+			page = Page.SIGN_UP;
 		}
+		return page.getAddress();
 	}
 
-	private User signupUser(HttpServletRequest request) throws ServiceException {
+	private User signUpUser(HttpServletRequest request) throws ServiceException {
 		String email = request.getParameter(JSPParameter.EMAIL);
 		String password = request.getParameter(JSPParameter.PASSWORD);
 		String repeatedPassword = request.getParameter(JSPParameter.REPEAT_PASSWORD);
@@ -42,8 +44,13 @@ public class SignUpCommand implements Command {
 		return userService.signUp(email, password, repeatedPassword, firstName, lastName);
 	}
 
-	private void setAttribute(HttpSession session, User user) {
+	private void setAttribute(HttpServletRequest request, User user) {
+		HttpSession session = request.getSession();
 		session.setAttribute(Attribute.USER_ROLE.toString(), user.getRole());
 		session.setAttribute(Attribute.USER.toString(), user);
+	}
+
+	private void sendGreetingEmail(User user, Locale locale) {
+		getEmailSenderService().sendGreetingMessage(user.getEmail(), user.getFirstName(), user.getLastName(), locale);
 	}
 }

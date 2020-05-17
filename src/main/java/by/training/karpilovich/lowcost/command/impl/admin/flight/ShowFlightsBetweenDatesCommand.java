@@ -19,15 +19,24 @@ public class ShowFlightsBetweenDatesCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String from = request.getParameter(JSPParameter.BOUND_FROM);
-		String to = request.getParameter(JSPParameter.BOUND_TO);
+		Page page = null;
 		try {
-			List<Flight> flights = getFlightService().searchFlightsBetweenDates(from, to);
-			request.setAttribute(Attribute.FLIGHTS.toString(), flights);
-			return Page.SHOW_FLIGHTS.getAddress();
+			setFlightsToRequest(request, getFlightsBetweenDates(request));
+			page = Page.SHOW_FLIGHTS;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.CHOOSE_DATE_BOUNDS.getAddress();
+			page = Page.CHOOSE_DATE_BOUNDS;
 		}
+		return page.getAddress();
+	}
+
+	private void setFlightsToRequest(HttpServletRequest request, List<Flight> flights) {
+		request.setAttribute(Attribute.FLIGHTS.toString(), flights);
+	}
+
+	private List<Flight> getFlightsBetweenDates(HttpServletRequest request) throws ServiceException {
+		String from = request.getParameter(JSPParameter.BOUND_FROM);
+		String to = request.getParameter(JSPParameter.BOUND_TO);
+		return getFlightService().searchFlightsBetweenDates(from, to);
 	}
 }

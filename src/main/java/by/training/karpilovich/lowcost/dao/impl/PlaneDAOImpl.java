@@ -46,11 +46,7 @@ public class PlaneDAOImpl implements PlaneDAO {
 
 	private PlaneDAOImpl() {
 	}
-
-	private static final class PlaneDAOImplInstanceHolder {
-		private static final PlaneDAOImpl INSTANCE = new PlaneDAOImpl();
-	}
-
+	
 	public static PlaneDAOImpl getInstance() {
 		return PlaneDAOImplInstanceHolder.INSTANCE;
 	}
@@ -104,6 +100,11 @@ public class PlaneDAOImpl implements PlaneDAO {
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
 	}
+	
+	private static final class PlaneDAOImplInstanceHolder {
+		private static final PlaneDAOImpl INSTANCE = new PlaneDAOImpl();
+	}
+
 
 	private void prepareAddStatement(PreparedStatement statement, Plane plane) throws SQLException {
 		statement.setString(ADD_QUERY_MODEL_INDEX, plane.getModel());
@@ -131,9 +132,7 @@ public class PlaneDAOImpl implements PlaneDAO {
 	}
 
 	private Plane buildPlane(ResultSet resultSet) throws SQLException {
-		PlaneBuilder builder = new PlaneBuilder();
-		builder.setPlaneModel(resultSet.getString(RESULT_SELECT_PLANE_BY_MODEL_MODEL));
-		builder.setPlanePlaceQuantity(resultSet.getInt(RESULT_SELECT_PLANE_BY_MODEL_PLACE_QUANTITY));
-		return builder.getPlane();
+		return new PlaneBuilder().setPlaneModel(resultSet.getString(RESULT_SELECT_PLANE_BY_MODEL_MODEL))
+				.setPlanePlaceQuantity(resultSet.getInt(RESULT_SELECT_PLANE_BY_MODEL_PLACE_QUANTITY)).getPlane();
 	}
 }

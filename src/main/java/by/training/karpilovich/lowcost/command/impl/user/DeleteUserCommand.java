@@ -12,7 +12,6 @@ import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.Command;
 import by.training.karpilovich.lowcost.command.JSPParameter;
 import by.training.karpilovich.lowcost.command.Page;
-import by.training.karpilovich.lowcost.command.impl.redirect.RedirectToDefaultPageCommand;
 import by.training.karpilovich.lowcost.entity.Role;
 import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ServiceException;
@@ -22,20 +21,24 @@ public class DeleteUserCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		HttpSession session = request.getSession();
-		String repeatPassword = request.getParameter(JSPParameter.REPEAT_PASSWORD);
-		User user = (User) session.getAttribute(Attribute.USER.toString());
+		Page page = null;
 		try {
-			getUserService().deleteUser(user, repeatPassword);
+			deleteUser(request);
 			removeCookies(request.getCookies(), response);
-			session.invalidate();
-			HttpSession newSession = request.getSession();
-			newSession.setAttribute(Attribute.USER_ROLE.toString(), Role.GUEST);
-			return new RedirectToDefaultPageCommand().execute(request, response);
+			request.getSession().invalidate();
+			createNewSession(request);
+			page = Page.DEFAULT;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.DELETE_USER.getAddress();
+			page = Page.DELETE_USER;
 		}
+		return page.getAddress();
+	}
+
+	private void deleteUser(HttpServletRequest request) throws ServiceException {
+		String repeatPassword = request.getParameter(JSPParameter.REPEAT_PASSWORD);
+		User user = (User) request.getSession().getAttribute(Attribute.USER.toString());
+		getUserService().deleteUser(user, repeatPassword);
 	}
 
 	private void removeCookies(Cookie[] cookies, HttpServletResponse response) {
@@ -45,5 +48,11 @@ public class DeleteUserCommand implements Command {
 				response.addCookie(cookie);
 			}
 		}
+	}
+
+	private void createNewSession(HttpServletRequest request) throws ServiceException {
+		HttpSession newSession = request.getSession();
+		newSession.setAttribute(Attribute.USER_ROLE.toString(), Role.GUEST);
+		newSession.setAttribute(Attribute.CITIES.toString(), getCityService().getAllCities());
 	}
 }

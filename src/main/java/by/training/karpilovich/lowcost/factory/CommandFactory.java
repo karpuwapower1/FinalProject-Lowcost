@@ -145,7 +145,7 @@ public class CommandFactory {
 	private EnumSet<CommandType> initGuestsCommands() {
 		return EnumSet.of(CommandType.SIGN_IN, CommandType.SIGN_UP, CommandType.RESTORE_PASSWORD,
 				CommandType.SEARCH_FLIGHT, CommandType.SORT_FLIGHTS_BY_DEPARTURE_DATE,
-				CommandType.SORT_FLIGHTS_BY_TICKET_PRICE, CommandType.BUY_TICKET, CommandType.REDIRECT,
+				CommandType.SORT_FLIGHTS_BY_TICKET_PRICE, CommandType.CREATE_TICKET, CommandType.REDIRECT,
 				CommandType.CHANGE_LANGUAGE);
 	}
 

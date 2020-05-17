@@ -15,13 +15,17 @@ public class AddCityCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String cityName = request.getParameter(JSPParameter.CITY_NAME);
-		String countryName = request.getParameter(JSPParameter.COUNTRY);
 		try {
-			getCityService().addCity(cityName, countryName);
+			addCity(request);
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
 		}
 		return new ShowAllCitiesCommand().execute(request, response);
+	}
+
+	private void addCity(HttpServletRequest request) throws ServiceException {
+		String cityName = request.getParameter(JSPParameter.CITY_NAME);
+		String countryName = request.getParameter(JSPParameter.COUNTRY);
+		getCityService().addCity(cityName, countryName);
 	}
 }
