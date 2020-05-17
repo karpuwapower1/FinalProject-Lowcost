@@ -43,11 +43,7 @@ public class UserServiceImpl implements UserService {
 		Validator validator = getEmailAndPasswordValidator(email, password);
 		try {
 			validator.validate();
-			Optional<User> optional = userDAO.selectUserByEmaiAndPassword(email, password);
-			if (optional.isPresent()) {
-				return optional.get();
-			}
-			throw new ServiceException(MessageType.ILLEGAL_EMAIL_OR_PASSWORD_MESSAGE.getMessage());
+			return getUserFromOptional(userDAO.selectUserByEmaiAndPassword(email, password));
 		} catch (ValidatorException | DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -69,7 +65,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deleteUser(User user, String repeatedPassword) throws ServiceException {
-		checkUserOnNull(user);
+		serviceUtil.checkUserOnNull(user);
 		Validator passwordValidator = new PasswordMatchValidator(user.getPassword(), repeatedPassword);
 		try {
 			passwordValidator.validate();
@@ -92,7 +88,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User deposit(User user, String amount) throws ServiceException {
-		checkUserOnNull(user);
+		serviceUtil.checkUserOnNull(user);
 		BigDecimal additionalAmount = serviceUtil.takeBigDecimalFromString(amount);
 		Validator validator = new AmountValidator(additionalAmount);
 		try {
@@ -109,7 +105,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User changePassword(User user, String newPassword, String repeatNewPassword) throws ServiceException {
-		checkUserOnNull(user);
+		serviceUtil.checkUserOnNull(user);
 		try {
 			getPasswordValidator(newPassword, repeatNewPassword).validate();
 			User newUser = buildUser(user.getEmail(), newPassword, user.getFirstName(), user.getLastName(),
@@ -123,61 +119,45 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String getPasswordByEmail(String email) throws ServiceException {
-		Validator validator = new EmailValidator(email);
-		Validator emailPresenceValidator = new EmailPresenceValidator(email);
-		validator.setNext(emailPresenceValidator);
+		Validator validator = new EmailValidator(email).setNext(new EmailPresenceValidator(email));
 		try {
-			Optional<String> optional = userDAO.getUserPasswordByEmail(email);
-			if (optional.isPresent()) {
-				return optional.get();
-			}
-			throw new ServiceException(MessageType.ILLEGAL_EMAIL.getMessage());
-		} catch (DAOException e) {
+			validator.validate();
+			return getPasswordFromOptional(userDAO.getUserPasswordByEmail(email));
+		} catch (DAOException | ValidatorException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
 
-	private void checkUserOnNull(User user) throws ServiceException {
-		if (user == null) {
-			throw new ServiceException(MessageType.USER_IS_NULL.getMessage());
-		}
-	}
-
 	private Validator getUserValidator(String email, String password, String repeatPassword, String firstName) {
-		Validator validator = new EmailValidator(email);
-		Validator emailPresenceValidator = new EmailPresenceValidator(email);
-		Validator passwordValidator = new PasswordValidator(password);
-		Validator passwordMatchValidator = new PasswordMatchValidator(password, repeatPassword);
-		Validator nameValidator = new NameValidator(firstName);
-		validator.setNext(emailPresenceValidator);
-		emailPresenceValidator.setNext(passwordValidator);
-		passwordValidator.setNext(passwordMatchValidator);
-		passwordMatchValidator.setNext(nameValidator);
-		return validator;
+		return new EmailValidator(email).setNext(new EmailPresenceValidator(email))
+				.setNext(new PasswordValidator(password)).setNext(new PasswordMatchValidator(password, repeatPassword))
+				.setNext(new NameValidator(firstName));
 	}
 
 	private Validator getEmailAndPasswordValidator(String email, String password) {
-		Validator validator = new EmailValidator(email);
-		Validator passwordValidator = new PasswordValidator(password);
-		validator.setNext(passwordValidator);
-		return validator;
+		return new EmailValidator(email).setNext(new PasswordValidator(password));
+	}
+
+	private User getUserFromOptional(Optional<User> optional) throws ServiceException {
+		if (optional.isPresent()) {
+			return optional.get();
+		}
+		throw new ServiceException(MessageType.ILLEGAL_EMAIL_OR_PASSWORD_MESSAGE.getMessage());
 	}
 
 	private Validator getPasswordValidator(String password, String repeatPassword) {
-		Validator validator = new PasswordValidator(password);
-		Validator passwordMatchValidator = new PasswordMatchValidator(password, repeatPassword);
-		validator.setNext(passwordMatchValidator);
-		return validator;
+		return new PasswordValidator(password).setNext(new PasswordMatchValidator(password, repeatPassword));
 	}
 
 	private User buildUser(String email, String password, String firstName, String lastName, BigDecimal amount) {
-		UserBuilder builder = new UserBuilder();
-		builder.setUserEmail(email);
-		builder.setUserPassword(password);
-		builder.setUserFirstName(firstName);
-		builder.setUserLastName(lastName);
-		builder.setUserRole(Role.USER);
-		builder.setBalanceAmount(amount);
-		return builder.getUser();
+		return new UserBuilder().setUserEmail(email).setUserPassword(password).setUserFirstName(firstName)
+				.setUserLastName(lastName).setUserRole(Role.USER).setBalanceAmount(amount).getUser();
+	}
+
+	private String getPasswordFromOptional(Optional<String> optional) throws ServiceException {
+		if (optional.isPresent()) {
+			return optional.get();
+		}
+		throw new ServiceException(MessageType.ILLEGAL_EMAIL.getMessage());
 	}
 }

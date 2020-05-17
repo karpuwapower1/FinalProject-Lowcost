@@ -10,7 +10,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -122,7 +121,7 @@ public class FlightDAOImpl implements FlightDAO {
 	private static final String RESULT_SELECT_FLIGHT_CITY_TO_ID = "city_to_id";
 	private static final String RESULT_SELECT_FLIGHT_CITY_TO_NAME = "city_to_name";
 	private static final String RESULT_SELECT_FLIGHT_CITY_TO_COUNTRY = "country_to";
-	
+
 	private static final int LAST_INSERTED_ID = 1;
 
 	private static final Logger LOGGER = LogManager.getLogger(FlightDAOImpl.class);
@@ -306,10 +305,10 @@ public class FlightDAOImpl implements FlightDAO {
 	}
 
 	private void setIdToNewAddedFlight(Statement statement, Flight flight) throws SQLException {
-		flight.setId(getNeewAddedFlightId(statement));
+		flight.setId(getNewAddedFlightId(statement));
 	}
 
-	private int getNeewAddedFlightId(Statement statement) throws SQLException {
+	private int getNewAddedFlightId(Statement statement) throws SQLException {
 		try (ResultSet resultSet = statement.getGeneratedKeys()) {
 			resultSet.next();
 			return resultSet.getInt(LAST_INSERTED_ID);
@@ -333,42 +332,36 @@ public class FlightDAOImpl implements FlightDAO {
 	}
 
 	private Flight buildFlight(ResultSet resultSet) throws SQLException {
-		FlightBuilder builder = new FlightBuilder();
 		int flightId = resultSet.getInt(RESULT_SELECT_FLIGHT_FLIGHT_ID);
-		builder.setId(flightId);
-		builder.setFlightNumber(resultSet.getString(RESULT_SELECT_FLIGHT_FLIGHT_NUMBER));
-		builder.setDate(buildDate(resultSet.getTimestamp(RESULT_SELECT_FLIGHT_FLIGHT_DATE)));
-		builder.setPrice(resultSet.getBigDecimal(RESULT_SELECT_FLIGHT_PRICE));
-		builder.setPermittedLuggageWeight(resultSet.getInt(RESULT_SELECT_FLIGHT_DEFAULT_LUGGAGE));
-		builder.setAvailablePlaceQuantity(resultSet.getInt(RESULT_SELECT_FLIGHT_AVAILABLE_PLACES));
-		builder.setPrimaryBoardingPrice(resultSet.getBigDecimal(RESULT_SELECT_FLIGHT_PRIMARY_BOARDING_PRICE));
-		builder.setOverweightLuggagePrice(resultSet.getBigDecimal(RESULT_SELECT_FLIGHT_PRICE_FOR_OVERWEIGHT));
-		builder.setPlaneModel(buildPlane(resultSet));
-		builder.setFrom(buildCity(resultSet, RESULT_SELECT_FLIGHT_CITY_FROM_ID, RESULT_SELECT_FLIGHT_CITY_FROM_NAME,
-				RESULT_SELECT_FLIGHT_CITY_FROM_COUNTRY));
-		builder.setTo(buildCity(resultSet, RESULT_SELECT_FLIGHT_CITY_TO_ID, RESULT_SELECT_FLIGHT_CITY_TO_NAME,
-				RESULT_SELECT_FLIGHT_CITY_TO_COUNTRY));
-		return builder.getFlight();
+		return new FlightBuilder().setId(flightId)
+				.setFlightNumber(resultSet.getString(RESULT_SELECT_FLIGHT_FLIGHT_NUMBER))
+				.setDate(buildDate(resultSet.getTimestamp(RESULT_SELECT_FLIGHT_FLIGHT_DATE)))
+				.setPrice(resultSet.getBigDecimal(RESULT_SELECT_FLIGHT_PRICE))
+				.setPermittedLuggageWeight(resultSet.getInt(RESULT_SELECT_FLIGHT_DEFAULT_LUGGAGE))
+				.setAvailablePlaceQuantity(resultSet.getInt(RESULT_SELECT_FLIGHT_AVAILABLE_PLACES))
+				.setPrimaryBoardingPrice(resultSet.getBigDecimal(RESULT_SELECT_FLIGHT_PRIMARY_BOARDING_PRICE))
+				.setOverweightLuggagePrice(resultSet.getBigDecimal(RESULT_SELECT_FLIGHT_PRICE_FOR_OVERWEIGHT))
+				.setPlaneModel(buildPlane(resultSet))
+				.setFrom(buildCity(resultSet, RESULT_SELECT_FLIGHT_CITY_FROM_ID, RESULT_SELECT_FLIGHT_CITY_FROM_NAME,
+						RESULT_SELECT_FLIGHT_CITY_FROM_COUNTRY))
+				.setTo(buildCity(resultSet, RESULT_SELECT_FLIGHT_CITY_TO_ID, RESULT_SELECT_FLIGHT_CITY_TO_NAME,
+						RESULT_SELECT_FLIGHT_CITY_TO_COUNTRY))
+				.getFlight();
 	}
 
 	private Plane buildPlane(ResultSet resultSet) throws SQLException {
-		PlaneBuilder builder = new PlaneBuilder();
-		builder.setPlaneModel(resultSet.getString(RESULT_SELECT_FLIGHT_PLANE_MODEL));
-		builder.setPlanePlaceQuantity(resultSet.getInt(RESULT_SELECT_FLIGHT_PLANE_PASSENGER_QUANTITY));
-		return builder.getPlane();
+		return new PlaneBuilder().setPlaneModel(resultSet.getString(RESULT_SELECT_FLIGHT_PLANE_MODEL))
+				.setPlanePlaceQuantity(resultSet.getInt(RESULT_SELECT_FLIGHT_PLANE_PASSENGER_QUANTITY)).getPlane();
 	}
 
 	private City buildCity(ResultSet resultSet, String idColumn, String nameColumn, String countryColumn)
 			throws SQLException {
-		CityBuilder builder = new CityBuilder();
-		builder.setCityId(resultSet.getInt(idColumn));
-		builder.setCityName(resultSet.getString(nameColumn));
-		builder.setCityCountry(resultSet.getString(countryColumn));
-		return builder.getCity();
+		return new CityBuilder().setCityId(resultSet.getInt(idColumn)).setCityName(resultSet.getString(nameColumn))
+				.setCityCountry(resultSet.getString(countryColumn)).getCity();
 	}
 
 	private Calendar buildDate(Timestamp timestamp) {
-		Calendar calendar = new GregorianCalendar();
+		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(timestamp.getTime());
 		return calendar;
 	}

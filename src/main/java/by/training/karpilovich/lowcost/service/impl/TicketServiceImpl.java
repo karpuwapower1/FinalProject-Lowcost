@@ -128,11 +128,7 @@ public class TicketServiceImpl implements TicketService {
 	public Ticket getTicketByNumber(String ticketNumber) throws ServiceException {
 		long number = serviceUtil.takeLongFromString(ticketNumber);
 		try {
-			Optional<Ticket> ticket = ticketDAO.getTicketByNumber(number);
-			if (ticket.isPresent()) {
-				return ticket.get();
-			}
-			throw new ServiceException(MessageType.NO_SUCH_TICKET.getMessage());
+			return getTicketFromoptional(ticketDAO.getTicketByNumber(number));
 		} catch (DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -181,39 +177,33 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	private Validator createTicketValidator(Ticket ticket) {
-		Validator validator = new BuyerDataValidator(ticket.getEmail(), ticket.getPassengerFirstName(),
-				ticket.getPassengerLastName(), ticket.getPassengerPassportNumber(), ticket.getLuggageQuantity());
-		Validator flightValidator = new FlightNumberAndDateValidator(ticket.getFlight());
-		Validator priceValidator = new PriceValidator(ticket.getPrice());
-		Validator luggagePriceValidator = new LuggagePriceValidator(ticket.getOverweightLuggagePrice());
-		validator.setNext(flightValidator);
-		flightValidator.setNext(priceValidator);
-		priceValidator.setNext(luggagePriceValidator);
-		return validator;
+		return new BuyerDataValidator(ticket.getEmail(), ticket.getPassengerFirstName(), ticket.getPassengerLastName(),
+				ticket.getPassengerPassportNumber(), ticket.getLuggageQuantity())
+						.setNext(new FlightNumberAndDateValidator(ticket.getFlight()))
+						.setNext(new PriceValidator(ticket.getPrice()))
+						.setNext(new LuggagePriceValidator(ticket.getOverweightLuggagePrice()));
 	}
 
 	private Ticket buildTicket(User user, Flight flight, String firstName, String lastName, String passportNumber,
 			int luggageQuantity, boolean primaryBoardingRight) {
-		TicketBuilder builder = new TicketBuilder();
-		builder.setFlight(flight);
-		builder.setEmail(user.getEmail());
-		builder.setPassengerFirstName(firstName);
-		builder.setPassengerLastName(lastName);
-		builder.setPassengerPassportNumber(passportNumber);
-		builder.setLuggageQuantity(luggageQuantity);
-		BigDecimal overweightLuggagePrice = BigDecimal.ZERO;
-		if (flight.getPermittedLuggageWeigth() < luggageQuantity) {
-			overweightLuggagePrice = flight.getPriceForEveryKgOverweight()
-					.multiply(new BigDecimal(luggageQuantity - flight.getPermittedLuggageWeigth()));
-		}
-		builder.setOverweightLuggagePrice(overweightLuggagePrice);
-		BigDecimal price = BigDecimal.valueOf(flight.getPrice().doubleValue());
-		if (primaryBoardingRight) {
-			price = price.add(flight.getPrimaryBoardingPrice());
-		}
-		builder.setPrice(price);
-		builder.setPrimaryBoardingRight(primaryBoardingRight);
-		return builder.getTicket();
+		return new TicketBuilder().setFlight(flight).setEmail(user.getEmail()).setPassengerFirstName(firstName)
+				.setPassengerLastName(lastName).setPassengerPassportNumber(passportNumber)
+				.setLuggageQuantity(luggageQuantity)
+				.setPrice(countTicketPrice(flight.getPrice(), primaryBoardingRight, flight.getPrimaryBoardingPrice()))
+				.setOverweightLuggagePrice(countPriceForOverweigthLuggage(flight.getPermittedLuggageWeigth(),
+						luggageQuantity, flight.getPriceForEveryKgOverweight()))
+				.setPrimaryBoardingRight(primaryBoardingRight).getTicket();
+	}
+
+	private BigDecimal countPriceForOverweigthLuggage(int permittedLuggage, int passengerLuggage,
+			BigDecimal priceForKgOverweight) {
+		return permittedLuggage < passengerLuggage
+				? priceForKgOverweight.multiply(new BigDecimal(passengerLuggage - permittedLuggage))
+				: BigDecimal.ZERO;
+	}
+
+	private BigDecimal countTicketPrice(BigDecimal price, boolean primaryBoarding, BigDecimal primaryBoardingPrice) {
+		return primaryBoarding ? price.add(primaryBoardingPrice) : price;
 	}
 
 	private Map<Ticket, BigDecimal> createTicketAndPriceMap(List<Ticket> tickets) {
@@ -229,11 +219,18 @@ public class TicketServiceImpl implements TicketService {
 			throw new ServiceException(MessageType.INSUFFICIENT_FUNDS.getMessage());
 		}
 	}
-	
+
 	private void checkTicketDate(Ticket ticket) throws ServiceException {
 		if (ticket.getFlight().getDate().compareTo(new GregorianCalendar()) < 0) {
 			throw new ServiceException(MessageType.TICKET_CAN_NOT_BE_RETURNED.getMessage());
 		}
+	}
+
+	private Ticket getTicketFromoptional(Optional<Ticket> optional) throws ServiceException {
+		if (optional.isPresent()) {
+			return optional.get();
+		}
+		throw new ServiceException(MessageType.NO_SUCH_TICKET.getMessage());
 	}
 
 	private class FlightCache {

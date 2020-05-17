@@ -24,23 +24,30 @@ public class AddFlightCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		String address = null;
+		try {
+			addFlightAndCoefficients(request);
+			removeAttributes(request);
+			address = new ShowAllFlightsCommand().execute(request, response);
+		} catch (ServiceException e) {
+			setErrorMessage(request, response.getLocale(), e.getMessage());
+			address = Page.FLIGHT_PREVIEW.getAddress();
+		}
+		return address;
+	}
+
+	private void addFlightAndCoefficients(HttpServletRequest request) throws ServiceException {
 		HttpSession session = request.getSession();
 		Flight flight = (Flight) session.getAttribute(Attribute.FLIGHT.toString());
 		SortedSet<DateCoefficient> dateCoefficients = util.takeDateCoefficientFromSession(session);
 		SortedSet<PlaceCoefficient> placeCoefficients = util.takePlaceCoefficientFromSession(session);
-		try {
-			getFlightService().addFlight(flight);
-			getDateCoefficientService().saveCoefficients(flight, dateCoefficients);
-			getPlaceCoefficientService().saveCoefficients(flight, placeCoefficients);
-			removeSessionAttribute(session);
-			return new ShowAllFlightsCommand().execute(request, response);
-		} catch (ServiceException e) {
-			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.FLIGHT_PREVIEW.getAddress();
-		}
+		getFlightService().addFlight(flight);
+		getDateCoefficientService().saveCoefficients(flight, dateCoefficients);
+		getPlaceCoefficientService().saveCoefficients(flight, placeCoefficients);
 	}
 
-	private void removeSessionAttribute(HttpSession session) {
+	private void removeAttributes(HttpServletRequest request) {
+		HttpSession session = request.getSession();
 		session.removeAttribute(Attribute.FLIGHT.toString());
 		session.removeAttribute(Attribute.DATE_COEFFICIENT.toString());
 		session.removeAttribute(Attribute.PLACE_COEFFICIENT.toString());

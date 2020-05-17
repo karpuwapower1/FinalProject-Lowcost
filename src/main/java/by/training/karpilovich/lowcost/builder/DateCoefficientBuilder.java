@@ -8,27 +8,31 @@ import by.training.karpilovich.lowcost.entity.DateCoefficient;
 public class DateCoefficientBuilder {
 
 	private DateCoefficient coefficient;
-	
+
 	public DateCoefficientBuilder() {
 		coefficient = new DateCoefficient();
 	}
-	
-	public void setFlightId(int flightId) {
+
+	public DateCoefficientBuilder setFlightId(int flightId) {
 		coefficient.setFlightId(flightId);
+		return this;
 	}
-	
-	public void setFrom(Calendar from) {
+
+	public DateCoefficientBuilder setFrom(Calendar from) {
 		coefficient.setFrom(from);
+		return this;
 	}
-	
-	public void setTo(Calendar to) {
+
+	public DateCoefficientBuilder setTo(Calendar to) {
 		coefficient.setTo(to);
+		return this;
 	}
-	
-	public void setValue(BigDecimal value) {
+
+	public DateCoefficientBuilder setValue(BigDecimal value) {
 		coefficient.setValue(value);
+		return this;
 	}
-	
+
 	public DateCoefficient getCoefficient() {
 		return coefficient;
 	}

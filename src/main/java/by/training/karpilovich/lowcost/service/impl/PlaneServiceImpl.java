@@ -70,29 +70,25 @@ public class PlaneServiceImpl implements PlaneService {
 		Validator modelValidator = new ModelValidator(model);
 		try {
 			modelValidator.validate();
-			Optional<Plane> optional = planeDAO.getPlaneByModelName(model);
-			if (optional.isPresent()) {
-				return optional.get();
-			}
-			throw new ServiceException(MessageType.NO_SUCH_PLANE_MODEL.getMessage());
+			return getPlaneFromOptional(planeDAO.getPlaneByModelName(model));
 		} catch (ValidatorException | DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
 
 	private Plane buildPlane(String model, int placeQuantity) {
-		PlaneBuilder builder = new PlaneBuilder();
-		builder.setPlaneModel(model);
-		builder.setPlanePlaceQuantity(placeQuantity);
-		return builder.getPlane();
+		return new PlaneBuilder().setPlaneModel(model).setPlanePlaceQuantity(placeQuantity).getPlane();
 	}
 
 	private Validator createPlaneValidator(String model, int placeQuantity) {
-		Validator validator = new ModelValidator(model);
-		Validator modelAbsenceValidator = new ModelAbsenceValidator(model);
-		Validator placeQuantityVaildator = new PlaceQuantityValidator(placeQuantity);
-		validator.setNext(modelAbsenceValidator);
-		modelAbsenceValidator.setNext(placeQuantityVaildator);
-		return validator;
+		return new ModelValidator(model).setNext(new ModelAbsenceValidator(model))
+				.setNext(new PlaceQuantityValidator(placeQuantity));
+	}
+
+	private Plane getPlaneFromOptional(Optional<Plane> optional) throws ServiceException {
+		if (optional.isPresent()) {
+			return optional.get();
+		}
+		throw new ServiceException(MessageType.NO_SUCH_PLANE_MODEL.getMessage());
 	}
 }

@@ -80,7 +80,7 @@
 							</td>
 						</c:when>
 
-						<c:otherwise>
+						<c:when test="${USER_ROLE == 'USER' }">
 							<td>
 								<form action="lowcost" name="action" method="post">
 									<input type="hidden" name="from_page" value="${page}" /> <input
@@ -91,7 +91,7 @@
 									</button>
 								</form>
 							</td>
-						</c:otherwise>
+						</c:when>
 						</c:choose>
 					</tr>
 				</c:forEach>

@@ -20,13 +20,15 @@ public class RedirectToCreateFlightPageCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		Page page = null;
 		try {
 			setAttributes(request);
-			return Page.CREATE_FLIGHT.getAddress();
+			page = Page.CREATE_FLIGHT;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.DEFAULT.getAddress();
+			page = Page.DEFAULT;
 		}
+		return page.getAddress();
 	}
 
 	private void setAttributes(HttpServletRequest request) throws ServiceException {

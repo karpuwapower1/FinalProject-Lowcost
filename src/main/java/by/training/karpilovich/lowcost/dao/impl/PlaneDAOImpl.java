@@ -131,9 +131,7 @@ public class PlaneDAOImpl implements PlaneDAO {
 	}
 
 	private Plane buildPlane(ResultSet resultSet) throws SQLException {
-		PlaneBuilder builder = new PlaneBuilder();
-		builder.setPlaneModel(resultSet.getString(RESULT_SELECT_PLANE_BY_MODEL_MODEL));
-		builder.setPlanePlaceQuantity(resultSet.getInt(RESULT_SELECT_PLANE_BY_MODEL_PLACE_QUANTITY));
-		return builder.getPlane();
+		return new PlaneBuilder().setPlaneModel(resultSet.getString(RESULT_SELECT_PLANE_BY_MODEL_MODEL))
+				.setPlanePlaceQuantity(resultSet.getInt(RESULT_SELECT_PLANE_BY_MODEL_PLACE_QUANTITY)).getPlane();
 	}
 }

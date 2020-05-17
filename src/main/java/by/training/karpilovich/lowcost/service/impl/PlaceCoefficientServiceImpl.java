@@ -93,7 +93,8 @@ public class PlaceCoefficientServiceImpl implements PlaceCoefficientService {
 	private void checkAndFillPlaceCoefficients(Flight flight, SortedSet<PlaceCoefficient> coefficients) {
 		Optional<Integer> optional = checkIfPlaceCoefficientFilled(flight, coefficients);
 		if (optional.isPresent()) {
-			coefficients.add(buildPlaceCoefficient(optional.get(), flight.getAvailablePlaceQuantity(), DEFAULT_COEFFICIENT_VALUE));
+			coefficients.add(buildPlaceCoefficient(optional.get(), flight.getAvailablePlaceQuantity(),
+					DEFAULT_COEFFICIENT_VALUE));
 		}
 	}
 
@@ -108,19 +109,12 @@ public class PlaceCoefficientServiceImpl implements PlaceCoefficientService {
 	}
 
 	private PlaceCoefficient buildPlaceCoefficient(int from, int to, BigDecimal value) {
-		PlaceCoefficientBuilder builder = new PlaceCoefficientBuilder();
-		builder.setFrom(from);
-		builder.setTo(to);
-		builder.setValue(value);
-		return builder.getCoefficient();
+		return new PlaceCoefficientBuilder().setFrom(from).setTo(to).setValue(value).getCoefficient();
 	}
 
 	private Validator createPlaceCoefficientValidator(int maxPlacesQuantity, int from, int to, BigDecimal value) {
-		Validator validator = new PlaceCoefficientBoundFromValidator(from, maxPlacesQuantity);
-		Validator boundToValidator = new PlaceCoefficientBoundToValidator(to, from, maxPlacesQuantity);
-		Validator coefficientValueValidator = new CoefficientValueValidator(value);
-		validator.setNext(boundToValidator);
-		boundToValidator.setNext(coefficientValueValidator);
-		return validator;
+		return new PlaceCoefficientBoundFromValidator(from, maxPlacesQuantity)
+				.setNext(new PlaceCoefficientBoundToValidator(to, from, maxPlacesQuantity))
+				.setNext(new CoefficientValueValidator(value));
 	}
 }

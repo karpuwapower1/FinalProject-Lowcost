@@ -19,13 +19,22 @@ public class ShowAllPlanesCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		Page page = null;
 		try {
-			List<Plane> planes = getPlaneService().getAllPlanes();
-			request.setAttribute(Attribute.PLANES.toString(), planes);
-			return Page.SHOW_PLANES.getAddress();
+			setPlanesToRequest(request, getAllPlanes());
+			page = Page.SHOW_PLANES;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.valueOf(request.getParameter(JSPParameter.FROM_PAGE.toUpperCase())).getAddress();
+			page = Page.valueOf(request.getParameter(JSPParameter.FROM_PAGE.toUpperCase()));
 		}
+		return page.getAddress();
+	}
+	
+	private void setPlanesToRequest(HttpServletRequest request, List<Plane> planes) {
+		request.setAttribute(Attribute.PLANES.toString(), planes);
+	}
+	
+	private List<Plane> getAllPlanes() throws ServiceException {
+		return getPlaneService().getAllPlanes();
 	}
 }

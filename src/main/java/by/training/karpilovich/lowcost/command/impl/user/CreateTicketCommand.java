@@ -26,24 +26,33 @@ public class CreateTicketCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		HttpSession session = request.getSession();
-		List<Ticket> tickets = util.takeTicketsFromSession(session);
-		int quantity = (Integer) session.getAttribute(Attribute.PASSENGER_QUANTITY.toString());
-		CountDownLatch countDownLatch = (CountDownLatch) session.getAttribute(Attribute.COUNT_DOWN_LATCH.toString());
-		countDownLatch.countDown();
+		countDown(request);
+		List<Ticket> reserved = util.takeTicketsFromSession(request.getSession());
+		Page page = null;
 		try {
-			Ticket ticket = createTicket(request);
-			tickets.add(ticket);
-			session.setAttribute(Attribute.TICKETS.toString(), tickets);
-			return getReturnedPage(tickets, quantity, request);
+			createAndAddTicketToReserved(request, reserved);
+			setAttributes(request, reserved);
+			page = getReturnedPage(reserved, request);
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			removeSessionAttribute(session);
-			return Page.SHOW_FLIGHTS.getAddress();
+			removeAttributes(request);
+			page = Page.SHOW_FLIGHTS;
 		}
+		return page.getAddress();
 	}
 
-	private Ticket createTicket(HttpServletRequest request) throws ServiceException {
+	private void countDown(HttpServletRequest request) {
+		CountDownLatch countDownLatch = (CountDownLatch) request.getAttribute(Attribute.COUNT_DOWN_LATCH.toString());
+		countDownLatch.countDown();
+	}
+
+	private void setAttributes(HttpServletRequest request, List<Ticket> reserved) throws ServiceException {
+		request.setAttribute(Attribute.TOTAL_PRICE.toString(), getTicketService().countTicketPrice(reserved));
+		request.getSession().setAttribute(Attribute.TICKETS.toString(), reserved);
+	}
+
+	private void createAndAddTicketToReserved(HttpServletRequest request, List<Ticket> reserved)
+			throws ServiceException {
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute(Attribute.USER.toString());
 		Flight flight = (Flight) session.getAttribute(Attribute.FLIGHT.toString());
@@ -52,20 +61,18 @@ public class CreateTicketCommand implements Command {
 		String passportNumber = request.getParameter(JSPParameter.PASSPORT_NUMBER);
 		String luggageQuantity = request.getParameter(JSPParameter.LUGGAGE);
 		String primaryBoarding = request.getParameter(JSPParameter.PRIMARY_BOARDING);
-		return getTicketService().createTicket(user, flight, firstName, lastName, passportNumber, luggageQuantity,
-				primaryBoarding);
+		reserved.add(getTicketService().createTicket(user, flight, firstName, lastName, passportNumber, luggageQuantity,
+				primaryBoarding));
 	}
 
-	private String getReturnedPage(List<Ticket> tickets, int quantity, HttpServletRequest request)
-			throws ServiceException {
-		if (tickets.size() < quantity) {
-			return Page.CREATE_TICKET.getAddress();
-		}
-		request.setAttribute(Attribute.TOTAL_PRICE.toString(), getTicketService().countTicketPrice(tickets));
-		return Page.BYE_TICKETS.getAddress();
+	private Page getReturnedPage(List<Ticket> tickets, HttpServletRequest request) {
+		return tickets.size() < (Integer) request.getSession().getAttribute(Attribute.PASSENGER_QUANTITY.toString())
+				? Page.CREATE_TICKET
+				: Page.BYE_TICKETS;
 	}
 
-	private void removeSessionAttribute(HttpSession session) {
+	private void removeAttributes(HttpServletRequest request) {
+		HttpSession session = request.getSession();
 		session.removeAttribute(Attribute.TICKETS.toString());
 		session.removeAttribute(Attribute.PASSENGER_QUANTITY.toString());
 		session.removeAttribute(Attribute.FLIGHT.toString());

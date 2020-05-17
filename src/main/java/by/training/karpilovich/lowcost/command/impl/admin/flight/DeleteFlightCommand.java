@@ -19,15 +19,21 @@ public class DeleteFlightCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		String address = null;
 		String flightId = request.getParameter(JSPParameter.FLIGHT_ID);
 		try {
+			deleteFlight(flightId);
 			sendMessagesToTicketHolders(flightId, response.getLocale());
-			getFlightService().removeFlightAndReturnAllPurchasedTickets(flightId);
-			return new ShowAllFlightsCommand().execute(request, response);
+			address = new ShowAllFlightsCommand().execute(request, response);
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.SHOW_FLIGHTS.getAddress();
+			address = Page.SHOW_FLIGHTS.getAddress();
 		}
+		return address;
+	}
+	
+	private void deleteFlight(String flightId) throws ServiceException {
+		getFlightService().removeFlightAndReturnAllPurchasedTickets(flightId);
 	}
 
 	private void sendMessagesToTicketHolders(String flightId, Locale locale) throws ServiceException {

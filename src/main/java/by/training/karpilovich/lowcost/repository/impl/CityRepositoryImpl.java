@@ -1,6 +1,5 @@
 package by.training.karpilovich.lowcost.repository.impl;
 
-import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -15,6 +14,7 @@ import by.training.karpilovich.lowcost.entity.City;
 import by.training.karpilovich.lowcost.exception.DAOException;
 import by.training.karpilovich.lowcost.exception.RepositoryException;
 import by.training.karpilovich.lowcost.factory.DAOFactory;
+import by.training.karpilovich.lowcost.factory.SpecificationFactory;
 import by.training.karpilovich.lowcost.repository.CityRepository;
 import by.training.karpilovich.lowcost.specification.Specification;
 import by.training.karpilovich.lowcost.util.CityByCountryAndNameComparator;
@@ -71,10 +71,12 @@ public class CityRepositoryImpl implements CityRepository {
 	@Override
 	public void update(City city) throws RepositoryException {
 		checkRepositoryBeenInitialized();
-		Iterator<City> iterator = cities.iterator();
-		while (iterator.hasNext() && iterator.next().getId() != city.getId()) {
+		SortedSet<City> removedCity = getCities(
+				SpecificationFactory.getInstance().getQuerySpecificationById(city.getId()));
+		if (removedCity.isEmpty()) {
+			throw new RepositoryException(MessageType.NO_SUCH_CITY.getMessage());
 		}
-		iterator.remove();
+		cities.remove(removedCity.first());
 		cities.add(city);
 	}
 
@@ -90,5 +92,4 @@ public class CityRepositoryImpl implements CityRepository {
 			throw new RepositoryException(MessageType.INTERNAL_ERROR.getMessage());
 		}
 	}
-
 }

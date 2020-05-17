@@ -266,39 +266,33 @@ public class TicketDAOImpl implements TicketDAO {
 	}
 
 	private Ticket buildTicket(ResultSet resultSet) throws SQLException {
-		TicketBuilder builder = new TicketBuilder();
-		builder.setEmail(resultSet.getString(SELECT_TICKET_TICKET_USER_EMAIL_ROW));
-		builder.setNumber(resultSet.getLong(SELECT_TICKET_TICKET_NUMBER_ROW));
-		builder.setPrice(resultSet.getBigDecimal(SELECT_TICKET_PRICE_ROW));
-		builder.setPurshaseDate(takeCalendarFromTimestamp(resultSet.getTimestamp(SELECT_TICKET_PURCHASE_DATE_ROW)));
-		builder.setPassengerFirstName(resultSet.getString(SELECT_TICKET_PASSENGER_FIRST_NAME_ROW));
-		builder.setPassengerLastName(resultSet.getString(SELECT_TICKET_PASSENGER_LAST_NAME_ROW));
-		builder.setPassengerPassportNumber(resultSet.getString(SELECT_TICKET_PASSENGER_PASSPORT_NUMBER_ROW));
-		builder.setLuggageQuantity(resultSet.getInt(SELECT_TICKET_LUGGAGE_QUANTITY_ROW));
-		builder.setOverweightLuggagePrice(resultSet.getBigDecimal(SELECT_TICKET_LUGGAGE_PRICE_ROW));
-		builder.setPrimaryBoardingRight(resultSet.getBoolean(SELECT_TICKET_PRIMARY_BOARDING_ROW));
-		builder.setFlight(buildFlight(resultSet));
-		return builder.getTicket();
+		return new TicketBuilder().setEmail(resultSet.getString(SELECT_TICKET_TICKET_USER_EMAIL_ROW))
+				.setNumber(resultSet.getLong(SELECT_TICKET_TICKET_NUMBER_ROW))
+				.setPrice(resultSet.getBigDecimal(SELECT_TICKET_PRICE_ROW))
+				.setPurshaseDate(takeCalendarFromTimestamp(resultSet.getTimestamp(SELECT_TICKET_PURCHASE_DATE_ROW)))
+				.setPassengerFirstName(resultSet.getString(SELECT_TICKET_PASSENGER_FIRST_NAME_ROW))
+				.setPassengerLastName(resultSet.getString(SELECT_TICKET_PASSENGER_LAST_NAME_ROW))
+				.setPassengerPassportNumber(resultSet.getString(SELECT_TICKET_PASSENGER_PASSPORT_NUMBER_ROW))
+				.setLuggageQuantity(resultSet.getInt(SELECT_TICKET_LUGGAGE_QUANTITY_ROW))
+				.setOverweightLuggagePrice(resultSet.getBigDecimal(SELECT_TICKET_LUGGAGE_PRICE_ROW))
+				.setPrimaryBoardingRight(resultSet.getBoolean(SELECT_TICKET_PRIMARY_BOARDING_ROW))
+				.setFlight(buildFlight(resultSet)).getTicket();
 	}
 
 	private Flight buildFlight(ResultSet resultSet) throws SQLException {
-		FlightBuilder builder = new FlightBuilder();
-		builder.setId(resultSet.getInt(SELECT_TICKET_FLIGHT_ID_ROW));
-		builder.setDate(takeCalendarFromTimestamp(resultSet.getTimestamp(SELECT_TICKET_DEPARTURE_DATE_ROW)));
-		builder.setFlightNumber(resultSet.getString(SELECT_TICKET_FLIGHT_NUMBER_ROW));
-		builder.setFrom(buildCity(resultSet, SELECT_TICKET_CITY_FROM_ID_ROW, SELECT_TICKET_CITY_FROM_NAME_ROW,
-				SELECT_TICKET_CITY_FROM_COUNTRY_ROW));
-		builder.setTo(buildCity(resultSet, SELECT_TICKET_CITY_TO_ID_ROW, SELECT_TICKET_CITY_TO_NAME_ROW,
-				SELECT_TICKET_CITY_TO_COUNTRY_ROW));
-		return builder.getFlight();
+		return new FlightBuilder().setId(resultSet.getInt(SELECT_TICKET_FLIGHT_ID_ROW))
+				.setDate(takeCalendarFromTimestamp(resultSet.getTimestamp(SELECT_TICKET_DEPARTURE_DATE_ROW)))
+				.setFlightNumber(resultSet.getString(SELECT_TICKET_FLIGHT_NUMBER_ROW))
+				.setFrom(buildCity(resultSet, SELECT_TICKET_CITY_FROM_ID_ROW, SELECT_TICKET_CITY_FROM_NAME_ROW,
+						SELECT_TICKET_CITY_FROM_COUNTRY_ROW))
+				.setTo(buildCity(resultSet, SELECT_TICKET_CITY_TO_ID_ROW, SELECT_TICKET_CITY_TO_NAME_ROW,
+						SELECT_TICKET_CITY_TO_COUNTRY_ROW))
+				.getFlight();
 	}
 
 	private City buildCity(ResultSet resultSet, String idRow, String cityRow, String countryRow) throws SQLException {
-		CityBuilder builder = new CityBuilder();
-		builder.setCityId(resultSet.getInt(idRow));
-		builder.setCityName(resultSet.getString(cityRow));
-		builder.setCityCountry(resultSet.getString(countryRow));
-		return builder.getCity();
+		return new CityBuilder().setCityId(resultSet.getInt(idRow)).setCityName(resultSet.getString(cityRow))
+				.setCityCountry(resultSet.getString(countryRow)).getCity();
 	}
 
 	private Calendar takeCalendarFromTimestamp(Timestamp timestamp) {

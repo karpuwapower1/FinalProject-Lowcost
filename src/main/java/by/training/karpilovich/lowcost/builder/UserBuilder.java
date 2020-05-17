@@ -13,28 +13,34 @@ public class UserBuilder {
 		user = new User();
 	}
 
-	public void setUserEmail(String email) {
+	public UserBuilder setUserEmail(String email) {
 		user.setEmail(email);
+		return this;
 	}
 
-	public void setUserPassword(String password) {
+	public UserBuilder setUserPassword(String password) {
 		user.setPassword(password);
+		return this;
 	}
 
-	public void setUserFirstName(String firstName) {
+	public UserBuilder setUserFirstName(String firstName) {
 		user.setFirstName(firstName);
+		return this;
 	}
 
-	public void setUserLastName(String lastName) {
+	public UserBuilder setUserLastName(String lastName) {
 		user.setLastName(lastName);
+		return this;
 	}
 
-	public void setUserRole(Role role) {
+	public UserBuilder setUserRole(Role role) {
 		user.setRole(role);
+		return this;
 	}
-	
-	public void setBalanceAmount(BigDecimal balanceAmount) {
+
+	public UserBuilder setBalanceAmount(BigDecimal balanceAmount) {
 		user.setBalanceAmount(balanceAmount);
+		return this;
 	}
 
 	public User getUser() {

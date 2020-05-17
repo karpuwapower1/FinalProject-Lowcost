@@ -12,20 +12,24 @@ public class PlaceCoefficientBuilder {
 		coefficient = new PlaceCoefficient();
 	}
 
-	public void setFlightId(int flightId) {
+	public PlaceCoefficientBuilder setFlightId(int flightId) {
 		coefficient.setFlightId(flightId);
+		return this;
 	}
 
-	public void setFrom(int from) {
+	public PlaceCoefficientBuilder setFrom(int from) {
 		coefficient.setFrom(from);
+		return this;
 	}
 
-	public void setTo(int to) {
+	public PlaceCoefficientBuilder setTo(int to) {
 		coefficient.setTo(to);
+		return this;
 	}
 
-	public void setValue(BigDecimal value) {
+	public PlaceCoefficientBuilder setValue(BigDecimal value) {
 		coefficient.setValue(value);
+		return this;
 	}
 
 	public PlaceCoefficient getCoefficient() {

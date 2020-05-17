@@ -18,32 +18,51 @@ import by.training.karpilovich.lowcost.entity.User;
 import by.training.karpilovich.lowcost.exception.ServiceException;
 
 public class BuyTicketCommand implements Command {
-	
+
 	private final AttributeReceiverUtil util = new AttributeReceiverUtil();
-	
+
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		HttpSession session = request.getSession();
-		List<Ticket> tickets = util.takeTicketsFromSession(session);
-		User user = (User) session.getAttribute(Attribute.USER.toString());
-		CountDownLatch countDownLatch = (CountDownLatch) session.getAttribute(Attribute.COUNT_DOWN_LATCH.toString());
-		countDownLatch.countDown();
+		countDown(request);
+		User user = getUser(request);
+		Page page = null;
 		try {
-			List<Ticket> boughtTickets = getTicketService().byeTickets(user, tickets);
-			request.setAttribute(Attribute.TICKETS.toString(), boughtTickets);
-			user = getUserService().signIn(user.getEmail(), user.getPassword());
-			session.setAttribute(Attribute.USER.toString(), user);
-			return Page.SHOW_TICKET.getAddress();
+			request.setAttribute(Attribute.TICKETS.toString(), buyTicket(user, request));
+			updateUserIntoSession(request.getSession(), getUpdatedUser(user));
+			page = Page.SHOW_TICKET;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.DEFAULT.getAddress();
+			page = Page.DEFAULT;
 		} finally {
-			removeSessionAttribute(session);
+			removeAttributes(request);
 		}
+		return page.getAddress();
 	}
-	
-	private void removeSessionAttribute(HttpSession session) {
+
+	private void countDown(HttpServletRequest request) {
+		CountDownLatch countDownLatch = (CountDownLatch) request.getAttribute(Attribute.COUNT_DOWN_LATCH.toString());
+		countDownLatch.countDown();
+	}
+
+	private List<Ticket> buyTicket(User user, HttpServletRequest request) throws ServiceException {
+		return getTicketService().byeTickets(user, util.takeTicketsFromSession(request.getSession()));
+	}
+
+	private User getUser(HttpServletRequest request) {
+		return (User) request.getSession().getAttribute(Attribute.USER.toString());
+	}
+
+	private User getUpdatedUser(User user) throws ServiceException {
+		return getUserService().signIn(user.getEmail(), user.getPassword());
+	}
+
+	private void updateUserIntoSession(HttpSession session, User user) {
+		session.setAttribute(Attribute.USER.toString(), user);
+	}
+
+	private void removeAttributes(HttpServletRequest request) {
+		HttpSession session = request.getSession();
 		session.removeAttribute(Attribute.TICKETS.toString());
 		session.removeAttribute(Attribute.PASSENGER_QUANTITY.toString());
 		session.removeAttribute(Attribute.FLIGHT.toString());

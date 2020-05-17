@@ -19,9 +19,9 @@ import org.apache.logging.log4j.Logger;
 
 @WebFilter(urlPatterns = { "/*" }, initParams = { @WebInitParam(name = "encoding", value = "UTF-8") })
 public class EncodingFilter implements Filter {
-	
+
 	private static final Logger LOGGER = LogManager.getLogger(EncodingFilter.class);
-	
+
 	private String encoding;
 
 	@Override
@@ -37,11 +37,11 @@ public class EncodingFilter implements Filter {
 		setEncoding(httpRequest, httpResponse);
 		chain.doFilter(httpRequest, httpResponse);
 	}
-	
+
 	private void setEncoding(HttpServletRequest request, HttpServletResponse response) {
 		try {
-		request.setCharacterEncoding(encoding);
-		response.setCharacterEncoding(encoding);
+			request.setCharacterEncoding(encoding);
+			response.setCharacterEncoding(encoding);
 		} catch (UnsupportedEncodingException e) {
 			LOGGER.error("Error while setting encoding ", e);
 		}

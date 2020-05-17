@@ -200,14 +200,13 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	private User buildUser(ResultSet resultSet) throws SQLException {
-		UserBuilder builder = new UserBuilder();
-		builder.setUserRole(Role.valueOf(resultSet.getString(SELECT_USER_RESULT_ROLE_ROW).toUpperCase()));
-		builder.setUserEmail(resultSet.getString(SELECT_USER_RESULT_EMAIL_ROW));
-		builder.setUserPassword(resultSet.getString(SELECT_USER_RESULT_PASSWORD_ROW));
-		builder.setUserFirstName(resultSet.getString(SELECT_USER_RESULT_FIRST_NAME_ROW));
-		builder.setUserLastName(resultSet.getString(SELECT_USER_RESULT_LAST_NAME_ROW));
-		builder.setBalanceAmount(resultSet.getBigDecimal(SELECT_USER_RESULT_BALANCE_AMOUNT_ROW));
-		return builder.getUser();
+		return new UserBuilder()
+				.setUserRole(Role.valueOf(resultSet.getString(SELECT_USER_RESULT_ROLE_ROW).toUpperCase()))
+				.setUserEmail(resultSet.getString(SELECT_USER_RESULT_EMAIL_ROW))
+				.setUserPassword(resultSet.getString(SELECT_USER_RESULT_PASSWORD_ROW))
+				.setUserFirstName(resultSet.getString(SELECT_USER_RESULT_FIRST_NAME_ROW))
+				.setUserLastName(resultSet.getString(SELECT_USER_RESULT_LAST_NAME_ROW))
+				.setBalanceAmount(resultSet.getBigDecimal(SELECT_USER_RESULT_BALANCE_AMOUNT_ROW)).getUser();
 	}
 
 	private int executeCountUserStatement(PreparedStatement statement) throws SQLException {

@@ -19,13 +19,22 @@ public class ShowNextTwentyFourHoursFlightsCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		Page page = null;
 		try {
-			List<Flight> flights = getFlightService().searchNextTwentyForHoursFlights();
-			request.setAttribute(Attribute.FLIGHTS.toString(), flights);
-			return Page.SHOW_FLIGHTS.getAddress();
+			setFlightsToRequest(request, getNextTwentyFourHoursFlights());
+			page = Page.SHOW_FLIGHTS;
 		} catch (ServiceException e) {
 			setErrorMessage(request, response.getLocale(), e.getMessage());
-			return Page.valueOf(request.getParameter(JSPParameter.FROM_PAGE)).getAddress();
+			page = Page.valueOf(request.getParameter(JSPParameter.FROM_PAGE));
 		}
+		return page.getAddress();
+	}
+
+	private void setFlightsToRequest(HttpServletRequest request, List<Flight> flights) {
+		request.setAttribute(Attribute.FLIGHTS.toString(), flights);
+	}
+
+	private List<Flight> getNextTwentyFourHoursFlights() throws ServiceException {
+		return getFlightService().searchNextTwentyForHoursFlights();
 	}
 }

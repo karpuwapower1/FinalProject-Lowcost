@@ -12,6 +12,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import by.training.karpilovich.lowcost.command.Attribute;
 import by.training.karpilovich.lowcost.command.CookieName;
 import by.training.karpilovich.lowcost.entity.Role;
@@ -21,7 +24,9 @@ import by.training.karpilovich.lowcost.factory.ServiceFactory;
 import by.training.karpilovich.lowcost.service.UserService;
 
 @WebFilter(urlPatterns = { "/*" })
-public class SigninFilter implements Filter {
+public class SignInFilter implements Filter {
+
+	private static final Logger LOGGER = LogManager.getLogger(SignInFilter.class);
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -63,6 +68,7 @@ public class SigninFilter implements Filter {
 	private void setSessionAttribute(HttpSession session, User user) {
 		if (user != null) {
 			session.setAttribute(Attribute.USER.toString(), user);
+			LOGGER.debug(user.getBalanceAmount());
 			session.setAttribute(Attribute.USER_ROLE.toString(), user.getRole());
 			return;
 		}
