@@ -74,10 +74,6 @@ public class UserDAOImpl implements UserDAO {
 	private UserDAOImpl() {
 	}
 
-	private static final class MySqlUserDaoInstanceHolder {
-		private static final UserDAOImpl INSTANCE = new UserDAOImpl();
-	}
-
 	public static UserDAO getInstance() {
 		return MySqlUserDaoInstanceHolder.INSTANCE;
 	}
@@ -152,6 +148,10 @@ public class UserDAOImpl implements UserDAO {
 			LOGGER.error("Error while getting password by email=" + email, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
+	}
+
+	private static final class MySqlUserDaoInstanceHolder {
+		private static final UserDAOImpl INSTANCE = new UserDAOImpl();
 	}
 
 	private void prepareAddStatement(PreparedStatement statement, User user) throws SQLException {

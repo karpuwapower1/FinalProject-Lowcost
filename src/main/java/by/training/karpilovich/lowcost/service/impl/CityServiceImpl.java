@@ -38,10 +38,6 @@ public class CityServiceImpl implements CityService {
 	private CityServiceImpl() {
 	}
 
-	private static final class CityCerviceImplInstanceHolder {
-		private static final CityServiceImpl INSTANCE = new CityServiceImpl();
-	}
-
 	public static CityServiceImpl getInstance() {
 		return CityCerviceImplInstanceHolder.INSTANCE;
 	}
@@ -108,6 +104,10 @@ public class CityServiceImpl implements CityService {
 		} catch (RepositoryException e) {
 			throw new ServiceException(e.getMessage());
 		}
+	}
+
+	private static final class CityCerviceImplInstanceHolder {
+		private static final CityServiceImpl INSTANCE = new CityServiceImpl();
 	}
 
 	private City buildCity(String name, String countryName) {

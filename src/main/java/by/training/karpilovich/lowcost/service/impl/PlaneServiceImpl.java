@@ -26,10 +26,6 @@ public class PlaneServiceImpl implements PlaneService {
 	private PlaneServiceImpl() {
 	}
 
-	private static final class PlaneServiceImplInstanceHolder {
-		private static final PlaneServiceImpl INSTANCE = new PlaneServiceImpl();
-	}
-
 	public static PlaneServiceImpl getInstance() {
 		return PlaneServiceImplInstanceHolder.INSTANCE;
 	}
@@ -74,6 +70,10 @@ public class PlaneServiceImpl implements PlaneService {
 		} catch (ValidatorException | DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
+	}
+
+	private static final class PlaneServiceImplInstanceHolder {
+		private static final PlaneServiceImpl INSTANCE = new PlaneServiceImpl();
 	}
 
 	private Plane buildPlane(String model, int placeQuantity) {

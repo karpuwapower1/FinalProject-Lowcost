@@ -30,10 +30,6 @@ public class UserServiceImpl implements UserService {
 	private UserServiceImpl() {
 	}
 
-	private static final class UserServiceInstanceHolder {
-		private static final UserServiceImpl INSTANCE = new UserServiceImpl();
-	}
-
 	public static UserService getInstance() {
 		return UserServiceInstanceHolder.INSTANCE;
 	}
@@ -126,6 +122,10 @@ public class UserServiceImpl implements UserService {
 		} catch (DAOException | ValidatorException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
+	}
+
+	private static final class UserServiceInstanceHolder {
+		private static final UserServiceImpl INSTANCE = new UserServiceImpl();
 	}
 
 	private Validator getUserValidator(String email, String password, String repeatPassword, String firstName) {

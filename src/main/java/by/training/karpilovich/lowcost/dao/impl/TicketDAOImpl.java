@@ -111,10 +111,6 @@ public class TicketDAOImpl implements TicketDAO {
 	private TicketDAOImpl() {
 	}
 
-	private static final class TicketDAOImplInstanceHolder {
-		private static final TicketDAOImpl INSTANCE = new TicketDAOImpl();
-	}
-
 	public static TicketDAOImpl getInstance() {
 		return TicketDAOImplInstanceHolder.INSTANCE;
 	}
@@ -190,6 +186,10 @@ public class TicketDAOImpl implements TicketDAO {
 			LOGGER.error("Error while getting user emails and ticket numbers by fligth id=" + flight.getId(), e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
+	}
+	
+	private static final class TicketDAOImplInstanceHolder {
+		private static final TicketDAOImpl INSTANCE = new TicketDAOImpl();
 	}
 
 	private List<Ticket> addTicketsToDataSource(Map<Ticket, BigDecimal> ticketsAndPrices, CallableStatement statement)

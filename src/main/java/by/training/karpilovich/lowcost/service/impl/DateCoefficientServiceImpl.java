@@ -33,10 +33,6 @@ public class DateCoefficientServiceImpl implements DateCoefficientService {
 	private DateCoefficientServiceImpl() {
 	}
 
-	private static final class DateCoefficientServiceImpllInstanceHolder {
-		private static final DateCoefficientServiceImpl INSTANCE = new DateCoefficientServiceImpl();
-	}
-
 	public static DateCoefficientServiceImpl getInstance() {
 		return DateCoefficientServiceImpllInstanceHolder.INSTANCE;
 	}
@@ -90,6 +86,10 @@ public class DateCoefficientServiceImpl implements DateCoefficientService {
 			calendar.add(Calendar.DATE, INCREASE_ONE_DAY_VALUE);
 		}
 		return calendar;
+	}
+
+	private static final class DateCoefficientServiceImpllInstanceHolder {
+		private static final DateCoefficientServiceImpl INSTANCE = new DateCoefficientServiceImpl();
 	}
 
 	private void checkAndFillDateCoefficients(Flight flight, SortedSet<DateCoefficient> coefficients) {

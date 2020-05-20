@@ -48,10 +48,6 @@ public class FlightServiceImpl implements FlightService {
 	private FlightServiceImpl() {
 	}
 
-	private static final class FlightServiceInstanceHolder {
-		private static final FlightServiceImpl INSTANCE = new FlightServiceImpl();
-	}
-
 	public static FlightService getInstance() {
 		return FlightServiceInstanceHolder.INSTANCE;
 	}
@@ -192,6 +188,10 @@ public class FlightServiceImpl implements FlightService {
 		Calendar to = new GregorianCalendar();
 		to.add(Calendar.HOUR, HOURS_TO_NEXT_DAY_QUANTITY);
 		return getFlightsBetweenDates(from, to);
+	}
+
+	private static final class FlightServiceInstanceHolder {
+		private static final FlightServiceImpl INSTANCE = new FlightServiceImpl();
 	}
 
 	private Flight createFlightFromParameters(String number, City from, City to, String date, String defaultPrice,

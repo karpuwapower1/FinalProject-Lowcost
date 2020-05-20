@@ -32,10 +32,6 @@ public class PlaceCoefficientServiceImpl implements PlaceCoefficientService {
 	private PlaceCoefficientServiceImpl() {
 	}
 
-	private static final class PlaceCoefficientServiceImplInstanceHolder {
-		private static final PlaceCoefficientServiceImpl INSTANCE = new PlaceCoefficientServiceImpl();
-	}
-
 	public static PlaceCoefficientServiceImpl getInstance() {
 		return PlaceCoefficientServiceImplInstanceHolder.INSTANCE;
 	}
@@ -88,6 +84,10 @@ public class PlaceCoefficientServiceImpl implements PlaceCoefficientService {
 			bound = coefficients.last().getTo() + INCREASE_PLACE_COEFFICIENT_VALUE;
 		}
 		return bound;
+	}
+
+	private static final class PlaceCoefficientServiceImplInstanceHolder {
+		private static final PlaceCoefficientServiceImpl INSTANCE = new PlaceCoefficientServiceImpl();
 	}
 
 	private void checkAndFillPlaceCoefficients(Flight flight, SortedSet<PlaceCoefficient> coefficients) {

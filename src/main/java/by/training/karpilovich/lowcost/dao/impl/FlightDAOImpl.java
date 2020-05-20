@@ -131,10 +131,6 @@ public class FlightDAOImpl implements FlightDAO {
 	private FlightDAOImpl() {
 	}
 
-	private static final class FlightDAOImplInstanceHolder {
-		private static final FlightDAOImpl INSTANCE = new FlightDAOImpl();
-	}
-
 	public static FlightDAO getInstance() {
 		return FlightDAOImplInstanceHolder.INSTANCE;
 	}
@@ -237,6 +233,10 @@ public class FlightDAOImpl implements FlightDAO {
 			LOGGER.error("Error while getting flighs between dates : \nfrom=" + from + " \nto=" + to, e);
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
+	}
+	
+	private static final class FlightDAOImplInstanceHolder {
+		private static final FlightDAOImpl INSTANCE = new FlightDAOImpl();
 	}
 
 	private void prepareCountFlightByNumberAndDateQuery(PreparedStatement statement, String number, Calendar date)

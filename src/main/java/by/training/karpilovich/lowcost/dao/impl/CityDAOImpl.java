@@ -53,10 +53,6 @@ public class CityDAOImpl implements CityDAO {
 	private CityDAOImpl() {
 	}
 
-	private static final class CityDAOImplInstanceHolder {
-		private static final CityDAOImpl INSTANCE = new CityDAOImpl();
-	}
-
 	public static CityDAOImpl getInstance() {
 		return CityDAOImplInstanceHolder.INSTANCE;
 	}
@@ -111,6 +107,10 @@ public class CityDAOImpl implements CityDAO {
 			LOGGER.error("Error while getting all cities");
 			throw new DAOException(MessageType.INTERNAL_ERROR.getMessage(), e);
 		}
+	}
+	
+	private static final class CityDAOImplInstanceHolder {
+		private static final CityDAOImpl INSTANCE = new CityDAOImpl();
 	}
 
 	private void setIdToNewAddedCity(City city, Statement statement) throws SQLException {

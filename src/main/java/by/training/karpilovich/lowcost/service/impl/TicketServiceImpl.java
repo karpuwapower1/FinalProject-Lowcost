@@ -37,10 +37,6 @@ public class TicketServiceImpl implements TicketService {
 	private TicketServiceImpl() {
 	}
 
-	private static final class TicketServiceInstanceHolder {
-		private static final TicketServiceImpl INSTATNCE = new TicketServiceImpl();
-	}
-
 	public static TicketServiceImpl getInstance() {
 		return TicketServiceInstanceHolder.INSTATNCE;
 	}
@@ -96,7 +92,8 @@ public class TicketServiceImpl implements TicketService {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
-
+	
+	@Override
 	public void returnTicket(User user, String ticketNumber) throws ServiceException {
 		serviceUtil.checkUserOnNull(user);
 		try {
@@ -153,6 +150,10 @@ public class TicketServiceImpl implements TicketService {
 		} catch (DAOException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
+	}
+
+	private static final class TicketServiceInstanceHolder {
+		private static final TicketServiceImpl INSTATNCE = new TicketServiceImpl();
 	}
 
 	private void lockPlaces(AtomicInteger placesUnderConsideration, int requiredPlaces, int availablePlaces)
