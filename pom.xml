@@ -13,7 +13,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<junitVersion>4.12</junitVersion>
-		<log4jVersion>2.12.1</log4jVersion>
+		<log4jVersion>2.13.3</log4jVersion>
 		<jstlVersion>1.2</jstlVersion>
 		<jsp-api-version>2.1</jsp-api-version>
 		<javaee-web-api-vercion>7.0</javaee-web-api-vercion>
