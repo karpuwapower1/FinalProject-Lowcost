@@ -21,7 +21,7 @@
 		<javax.mail.Version>1.4.7</javax.mail.Version>
 		<mysql-connector-java-version>8.0.18</mysql-connector-java-version>
 		<maven-compiler-plugin-version>3.5.1</maven-compiler-plugin-version>
-		<hibernate-core-version>5.4.15.Final</hibernate-core-version>
+		<hibernate-core-version>5.4.24.Final</hibernate-core-version>
 	</properties>
 
 	<dependencies>
